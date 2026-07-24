@@ -48,3 +48,20 @@ After each change, report:
 - Whether the change was pushed to GitHub
 - Whether files were synced to the server
 - Verification result
+
+## Context Handoff Rule
+
+Before ending a work session or when the user asks to stop/exit, update the project context handoff file:
+
+- `CODEX_CONTEXT.md`
+
+The context handoff should record:
+
+- Current workflow rule status
+- Latest completed task
+- Latest GitHub commit hash
+- Whether the server has been synced
+- Open issues / pending next steps
+- Important operational notes
+
+This file should be committed to GitHub and synced to the server as part of the normal workflow.
