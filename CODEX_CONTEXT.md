@@ -52,17 +52,31 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 - Excluded uploads, storage, runtime config and backup files from GitHub.
 - Pushed initial server code to GitHub.
 - Added workflow rules.
+- Added context handoff rule and this context file.
+- Confirmed standing rule: before exit, update context, commit, push GitHub, and sync server.
 
 ## Latest Known Commits
 
 - `aa79f0a` - Initial sync from Hong Kong website server
 - `45f65a1` - Document local GitHub server workflow
+- `8dbc2d9` - Add Codex context handoff rule
 
 ## Server Sync Status
 
 - Initial code sync to GitHub completed.
 - `WORKFLOW_RULES.md` synced to server.
-- This context file should also be synced to server after commit.
+- `CODEX_CONTEXT.md` synced to server.
+
+## Current Session Closeout
+
+- User requested exit.
+- Context file updated before exit.
+- No open code changes are pending besides this context update.
+- Next session should continue using the default workflow:
+
+```text
+Local edit -> Git commit -> GitHub push -> Server deploy
+```
 
 ## Standing Rule
 
