@@ -1,0 +1,340 @@
+/* V6.2 — minimal product-family headings between product groups */
+.catalog-grid-grouped{align-items:stretch}
+.catalog-family-divider{
+  grid-column:1/-1;
+  margin:30px 0 2px;
+  padding:15px 0 9px;
+  border:0;
+  background:transparent;
+  color:#171717;
+}
+.catalog-family-divider:first-child{margin-top:0}
+.catalog-family-divider h3{
+  margin:0;
+  font-size:clamp(26px,2.55vw,40px);
+  line-height:1.08;
+  font-weight:400;
+  letter-spacing:-.035em;
+}
+.catalog-family-divider h3>a{
+  display:inline-flex;
+  align-items:center;
+  gap:.28em;
+  color:inherit;
+  text-decoration:none;
+}
+.catalog-family-arrow{
+  display:inline-block;
+  font-weight:300;
+  line-height:1;
+  transition:transform .22s ease,color .22s ease;
+}
+.catalog-family-divider h3>a:hover{color:var(--china-red,#c8102e)}
+.catalog-family-divider h3>a:hover .catalog-family-arrow{transform:translateX(6px)}
+@media(max-width:780px){
+  .catalog-family-divider{margin-top:22px;padding:12px 0 7px}
+  .catalog-family-divider h3{font-size:clamp(24px,7.2vw,32px)}
+}
+
+/* =========================================================
+   V6.3 — square product image stage + wider pinned filters
+   ========================================================= */
+@media (min-width: 781px){
+  .catalog-layout{
+    grid-template-columns:270px minmax(0,1fr)!important;
+    gap:38px!important;
+  }
+  .catalog-filters{
+    position:sticky!important;
+    top:92px!important;
+    align-self:start;
+    width:100%;
+    max-height:calc(100vh - 112px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+}
+
+/* Product picture zone is always a true square. */
+.catalog-card-v51{
+  aspect-ratio:auto!important;
+  height:auto!important;
+}
+.catalog-card-v51 .catalog-card-link{
+  display:grid!important;
+  grid-template-rows:30px auto minmax(0,1fr)!important;
+  height:100%;
+}
+.catalog-card-v51 .catalog-card-image{
+  width:100%;
+  aspect-ratio:1 / 1!important;
+  height:auto!important;
+  min-height:0!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden;
+}
+.catalog-card-v51 .catalog-card-image img{
+  width:80%!important;
+  height:80%!important;
+  max-width:80%!important;
+  max-height:80%!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+.catalog-card-v51 .catalog-card-body{
+  min-height:280px!important;
+}
+
+@media (max-width:1100px) and (min-width:781px){
+  .catalog-layout{
+    grid-template-columns:235px minmax(0,1fr)!important;
+    gap:28px!important;
+  }
+}
+
+@media (max-width:780px){
+  .catalog-card-v51 .catalog-card-image img{
+    width:82%!important;
+    height:82%!important;
+    max-width:82%!important;
+    max-height:82%!important;
+  }
+  .catalog-card-v51 .catalog-card-body{
+    min-height:0!important;
+  }
+}
+
+/* V6.8.6 — white image stage without touching catalogue layout */
+.catalog-card-v51 .catalog-card-image{
+  background:#fff!important;
+}
+.catalog-card-v51 .catalog-card-image::before,
+.catalog-card-v51 .catalog-card-image::after{
+  content:none!important;
+  display:none!important;
+}
+.catalog-card-v51 .catalog-card-image img{
+  background:transparent!important;
+  filter:none!important;
+}
+.catalog-card-v51 .catalog-card-body{
+  background:#f7f7f7!important;
+}
+
+/* V7.0.4 — richer catalogue cards and fuller product imagery */
+.catalog-card-v51.catalog-rich-card .catalog-card-link{
+  grid-template-rows:auto minmax(0,1fr)!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-image{
+  background:#fff!important;
+  border-bottom:1px solid var(--line,#dedede);
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-image img{
+  width:92%!important;
+  height:92%!important;
+  max-width:92%!important;
+  max-height:92%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-body{
+  min-height:330px!important;
+  padding:30px 28px 28px!important;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-body h3{
+  margin:0 0 18px!important;
+  font-size:clamp(24px,1.65vw,32px)!important;
+  line-height:1.15!important;
+  letter-spacing:-.035em!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-subtitle{
+  margin:0 0 15px!important;
+  color:#333!important;
+  font-size:19px!important;
+  line-height:1.55!important;
+  letter-spacing:-.01em!important;
+}
+.catalog-card-detail-list{
+  display:grid;
+  gap:9px;
+  margin:0 0 22px;
+  padding:0;
+}
+.catalog-card-detail-list div{
+  display:flex;
+  gap:7px;
+  align-items:baseline;
+  color:#303030;
+  font-size:18px;
+  line-height:1.35;
+}
+.catalog-card-detail-list dt{
+  margin:0;
+  font-weight:400;
+  color:#333;
+}
+.catalog-card-detail-list dd{
+  margin:0;
+  font-weight:800;
+  color:#222;
+}
+.catalog-card-view-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  padding:8px 18px;
+  border:1px solid #d6d6d6;
+  background:#ececec;
+  color:#202020;
+  font-size:18px;
+  line-height:1;
+  margin-top:auto;
+  transition:background .18s ease,border-color .18s ease,color .18s ease;
+}
+.catalog-card-v51.catalog-rich-card:hover .catalog-card-view-button{
+  background:#111;
+  border-color:#111;
+  color:#fff;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-tags{
+  margin-top:18px!important;
+}
+.catalog-concrete-product-card.catalog-rich-card .catalog-card-series-label,
+.catalog-concrete-product-card.catalog-rich-card .catalog-card-model{
+  margin:0 0 8px;
+  color:#777;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-weight:700;
+}
+@media(max-width:1180px){
+  .catalog-card-v51.catalog-rich-card .catalog-card-body{min-height:300px!important;padding:26px 24px!important}
+  .catalog-card-v51.catalog-rich-card .catalog-card-subtitle{font-size:17px!important}
+  .catalog-card-detail-list div{font-size:16px}
+}
+@media(max-width:780px){
+  .catalog-card-v51.catalog-rich-card .catalog-card-image img{width:90%!important;height:90%!important;max-width:90%!important;max-height:90%!important}
+  .catalog-card-v51.catalog-rich-card .catalog-card-body{min-height:0!important}
+  .catalog-card-v51.catalog-rich-card .catalog-card-body h3{font-size:25px!important}
+  .catalog-card-v51.catalog-rich-card .catalog-card-subtitle{font-size:16px!important}
+  .catalog-card-detail-list div{font-size:15px}
+  .catalog-card-view-button{font-size:16px;min-height:38px}
+}
+
+/* V7.0.5 — catalogue card image scale control + compact rich card rhythm.
+   Images are no longer hard-enlarged globally; each series/model can tune scale in backend. */
+.catalog-card-v51.catalog-rich-card{
+  --catalog-card-image-scale:1;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-image{
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-image img{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:scale(var(--catalog-card-image-scale,1));
+  transform-origin:center center;
+  transition:transform .18s ease;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-body{
+  min-height:282px!important;
+  padding:26px 26px 26px!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-body h3{
+  margin:0 0 14px!important;
+  font-size:clamp(22px,1.45vw,28px)!important;
+  line-height:1.14!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-subtitle{
+  margin:0 0 12px!important;
+  font-size:16px!important;
+  line-height:1.48!important;
+}
+.catalog-card-detail-list{
+  gap:7px!important;
+  margin-bottom:18px!important;
+}
+.catalog-card-detail-list div{
+  font-size:15px!important;
+  line-height:1.3!important;
+}
+.catalog-card-view-button{
+  min-height:36px!important;
+  padding:7px 15px!important;
+  font-size:15px!important;
+}
+@media(max-width:1180px){
+  .catalog-card-v51.catalog-rich-card .catalog-card-body{min-height:260px!important;padding:23px 22px!important}
+  .catalog-card-v51.catalog-rich-card .catalog-card-subtitle{font-size:15px!important}
+  .catalog-card-detail-list div{font-size:14px!important}
+}
+
+/* V7.0.6 — card frame-size control. The backend slider now changes the whole
+   card frame; the older per-item control only fine-tunes the image inside it. */
+.catalog-grid-grouped{align-items:start!important}
+.catalog-series-mode .catalog-grid{
+  grid-template-columns:repeat(auto-fill,var(--catalog-series-card-width,300px))!important;
+  justify-content:space-between;
+  align-items:start;
+}
+.catalog-product-mode .catalog-grid{
+  grid-template-columns:repeat(auto-fill,var(--catalog-product-card-width,280px))!important;
+  justify-content:space-between;
+  align-items:start;
+}
+.catalog-card-v51.catalog-rich-card{
+  width:100%;
+  align-self:start;
+}
+.catalog-series-mode .catalog-card-v51.catalog-rich-card .catalog-card-image img{
+  object-fit:var(--catalog-series-image-fit,cover)!important;
+}
+.catalog-product-mode .catalog-card-v51.catalog-rich-card .catalog-card-image img{
+  object-fit:var(--catalog-product-image-fit,contain)!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-body{
+  min-height:0!important;
+  padding:22px 22px 24px!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-body h3{
+  margin-bottom:12px!important;
+}
+.catalog-card-v51.catalog-rich-card .catalog-card-subtitle{
+  margin-bottom:10px!important;
+}
+.catalog-card-detail-list{
+  margin-bottom:0!important;
+}
+.catalog-card-view-button{
+  margin-top:16px!important;
+}
+@media(max-width:1180px) and (min-width:801px){
+  .catalog-series-mode .catalog-grid,
+  .catalog-product-mode .catalog-grid{
+    justify-content:start;
+  }
+}
+@media(max-width:800px){
+  .catalog-series-mode .catalog-grid{
+    grid-template-columns:min(100%,var(--catalog-series-card-width,300px))!important;
+    justify-content:center;
+  }
+  .catalog-product-mode .catalog-grid{
+    grid-template-columns:min(100%,var(--catalog-product-card-width,280px))!important;
+    justify-content:center;
+  }
+}

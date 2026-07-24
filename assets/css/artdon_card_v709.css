@@ -1,0 +1,230 @@
+/*
+ * Artdon Lighting 官网 V7.0.9.1
+ * 产品 / 系列卡片显示修正版
+ *
+ * 不调整产品网格 gap；不强制放大图片；卡片尺寸和图片主体缩放仅在后台填写后生效。
+ */
+
+body.artdon-v7091-card-ready{
+  --artdon-card-title-size:18px;
+  --artdon-card-subtitle-size:13px;
+  --artdon-card-description-size:12px;
+  --artdon-card-spec-label-size:12px;
+  --artdon-card-spec-value-size:13px;
+  --artdon-card-tag-size:11px;
+  --artdon-card-meta-size:11px;
+  --artdon-card-badge-size:11px;
+  --artdon-family-heading-size:30px;
+  --artdon-card-badge-top:14px;
+  --artdon-card-badge-left:14px;
+  --artdon-card-badge-radius:999px;
+}
+
+/* 1. 隐藏真实 View Details 元素 */
+body.artdon-v7091-hide-details .view-details,
+body.artdon-v7091-hide-details .view-detail,
+body.artdon-v7091-hide-details .details-btn,
+body.artdon-v7091-hide-details .btn-details,
+body.artdon-v7091-hide-details .product-detail-btn,
+body.artdon-v7091-hide-details .series-detail-btn,
+body.artdon-v7091-hide-details .catalog-card-cta,
+body.artdon-v7091-hide-details .catalog-card-action,
+body.artdon-v7091-hide-details .catalog-card-button,
+body.artdon-v7091-hide-details [data-artdon-v7091-hidden="view-details"],
+body.artdon-v7091-hide-details [data-artdon-v7091-hidden="view-details-wrap"]{
+  display:none!important;
+  visibility:hidden!important;
+  width:0!important;
+  height:0!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  opacity:0!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+
+/* 兼容由 ::before / ::after 生成的 View Details */
+body.artdon-v7091-hide-details .catalog-card-link::after,
+body.artdon-v7091-hide-details .catalog-card-body::after,
+body.artdon-v7091-hide-details .product-card-link::after,
+body.artdon-v7091-hide-details .series-card-link::after,
+body.artdon-v7091-hide-details .family-card-link::after,
+body.artdon-v7091-hide-details .artdon-v7091-pseudo-details-after::after{
+  content:none!important;
+  display:none!important;
+  visibility:hidden!important;
+  width:0!important;
+  height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+/* 2. 隐藏图片圆形 i / 感叹号 */
+body.artdon-v7091-hide-info .catalog-card-info,
+body.artdon-v7091-hide-info .catalog-info,
+body.artdon-v7091-hide-info .info-icon,
+body.artdon-v7091-hide-info .info-dot,
+body.artdon-v7091-hide-info .card-info-icon,
+body.artdon-v7091-hide-info .product-info-icon,
+body.artdon-v7091-hide-info .series-info-icon,
+body.artdon-v7091-hide-info .circle-info,
+body.artdon-v7091-hide-info .hotspot-info,
+body.artdon-v7091-hide-info [data-artdon-v7091-hidden="info-icon"]{
+  display:none!important;
+  visibility:hidden!important;
+  width:0!important;
+  height:0!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  opacity:0!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+
+/* 3. products.php 真实卡片结构 */
+body.artdon-v7091-card-ready .catalog-card .catalog-card-body h3,
+body.artdon-v7091-card-ready .catalog-card h3{
+  font-size:var(--artdon-card-title-size)!important;
+  line-height:1.16!important;
+}
+body.artdon-v7091-card-ready .catalog-card .catalog-card-subtitle{
+  font-size:var(--artdon-card-subtitle-size)!important;
+  line-height:1.42!important;
+}
+body.artdon-v7091-card-ready .catalog-card .catalog-card-description,
+body.artdon-v7091-card-ready .catalog-card .catalog-card-body>p:not(.catalog-card-subtitle){
+  font-size:var(--artdon-card-description-size)!important;
+  line-height:1.48!important;
+}
+body.artdon-v7091-card-ready .catalog-card .catalog-card-metrics dt{
+  font-size:var(--artdon-card-spec-label-size)!important;
+  line-height:1.36!important;
+}
+body.artdon-v7091-card-ready .catalog-card .catalog-card-metrics dd{
+  font-size:var(--artdon-card-spec-value-size)!important;
+  line-height:1.36!important;
+}
+
+/* Track / Grille / Visual comfort 等标签保留，只允许调整字号 */
+body.artdon-v7091-card-ready .catalog-card .catalog-card-tags,
+body.artdon-v7091-card-ready .catalog-card .catalog-card-tags span,
+body.artdon-v7091-card-ready .catalog-card .catalog-card-tags a{
+  font-size:var(--artdon-card-tag-size)!important;
+}
+body.artdon-v7091-card-ready .catalog-card small,
+body.artdon-v7091-card-ready .catalog-card .meta,
+body.artdon-v7091-card-ready .catalog-card .note{
+  font-size:var(--artdon-card-meta-size)!important;
+}
+body.artdon-v7091-card-ready .catalog-family-divider h3{
+  font-size:var(--artdon-family-heading-size)!important;
+}
+
+/* 4. 兼容其它系列 / 产品卡片 */
+body.artdon-v7091-card-ready :is(.product-card,.product-item,.series-card,.series-item,.collection-card,.family-card,.variant-card,.series-variant-card,.family-variant-card) :is(h2,h3,h4,.title,.name,.product-title,.series-title,.card-title){
+  font-size:var(--artdon-card-title-size)!important;
+  line-height:1.16!important;
+}
+body.artdon-v7091-card-ready :is(.product-card,.product-item,.series-card,.series-item,.collection-card,.family-card,.variant-card,.series-variant-card,.family-variant-card) :is(.subtitle,.product-subtitle,.series-subtitle,.card-subtitle){
+  font-size:var(--artdon-card-subtitle-size)!important;
+}
+body.artdon-v7091-card-ready :is(.product-card,.product-item,.series-card,.series-item,.collection-card,.family-card,.variant-card,.series-variant-card,.family-variant-card) :is(.description,.desc,.card-description){
+  font-size:var(--artdon-card-description-size)!important;
+}
+body.artdon-v7091-card-ready :is(.product-card,.product-item,.series-card,.series-item,.collection-card,.family-card,.variant-card,.series-variant-card,.family-variant-card) :is(dt,.spec-label,.parameter-label){
+  font-size:var(--artdon-card-spec-label-size)!important;
+}
+body.artdon-v7091-card-ready :is(.product-card,.product-item,.series-card,.series-item,.collection-card,.family-card,.variant-card,.series-variant-card,.family-variant-card) :is(dd,.spec-value,.parameter-value){
+  font-size:var(--artdon-card-spec-value-size)!important;
+}
+body.artdon-v7091-card-ready :is(.product-card,.product-item,.series-card,.series-item,.collection-card,.family-card,.variant-card,.series-variant-card,.family-variant-card) :is(.tags,.tag-list,.card-tags,.product-tags,.series-tags) :is(span,a){
+  font-size:var(--artdon-card-tag-size)!important;
+}
+body.artdon-v7091-card-ready :is(.product-card,.product-item,.series-card,.series-item,.collection-card,.family-card,.variant-card,.series-variant-card,.family-variant-card) :is(small,.meta,.note){
+  font-size:var(--artdon-card-meta-size)!important;
+}
+
+/* 系列页里的具体产品 / 其它尺寸 */
+body.artdon-v7091-card-ready .variant-siblings>div>a h3,
+body.artdon-v7091-card-ready .family-variants a h3,
+body.artdon-v7091-card-ready .series-products a h3{
+  font-size:var(--artdon-card-title-size)!important;
+}
+body.artdon-v7091-card-ready .variant-siblings>div>a p,
+body.artdon-v7091-card-ready .family-variants a p,
+body.artdon-v7091-card-ready .series-products a p{
+  font-size:var(--artdon-card-subtitle-size)!important;
+}
+body.artdon-v7091-card-ready .variant-siblings>div>a>span,
+body.artdon-v7091-card-ready .family-variants a>span,
+body.artdon-v7091-card-ready .series-products a>span{
+  font-size:var(--artdon-card-meta-size)!important;
+}
+
+/* 5. NEW / ★ */
+.artdon-v7091-badge-host{position:relative!important}
+.artdon-v7091-badge{
+  position:absolute!important;
+  z-index:12!important;
+  top:var(--artdon-card-badge-top)!important;
+  left:var(--artdon-card-badge-left)!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:38px!important;
+  min-height:22px!important;
+  box-sizing:border-box!important;
+  padding:5px 9px!important;
+  border:0!important;
+  border-radius:var(--artdon-card-badge-radius)!important;
+  background:#e1192c!important;
+  color:#fff!important;
+  font-size:var(--artdon-card-badge-size)!important;
+  font-weight:800!important;
+  line-height:1!important;
+  letter-spacing:.08em!important;
+  box-shadow:0 8px 22px rgba(225,25,44,.22)!important;
+  pointer-events:none!important;
+  user-select:none!important;
+}
+.artdon-v7091-badge.artdon-v7091-star{
+  width:28px!important;
+  min-width:28px!important;
+  height:28px!important;
+  min-height:28px!important;
+  padding:0!important;
+  font-size:calc(var(--artdon-card-badge-size) + 4px)!important;
+  letter-spacing:0!important;
+}
+
+/* 6. 可选尺寸设置：后台留空时这些规则完全不启用 */
+body.artdon-v7091-card-width-on .catalog-card,
+body.artdon-v7091-card-width-on :is(.product-card,.series-card,.variant-card,.family-variant-card,.series-variant-card){
+  width:var(--artdon-card-custom-width)!important;
+  max-width:100%!important;
+}
+body.artdon-v7091-card-height-on .catalog-card,
+body.artdon-v7091-card-height-on :is(.product-card,.series-card,.variant-card,.family-variant-card,.series-variant-card){
+  min-height:var(--artdon-card-custom-height)!important;
+}
+body.artdon-v7091-image-scale-on .catalog-card-image img,
+body.artdon-v7091-image-scale-on :is(.product-card,.series-card,.variant-card,.family-variant-card,.series-variant-card) figure img{
+  width:var(--artdon-card-image-scale)!important;
+  height:var(--artdon-card-image-scale)!important;
+  max-width:var(--artdon-card-image-scale)!important;
+  max-height:var(--artdon-card-image-scale)!important;
+  object-fit:contain!important;
+}
+
+@media(max-width:780px){
+  body.artdon-v7091-card-ready{--artdon-family-heading-size:26px}
+}

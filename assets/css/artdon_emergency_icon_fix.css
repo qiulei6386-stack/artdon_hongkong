@@ -1,0 +1,157 @@
+/* Artdon V6.8.2 emergency icon containment fix */
+html, body { overflow-x: hidden !important; }
+
+/* Never allow inline icons to become full-screen artwork */
+svg:not(.artdon-logo):not(.hero-visual):not(.product-visual),
+.site-footer svg,
+.footer-social svg,
+.footer-social-link svg,
+.social-links svg,
+.social-icon svg,
+[class*="social"] svg,
+[class*="icon"] svg {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  display: block !important;
+  overflow: visible !important;
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex: 0 0 18px !important;
+}
+
+/* Constrain all social containers */
+.footer-social,
+.social-links,
+.site-footer [class*="social"] {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+}
+
+.footer-social-link,
+.social-link,
+.social-icon,
+.site-footer [class*="social"] a {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  max-width: 34px !important;
+  max-height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 34px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 1px solid rgba(255,255,255,.22) !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  position: relative !important;
+  inset: auto !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+.footer-social-link::before,
+.footer-social-link::after,
+.social-link::before,
+.social-link::after,
+.social-icon::before,
+.social-icon::after,
+.site-footer [class*="social"] a::before,
+.site-footer [class*="social"] a::after {
+  content: none !important;
+  display: none !important;
+}
+
+.footer-social-link img,
+.social-link img,
+.social-icon img,
+.site-footer [class*="social"] a img {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  object-fit: contain !important;
+  display: block !important;
+  position: static !important;
+  transform: none !important;
+}
+
+/* Contain any accidental giant icon wrappers on homepage */
+.home-social,
+.home-social-icon,
+.footer-social-item,
+.social-item,
+[class*="social-item"],
+[class*="icon-wrap"] {
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  max-width: 100% !important;
+  max-height: none !important;
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  overflow: visible !important;
+}
+
+/* Last-resort: hide obviously oversized SVGs created by icon CSS bugs */
+body > svg,
+main > svg,
+.site-main > svg,
+.homepage > svg {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .footer-social-link,
+  .social-link,
+  .social-icon,
+  .site-footer [class*="social"] a {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    max-width: 30px !important;
+    max-height: 30px !important;
+    flex-basis: 30px !important;
+  }
+  .site-footer svg,
+  .footer-social svg,
+  .footer-social-link svg,
+  .social-links svg,
+  .social-icon svg,
+  [class*="social"] svg,
+  [class*="icon"] svg,
+  .footer-social-link img,
+  .social-link img,
+  .social-icon img {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    min-height: 16px !important;
+    max-width: 16px !important;
+    max-height: 16px !important;
+  }
+}

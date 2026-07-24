@@ -1,0 +1,832 @@
+:root{--artdon-red:#c8102e;--ink:#111;--muted:#6f6f6f;--line:#dedede;--soft:#f4f4f4;--max:1600px}
+.family-page,.product-variant-page{background:#fff;color:var(--ink)}
+.family-page a,.product-variant-page a{text-decoration:none;color:inherit}
+.family-subnav{position:sticky;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px max(24px,calc((100vw - var(--max))/2));background:rgba(255,255,255,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(14px)}
+.family-subnav strong{font-size:17px;letter-spacing:.02em}.family-subnav div{display:flex;gap:28px;overflow:auto;white-space:nowrap}.family-subnav a{font-size:13px}.family-subnav a:hover{color:var(--artdon-red)}
+.family-breadcrumb{max-width:var(--max);margin:0 auto;padding:24px 28px 8px}
+.family-hero{max-width:var(--max);margin:0 auto;padding:28px;display:grid;grid-template-columns:minmax(0,1.18fr) minmax(360px,.82fr);gap:58px;align-items:center}
+.family-hero-media{position:relative;background:#f3f3f3;min-height:620px;display:flex;align-items:center;justify-content:center;overflow:hidden}.family-hero-media>img{width:100%;height:100%;max-height:720px;object-fit:contain;padding:6%}.family-image-placeholder{color:#999}
+.family-hero-dots{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:9px}.family-hero-dots button{width:8px;height:8px;border:0;border-radius:50%;background:rgba(200,16,46,.25);padding:0;cursor:pointer}.family-hero-dots button.is-active{width:12px;height:12px;background:var(--artdon-red)}
+.family-kicker,.family-section-head>p,.family-section-head>div>p,.variant-section header>p,.variant-siblings header p{margin:0 0 14px;text-transform:uppercase;letter-spacing:.18em;font-size:12px;font-weight:700;color:var(--artdon-red)}
+.family-hero-copy h1{font-size:clamp(42px,5vw,78px);line-height:.98;letter-spacing:-.055em;margin:0 0 28px;max-width:780px}.family-hero-copy h2{font-size:clamp(22px,2vw,34px);line-height:1.18;font-weight:500;margin:0 0 22px}.family-hero-copy>p{font-size:18px;line-height:1.7;color:#575757;max-width:680px}.family-hero-actions{display:flex;gap:30px;margin-top:34px}.family-hero-actions a{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;border-bottom:2px solid var(--artdon-red);padding-bottom:8px}.family-hero-actions a:hover{color:var(--artdon-red)}
+.family-section{max-width:var(--max);margin:0 auto;padding:110px 28px}.family-section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:42px}.family-section-head h2{font-size:clamp(34px,4vw,62px);letter-spacing:-.045em;line-height:1;margin:0;max-width:900px}.family-section-head>p,.family-section-head>div>p{margin-bottom:12px}.family-feature-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}.family-feature-card{border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}.family-feature-card figure{margin:0;aspect-ratio:4/3;background:var(--soft);overflow:hidden}.family-feature-card figure img{width:100%;height:100%;object-fit:cover}.family-feature-card>div{padding:30px}.family-feature-card h3{font-size:23px;margin:0 0 14px}.family-feature-card p{margin:0;color:#666;line-height:1.6}
+.family-applications{background:#111;color:#fff;max-width:none;padding-left:max(28px,calc((100vw - var(--max))/2 + 28px));padding-right:max(28px,calc((100vw - var(--max))/2 + 28px))}.family-applications .family-section-head h2{color:#fff}.family-application-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.family-application-grid article{position:relative;min-height:480px;overflow:hidden;background:#222}.family-application-grid figure{position:absolute;inset:0;margin:0}.family-application-grid img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}.family-application-grid article:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,rgba(0,0,0,.88))}.family-application-grid article>div{position:absolute;z-index:2;left:30px;right:30px;bottom:28px}.family-application-grid h3{font-size:26px;margin:0 0 10px}.family-application-grid p{margin:0;color:#ddd;line-height:1.55}.family-application-grid article:hover img{transform:scale(1.025)}
+.family-structure{max-width:var(--max);margin:0 auto;padding:110px 28px;display:grid;grid-template-columns:1.15fr .85fr;gap:80px;border-bottom:1px solid var(--line)}.family-structure h2{font-size:clamp(36px,4vw,60px);letter-spacing:-.045em;line-height:1.02;margin:0 0 24px}.family-structure p{font-size:18px;line-height:1.7;color:#606060}.family-structure ul{margin:32px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}.family-structure li{padding:20px 0;border-bottom:1px solid var(--line);font-size:17px}
+.family-variants-head>span{font-size:16px;color:#777}.family-variant-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.family-variant-card{border:1px solid var(--line);background:#fff;min-width:0;transition:transform .25s ease,box-shadow .25s ease}.family-variant-card:hover{transform:translateY(-4px);box-shadow:0 14px 35px rgba(0,0,0,.08)}.family-variant-card figure{margin:0;aspect-ratio:1/1;background:var(--soft);display:flex;align-items:center;justify-content:center;overflow:hidden}.family-variant-card figure img{width:82%;height:82%;object-fit:contain}.family-variant-card figure span{color:#aaa}.family-variant-body{padding:26px}.family-variant-body>p{margin:0 0 10px;color:var(--artdon-red);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700}.family-variant-body h3{font-size:25px;margin:0 0 14px}.family-variant-description{font-size:14px;color:#666;line-height:1.55;min-height:44px}.family-variant-body dl{margin:24px 0;border-top:1px solid var(--line)}.family-variant-body dl div{display:flex;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}.family-variant-body dt{color:#777}.family-variant-body dd{margin:0;font-weight:700;text-align:right}.family-variant-link{display:inline-block;margin-top:4px;font-size:13px;font-weight:700;border-bottom:1px solid var(--artdon-red);padding-bottom:5px}
+.family-downloads>div{border-top:1px solid var(--line)}.family-downloads a{display:flex;justify-content:space-between;gap:20px;padding:22px 0;border-bottom:1px solid var(--line);font-size:17px}.family-downloads a strong{font-size:12px;text-transform:uppercase;letter-spacing:.12em}.family-downloads a:hover strong{color:var(--artdon-red)}
+.family-quote{max-width:var(--max);margin:20px auto 100px;padding:54px 28px;display:flex;align-items:center;justify-content:space-between;gap:40px;background:#f3f3f3}.family-quote h2{font-size:clamp(30px,3.6vw,52px);line-height:1.04;letter-spacing:-.04em;margin:0 0 14px}.family-quote p{color:#666;font-size:17px}.family-quote>a{border:1px solid #111;padding:18px 26px;white-space:nowrap;font-weight:700}.family-quote>a:hover{background:#111;color:#fff}
+.family-related-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.family-related-grid figure{margin:0;aspect-ratio:1/1;background:var(--soft)}.family-related-grid img{width:100%;height:100%;object-fit:contain;padding:10%}.family-related-grid h3{font-size:21px;margin:18px 0 8px}.family-related-grid span{font-size:13px;border-bottom:1px solid var(--artdon-red)}
+.hierarchy-empty{max-width:900px;margin:80px auto;padding:60px 28px;text-align:center}.hierarchy-empty h1,.hierarchy-empty h3{font-size:40px}.hierarchy-empty a{display:inline-block;margin-top:20px;border-bottom:2px solid var(--artdon-red);padding-bottom:6px}
+
+.product-variant-page{max-width:var(--max);margin:0 auto;padding:0 28px 110px}.variant-hero{display:grid;grid-template-columns:1.08fr .92fr;gap:60px;align-items:center;padding:30px 0 90px}.variant-gallery>figure{margin:0;background:var(--soft);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}.variant-gallery>figure img{width:86%;height:86%;object-fit:contain}.variant-thumbs{display:flex;gap:10px;margin-top:12px;overflow:auto}.variant-thumbs button{width:82px;height:82px;border:1px solid var(--line);background:#fff;padding:6px}.variant-thumbs button.is-active{border-color:var(--artdon-red)}.variant-thumbs img{width:100%;height:100%;object-fit:contain}.variant-copy h1{font-size:clamp(42px,5vw,76px);line-height:.98;letter-spacing:-.05em;margin:0 0 18px}.variant-model{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#777}.variant-lead{font-size:19px;line-height:1.65;color:#555;max-width:650px}.variant-quick-specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:30px 0;border-top:1px solid var(--line)}.variant-quick-specs div{padding:16px 0;border-bottom:1px solid var(--line)}.variant-quick-specs dt{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#777}.variant-quick-specs dd{font-size:19px;margin:6px 0 0;font-weight:700}.variant-tags{display:flex;flex-wrap:wrap;gap:8px}.variant-tags span{padding:7px 10px;background:#e7e7e7;font-size:12px}.variant-actions{display:flex;gap:16px;margin-top:32px}.variant-actions a{padding:16px 22px;border:1px solid #111;font-weight:700}.variant-actions a:first-child{background:#111;color:#fff}.variant-actions a:hover{border-color:var(--artdon-red);color:var(--artdon-red);background:#fff}
+.variant-section{display:grid;grid-template-columns:.7fr 1.3fr;gap:70px;padding:85px 0;border-top:1px solid var(--line)}.variant-section header h2{font-size:clamp(30px,3vw,48px);line-height:1.04;letter-spacing:-.04em;margin:0}.variant-overview>div p{font-size:18px;line-height:1.75;color:#555;margin:0}.variant-spec-table{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}.variant-spec-table div{display:flex;justify-content:space-between;gap:16px;padding:18px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.variant-spec-table span{color:#777}.variant-spec-table strong{text-align:right}.variant-downloads{border-top:1px solid var(--line)}.variant-downloads a{display:flex;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--line)}.variant-downloads strong{font-size:12px;text-transform:uppercase;letter-spacing:.1em}.variant-siblings{padding:85px 0;border-top:1px solid var(--line)}.variant-siblings header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:35px}.variant-siblings header h2{font-size:42px;margin:0}.variant-siblings header>a{border-bottom:1px solid var(--artdon-red)}.variant-siblings>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.variant-siblings>div>a{border:1px solid var(--line);padding-bottom:22px}.variant-siblings figure{margin:0;aspect-ratio:1/1;background:var(--soft)}.variant-siblings img{width:100%;height:100%;object-fit:contain;padding:9%}.variant-siblings p,.variant-siblings h3,.variant-siblings span{display:block;margin-left:20px;margin-right:20px}.variant-siblings p{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--artdon-red);margin-top:18px}.variant-siblings h3{font-size:21px;margin-top:8px;margin-bottom:8px}.variant-siblings span{color:#666;font-size:13px}
+
+@media(max-width:1100px){.family-hero{grid-template-columns:1fr;gap:30px}.family-hero-media{min-height:500px}.family-feature-grid{grid-template-columns:repeat(2,1fr)}.family-variant-grid,.family-related-grid,.variant-siblings>div{grid-template-columns:repeat(2,1fr)}.family-structure,.variant-section{grid-template-columns:1fr;gap:30px}.variant-hero{grid-template-columns:1fr;gap:30px}.family-subnav{top:0}}
+@media(max-width:720px){.family-subnav{padding:12px 16px;align-items:flex-start}.family-subnav strong{display:none}.family-subnav div{gap:18px}.family-breadcrumb{padding:18px 18px 4px}.family-hero,.family-section,.family-structure{padding-left:18px;padding-right:18px}.family-hero{padding-top:18px}.family-hero-media{min-height:360px}.family-hero-copy h1{font-size:44px}.family-section{padding-top:72px;padding-bottom:72px}.family-section-head{display:block}.family-feature-grid,.family-application-grid,.family-variant-grid,.family-related-grid,.variant-siblings>div{grid-template-columns:1fr}.family-applications{padding-left:18px;padding-right:18px}.family-application-grid article{min-height:360px}.family-quote{margin:0 18px 70px;padding:34px 24px;display:block}.family-quote>a{display:inline-block;margin-top:20px}.product-variant-page{padding-left:18px;padding-right:18px}.variant-hero{padding-bottom:60px}.variant-copy h1{font-size:44px}.variant-quick-specs,.variant-spec-table{grid-template-columns:1fr}.variant-section{padding:60px 0}.variant-siblings header{display:block}.variant-siblings header>a{display:inline-block;margin-top:16px}}
+
+
+/* V6.12.14 selectable product-detail media layouts */
+.variant-gallery{min-width:0}
+.variant-main-figure,.variant-dimension-figure{margin:0;background:#f5f5f5;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.variant-main-figure img,.variant-dimension-figure img{width:88%;height:88%;object-fit:contain}
+.variant-dimension-figure{background:#fff;border:1px solid var(--line)}
+.variant-dimension-figure figcaption{position:absolute;left:16px;bottom:13px;padding:6px 9px;background:rgba(255,255,255,.9);font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:#666}
+.variant-product-media{min-width:0}
+.variant-gallery-layout-stacked{display:grid;gap:14px}
+.variant-gallery-layout-stacked .variant-main-figure{aspect-ratio:1/1}
+.variant-gallery-layout-stacked .variant-dimension-figure{aspect-ratio:1.55/1;min-height:240px}
+.variant-gallery-layout-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch}
+.variant-gallery-layout-split .variant-product-media,.variant-gallery-layout-split .variant-main-figure,.variant-gallery-layout-split .variant-dimension-figure{min-height:610px}
+.variant-gallery-layout-split .variant-main-figure,.variant-gallery-layout-split .variant-dimension-figure{height:100%}
+.variant-gallery-layout-split .variant-product-media{display:flex;flex-direction:column}
+.variant-gallery-layout-split .variant-product-media .variant-main-figure{flex:1}
+.variant-gallery-layout-split .variant-thumbs{flex:0 0 auto}
+.variant-gallery-layout-strip{display:grid;grid-template-rows:minmax(480px,1fr) 210px;gap:12px}
+.variant-gallery-layout-strip .variant-main-figure{height:100%}
+.variant-gallery-layout-strip .variant-dimension-figure{height:210px}
+.variant-gallery-layout-switcher .variant-main-figure{aspect-ratio:1/1}
+.variant-thumbs-labelled button{width:110px;height:auto;min-height:104px;display:grid;grid-template-rows:70px auto;gap:5px;padding:6px;background:#fff;color:#555}
+.variant-thumbs-labelled button img{height:70px}
+.variant-thumbs-labelled button span{font-size:10px;line-height:1.15;text-align:center;text-transform:uppercase;letter-spacing:.08em}
+.variant-gallery-layout-technical_below .variant-main-figure{aspect-ratio:1/1}
+.variant-dimension-technical-section{display:grid;grid-template-columns:.45fr 1.55fr;gap:54px;padding:78px 0;border-top:1px solid var(--line)}
+.variant-dimension-technical-section header p{margin:0 0 12px;color:var(--artdon-red);font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:700}
+.variant-dimension-technical-section header h2{margin:0;font-size:32px;line-height:1.05;letter-spacing:-.035em}
+.variant-dimension-technical-section figure{margin:0;min-height:360px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;padding:30px}
+.variant-dimension-technical-section img{width:100%;height:100%;max-height:560px;object-fit:contain}
+.variant-hero-layout-split{grid-template-columns:1.38fr .62fr;gap:42px}
+.variant-hero-layout-strip{grid-template-columns:1.12fr .88fr}
+.variant-hero-layout-technical_below{grid-template-columns:1.08fr .92fr}
+@media(max-width:1180px){
+  .variant-gallery-layout-split{grid-template-columns:1fr 1fr}
+  .variant-gallery-layout-split .variant-product-media,.variant-gallery-layout-split .variant-main-figure,.variant-gallery-layout-split .variant-dimension-figure{min-height:420px}
+  .variant-dimension-technical-section{grid-template-columns:1fr;gap:24px}
+}
+@media(max-width:720px){
+  .variant-gallery-layout-split{grid-template-columns:1fr}
+  .variant-gallery-layout-split .variant-product-media,.variant-gallery-layout-split .variant-main-figure,.variant-gallery-layout-split .variant-dimension-figure{min-height:0}
+  .variant-gallery-layout-split .variant-main-figure{aspect-ratio:1/1}
+  .variant-gallery-layout-split .variant-dimension-figure{aspect-ratio:1.45/1;min-height:220px}
+  .variant-gallery-layout-strip{grid-template-rows:auto auto}
+  .variant-gallery-layout-strip .variant-main-figure{aspect-ratio:1/1}
+  .variant-gallery-layout-strip .variant-dimension-figure{height:auto;aspect-ratio:1.45/1;min-height:220px}
+  .variant-gallery-layout-stacked .variant-dimension-figure{min-height:210px}
+  .variant-dimension-technical-section{padding:55px 0}
+  .variant-dimension-technical-section figure{min-height:250px;padding:18px}
+}
+
+/* V6.12.15 product detail media: pure-white square standard for all five layouts. */
+:root{--variant-media-square:560px}
+.variant-main-figure,
+.variant-dimension-figure,
+.variant-dimension-technical-section figure{
+  background:#fff!important;
+  box-shadow:none!important;
+}
+.variant-main-figure,
+.variant-dimension-figure{
+  aspect-ratio:1/1!important;
+  height:auto!important;
+  min-height:0!important;
+  border:1px solid var(--line);
+}
+.variant-main-figure img,
+.variant-dimension-figure img,
+.variant-dimension-technical-section img{
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  background:#fff;
+  padding:4.5%;
+}
+.variant-dimension-figure figcaption{
+  background:transparent;
+  padding:0;
+  left:18px;
+  bottom:16px;
+  color:#777;
+}
+
+/* A / C: two equal square cards, centered to the visual size of the technical drawing. */
+.variant-gallery-layout-stacked,
+.variant-gallery-layout-strip{
+  display:grid;
+  grid-template-rows:auto auto!important;
+  gap:16px;
+}
+.variant-gallery-layout-stacked .variant-product-media,
+.variant-gallery-layout-strip .variant-product-media,
+.variant-gallery-layout-stacked .variant-dimension-figure,
+.variant-gallery-layout-strip .variant-dimension-figure{
+  width:min(100%,var(--variant-media-square));
+  margin-inline:auto;
+}
+.variant-gallery-layout-stacked .variant-main-figure,
+.variant-gallery-layout-strip .variant-main-figure,
+.variant-gallery-layout-stacked .variant-dimension-figure,
+.variant-gallery-layout-strip .variant-dimension-figure{
+  width:100%;
+  aspect-ratio:1/1!important;
+}
+
+/* B: equal square cards side by side. */
+.variant-gallery-layout-split{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+  align-items:start;
+}
+.variant-gallery-layout-split .variant-product-media,
+.variant-gallery-layout-split .variant-main-figure,
+.variant-gallery-layout-split .variant-dimension-figure{
+  min-height:0!important;
+  height:auto!important;
+}
+.variant-gallery-layout-split .variant-main-figure,
+.variant-gallery-layout-split .variant-dimension-figure{
+  width:100%;
+  aspect-ratio:1/1!important;
+}
+.variant-gallery-layout-split .variant-product-media{
+  display:block;
+}
+
+/* D / E: the visible main card uses the same square standard. */
+.variant-gallery-layout-switcher,
+.variant-gallery-layout-technical_below .variant-product-media{
+  width:min(100%,var(--variant-media-square));
+  margin-inline:auto;
+}
+.variant-gallery-layout-switcher .variant-main-figure,
+.variant-gallery-layout-technical_below .variant-main-figure{
+  width:100%;
+  aspect-ratio:1/1!important;
+}
+.variant-dimension-technical-section{
+  align-items:start;
+}
+.variant-dimension-technical-section figure{
+  width:min(100%,var(--variant-media-square));
+  aspect-ratio:1/1;
+  min-height:0!important;
+  padding:0!important;
+  justify-self:end;
+}
+
+/* Keep thumbnails white and square as well. */
+.variant-thumbs button,
+.variant-thumbs-labelled button{
+  background:#fff!important;
+}
+.variant-thumbs img,
+.variant-thumbs-labelled button img{
+  object-fit:contain;
+  background:#fff;
+}
+
+@media(max-width:1180px){
+  :root{--variant-media-square:520px}
+  .variant-gallery-layout-split{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .variant-dimension-technical-section figure{justify-self:start}
+}
+@media(max-width:720px){
+  :root{--variant-media-square:100%}
+  .variant-gallery-layout-split{grid-template-columns:1fr}
+  .variant-gallery-layout-split .variant-dimension-figure,
+  .variant-gallery-layout-strip .variant-dimension-figure,
+  .variant-gallery-layout-stacked .variant-dimension-figure{
+    aspect-ratio:1/1!important;
+    min-height:0!important;
+  }
+  .variant-main-figure img,
+  .variant-dimension-figure img,
+  .variant-dimension-technical-section img{padding:5%}
+}
+
+
+/* V6.12.16: keep product image size, reduce dimension drawing, top-align product copy. */
+:root{
+  --variant-main-square:560px;
+  --variant-dimension-square:420px;
+}
+
+/* The title/specification column starts at the top edge of the product image. */
+.variant-hero{
+  align-items:start!important;
+}
+.variant-copy{
+  align-self:start!important;
+  padding-top:0!important;
+  margin-top:0!important;
+}
+
+/* Main product image keeps the V6.12.15 size. */
+.variant-gallery-layout-stacked .variant-product-media,
+.variant-gallery-layout-strip .variant-product-media,
+.variant-gallery-layout-switcher,
+.variant-gallery-layout-technical_below .variant-product-media{
+  width:min(100%,var(--variant-main-square))!important;
+  max-width:var(--variant-main-square)!important;
+  margin-inline:0!important;
+  justify-self:start!important;
+}
+
+/* Dimension drawing is deliberately smaller and aligned to the product-image edge. */
+.variant-gallery-layout-stacked .variant-dimension-figure,
+.variant-gallery-layout-strip .variant-dimension-figure,
+.variant-gallery-layout-split .variant-dimension-figure,
+.variant-dimension-technical-section figure{
+  width:min(100%,var(--variant-dimension-square))!important;
+  max-width:var(--variant-dimension-square)!important;
+  margin-inline:0!important;
+  justify-self:start!important;
+  align-self:start!important;
+}
+
+.variant-gallery-layout-stacked,
+.variant-gallery-layout-strip{
+  justify-items:start!important;
+}
+
+/* Keep the drawing clear inside its smaller square. */
+.variant-dimension-figure img,
+.variant-dimension-technical-section img{
+  padding:8%!important;
+}
+
+/* In the single-image switcher layout, the frame stays unchanged,
+   but a selected dimension drawing is visually reduced inside it. */
+.variant-main-figure.is-dimension-view img{
+  padding:14%!important;
+}
+
+/* Split layout: both cards start at the same top line, dimension card remains smaller. */
+.variant-gallery-layout-split{
+  align-items:start!important;
+}
+.variant-gallery-layout-split .variant-product-media{
+  width:100%!important;
+  max-width:var(--variant-main-square)!important;
+  justify-self:start!important;
+}
+
+@media(max-width:1180px){
+  :root{
+    --variant-main-square:520px;
+    --variant-dimension-square:380px;
+  }
+}
+
+@media(max-width:720px){
+  :root{
+    --variant-main-square:100%;
+    --variant-dimension-square:88%;
+  }
+  .variant-gallery-layout-stacked .variant-dimension-figure,
+  .variant-gallery-layout-strip .variant-dimension-figure,
+  .variant-gallery-layout-split .variant-dimension-figure,
+  .variant-dimension-technical-section figure{
+    width:88%!important;
+    max-width:380px!important;
+  }
+  .variant-copy{
+    padding-top:0!important;
+  }
+}
+
+/* V6.12.17: equal-size product/dimension squares with a tighter vertical rhythm. */
+:root{
+  --variant-main-square:560px;
+  --variant-dimension-square:560px;
+  --variant-media-gap:8px;
+}
+
+/* A / C: same 1:1 card size, nearly joined as a single technical media column. */
+.variant-gallery-layout-stacked,
+.variant-gallery-layout-strip{
+  gap:var(--variant-media-gap)!important;
+}
+.variant-gallery-layout-stacked .variant-product-media,
+.variant-gallery-layout-strip .variant-product-media,
+.variant-gallery-layout-stacked .variant-dimension-figure,
+.variant-gallery-layout-strip .variant-dimension-figure{
+  width:min(100%,var(--variant-main-square))!important;
+  max-width:var(--variant-main-square)!important;
+  margin:0!important;
+  justify-self:start!important;
+}
+
+/* B: product and dimension cards remain exactly equal in the side-by-side layout. */
+.variant-gallery-layout-split{
+  gap:var(--variant-media-gap)!important;
+}
+.variant-gallery-layout-split .variant-product-media,
+.variant-gallery-layout-split .variant-dimension-figure{
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+.variant-gallery-layout-split .variant-main-figure,
+.variant-gallery-layout-split .variant-dimension-figure{
+  aspect-ratio:1/1!important;
+}
+
+/* E: technical drawing below uses the same square standard as the main product image. */
+.variant-dimension-technical-section figure{
+  width:min(100%,var(--variant-main-square))!important;
+  max-width:var(--variant-main-square)!important;
+  aspect-ratio:1/1!important;
+  margin:0!important;
+  justify-self:start!important;
+}
+
+/* The drawing receives the same internal white-space rule as the product image. */
+.variant-dimension-figure img,
+.variant-dimension-technical-section img{
+  padding:4.5%!important;
+}
+.variant-main-figure.is-dimension-view img{
+  padding:4.5%!important;
+}
+
+/* Keep the copy aligned to the top edge of the first square. */
+.variant-hero{
+  align-items:start!important;
+}
+.variant-copy{
+  align-self:start!important;
+  padding-top:0!important;
+  margin-top:0!important;
+}
+
+@media(max-width:1180px){
+  :root{
+    --variant-main-square:520px;
+    --variant-dimension-square:520px;
+    --variant-media-gap:8px;
+  }
+}
+
+@media(max-width:720px){
+  :root{
+    --variant-main-square:100%;
+    --variant-dimension-square:100%;
+    --variant-media-gap:8px;
+  }
+  .variant-gallery-layout-stacked .variant-dimension-figure,
+  .variant-gallery-layout-strip .variant-dimension-figure,
+  .variant-gallery-layout-split .variant-dimension-figure,
+  .variant-dimension-technical-section figure{
+    width:100%!important;
+    max-width:none!important;
+  }
+}
+
+/* V6.12.18: compress product image and dimension drawing into one tight visual group. */
+:root{
+  --variant-media-gap:2px;
+}
+.variant-gallery-layout-stacked,
+.variant-gallery-layout-strip,
+.variant-gallery-layout-split{
+  gap:2px!important;
+  row-gap:2px!important;
+  column-gap:2px!important;
+}
+.variant-gallery-layout-stacked .variant-dimension-figure,
+.variant-gallery-layout-strip .variant-dimension-figure{
+  margin-top:0!important;
+}
+@media(max-width:1180px){
+  :root{--variant-media-gap:2px}
+}
+@media(max-width:720px){
+  :root{--variant-media-gap:2px}
+}
+
+
+/* V6.12.20: ERCO-style full specification table in the hero + narrower page shell. */
+.product-variant-page{
+  max-width:1380px!important;
+  padding-left:34px!important;
+  padding-right:34px!important;
+}
+.family-breadcrumb{
+  max-width:1380px!important;
+  padding-left:34px!important;
+  padding-right:34px!important;
+}
+.variant-hero{
+  grid-template-columns:minmax(0,560px) minmax(420px,1fr)!important;
+  column-gap:52px!important;
+}
+.variant-copy{
+  min-width:0;
+}
+.variant-copy h1{
+  font-size:clamp(40px,4.4vw,68px)!important;
+  margin-bottom:16px!important;
+}
+.variant-model{
+  margin:0 0 26px!important;
+}
+.variant-lead:empty{display:none}
+.variant-hero-spec-table{
+  width:100%;
+  margin:26px 0 0;
+  border-top:1px solid #e2e2e2;
+  border-bottom:1px solid #e2e2e2;
+}
+.variant-hero-spec-row{
+  display:grid;
+  grid-template-columns:minmax(170px,42%) minmax(0,58%);
+  gap:24px;
+  align-items:start;
+  padding:11px 14px;
+  font-size:15px;
+  line-height:1.4;
+}
+.variant-hero-spec-row:nth-child(odd){background:#f4f4f4}
+.variant-hero-spec-row span{
+  color:#272727;
+  font-weight:400;
+}
+.variant-hero-spec-row strong{
+  color:#171717;
+  font-weight:500;
+  overflow-wrap:anywhere;
+}
+.variant-actions{
+  margin-top:26px!important;
+}
+@media(max-width:1180px){
+  .product-variant-page,.family-breadcrumb{
+    max-width:100%!important;
+    padding-left:24px!important;
+    padding-right:24px!important;
+  }
+  .variant-hero{
+    grid-template-columns:minmax(0,520px) minmax(360px,1fr)!important;
+    column-gap:36px!important;
+  }
+}
+@media(max-width:900px){
+  .variant-hero{
+    grid-template-columns:1fr!important;
+    gap:30px!important;
+  }
+  .variant-copy{max-width:760px}
+}
+@media(max-width:720px){
+  .product-variant-page,.family-breadcrumb{
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+  .variant-hero-spec-row{
+    grid-template-columns:42% 58%;
+    gap:14px;
+    padding:10px 9px;
+    font-size:13px;
+  }
+}
+
+/* V6.12.21: title above media, 20% smaller square cards, full spec table and narrower shell. */
+:root{
+  --variant-main-square:448px;
+  --variant-dimension-square:448px;
+}
+.product-variant-page{
+  max-width:1240px!important;
+  padding-left:38px!important;
+  padding-right:38px!important;
+}
+.family-breadcrumb{
+  max-width:1240px!important;
+  padding-left:38px!important;
+  padding-right:38px!important;
+}
+.variant-hero{
+  grid-template-columns:minmax(0,448px) minmax(390px,1fr)!important;
+  grid-template-areas:
+    "media-heading ."
+    "gallery copy";
+  column-gap:44px!important;
+  row-gap:22px!important;
+  align-items:start!important;
+}
+.variant-media-heading{
+  grid-area:media-heading;
+  width:min(100%,var(--variant-main-square));
+  align-self:end;
+}
+.variant-media-heading .family-kicker{margin-bottom:11px}
+.variant-media-heading h1{
+  margin:0;
+  font-size:clamp(38px,3.4vw,58px);
+  line-height:.96;
+  letter-spacing:-.055em;
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+.variant-gallery{grid-area:gallery}
+.variant-copy{
+  grid-area:copy;
+  align-self:start!important;
+  min-width:0;
+}
+.variant-copy .variant-model{margin-top:0!important}
+.variant-copy h1,.variant-copy>.family-kicker{display:none!important}
+.variant-main-figure,
+.variant-dimension-figure{
+  max-width:var(--variant-main-square)!important;
+}
+.variant-gallery-layout-stacked .variant-product-media,
+.variant-gallery-layout-strip .variant-product-media,
+.variant-gallery-layout-stacked .variant-dimension-figure,
+.variant-gallery-layout-strip .variant-dimension-figure,
+.variant-gallery-layout-switcher,
+.variant-gallery-layout-technical_below .variant-product-media,
+.variant-dimension-technical-section figure{
+  width:min(100%,var(--variant-main-square))!important;
+  max-width:var(--variant-main-square)!important;
+}
+.variant-hero-spec-table{margin-top:18px}
+.variant-hero-spec-row{
+  grid-template-columns:minmax(155px,40%) minmax(0,60%);
+  padding:9px 12px;
+  font-size:14px;
+}
+.variant-lead{font-size:16px;line-height:1.55;margin:0 0 18px}
+.variant-actions{margin-top:22px!important}
+@media(max-width:1100px){
+  :root{--variant-main-square:420px;--variant-dimension-square:420px}
+  .product-variant-page,.family-breadcrumb{max-width:100%!important;padding-left:26px!important;padding-right:26px!important}
+  .variant-hero{grid-template-columns:minmax(0,420px) minmax(340px,1fr)!important;column-gap:30px!important}
+}
+@media(max-width:900px){
+  .variant-hero{
+    grid-template-columns:1fr!important;
+    grid-template-areas:"media-heading" "gallery" "copy";
+    row-gap:20px!important;
+  }
+  .variant-media-heading,.variant-gallery,.variant-copy{max-width:680px;width:100%}
+}
+@media(max-width:720px){
+  :root{--variant-main-square:100%;--variant-dimension-square:100%}
+  .product-variant-page,.family-breadcrumb{padding-left:18px!important;padding-right:18px!important}
+  .variant-media-heading h1{font-size:40px}
+  .variant-hero-spec-row{grid-template-columns:40% 60%;font-size:13px;padding:9px 8px}
+}
+
+
+/* V6.12.22: remove redundant breadcrumb/kicker/model line, keep one-line title, enlarge dimension artwork. */
+.product-variant-page{
+  padding-top:34px!important;
+}
+.variant-media-heading{
+  width:auto!important;
+  max-width:none!important;
+  grid-column:1 / -1;
+  align-self:start!important;
+}
+.variant-media-heading h1{
+  white-space:nowrap!important;
+  overflow:visible!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  font-size:clamp(24px,3.15vw,52px)!important;
+  line-height:.96!important;
+  letter-spacing:-.06em!important;
+  margin:0 0 4px!important;
+}
+.variant-copy{
+  padding-top:0!important;
+}
+.variant-hero-spec-table{
+  margin-top:0!important;
+}
+.variant-dimension-figure img,
+.variant-dimension-technical-section img,
+.variant-main-figure.is-dimension-view img{
+  padding:0!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+}
+.variant-dimension-figure figcaption{
+  left:18px!important;
+  bottom:14px!important;
+}
+.variant-hero{
+  row-gap:16px!important;
+}
+@media(max-width:900px){
+  .variant-media-heading{grid-column:auto}
+  .variant-media-heading h1{
+    font-size:clamp(22px,6vw,44px)!important;
+  }
+}
+@media(max-width:520px){
+  .variant-media-heading h1{
+    font-size:clamp(18px,5.6vw,30px)!important;
+    letter-spacing:-.045em!important;
+  }
+}
+
+/* V6.12.25: compact three-column product sheet with photometric curves. */
+:root{--variant-main-square:360px;--variant-dimension-square:360px}
+.product-variant-page{max-width:1480px!important;padding-left:34px!important;padding-right:34px!important}
+.family-breadcrumb{max-width:1480px!important;padding:14px 34px 4px!important;margin:0 auto!important}
+.variant-hero{grid-template-columns:minmax(0,360px) minmax(430px,1fr)!important;grid-template-areas:"media-heading media-heading" "gallery copy";column-gap:28px!important;row-gap:14px!important;padding-top:18px!important}
+.variant-hero.has-photometric{grid-template-columns:minmax(0,360px) minmax(420px,1fr) minmax(330px,400px)!important;grid-template-areas:"media-heading media-heading media-heading" "gallery copy photometric"}
+.variant-media-heading{grid-area:media-heading!important;margin:0!important}
+.variant-gallery{grid-area:gallery!important;width:360px!important;max-width:100%!important}
+.variant-copy{grid-area:copy!important;min-width:0!important}
+.variant-photometric-panel{grid-area:photometric;align-self:start;min-width:0}
+.variant-main-figure,.variant-dimension-figure{width:360px!important;max-width:100%!important;aspect-ratio:1/1!important}
+.variant-gallery-layout-stacked .variant-product-media,.variant-gallery-layout-strip .variant-product-media,.variant-gallery-layout-stacked .variant-dimension-figure,.variant-gallery-layout-strip .variant-dimension-figure,.variant-gallery-layout-switcher,.variant-gallery-layout-technical_below .variant-product-media{width:360px!important;max-width:100%!important}
+.variant-gallery-layout-stacked,.variant-gallery-layout-strip{gap:2px!important}
+.variant-photometric-panel>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.variant-photometric-panel>header span{font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;color:var(--artdon-red)}
+.variant-photometric-panel>header strong{font-size:12px;color:#777;font-weight:500}
+.variant-photometric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.variant-photometric-grid figure{margin:0;border:1px solid var(--line);background:#fff;aspect-ratio:1/1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.variant-photometric-grid img{width:100%;height:100%;object-fit:contain;padding:4%}
+.variant-photometric-grid figcaption{position:absolute;left:8px;right:8px;bottom:7px;background:rgba(255,255,255,.9);padding:4px 5px;font-size:10px;line-height:1.25;color:#555}
+.variant-actions{flex-wrap:wrap}
+.variant-actions a:last-child{background:#fff;color:#111}
+@media(max-width:1280px){
+  :root{--variant-main-square:320px;--variant-dimension-square:320px}
+  .variant-hero.has-photometric{grid-template-columns:320px minmax(380px,1fr) 320px!important;column-gap:22px!important}
+  .variant-hero:not(.has-photometric){grid-template-columns:320px minmax(380px,1fr)!important}
+  .variant-gallery,.variant-main-figure,.variant-dimension-figure,.variant-gallery-layout-stacked .variant-product-media,.variant-gallery-layout-strip .variant-product-media,.variant-gallery-layout-stacked .variant-dimension-figure,.variant-gallery-layout-strip .variant-dimension-figure,.variant-gallery-layout-switcher,.variant-gallery-layout-technical_below .variant-product-media{width:320px!important}
+}
+@media(max-width:1050px){
+  .variant-hero,.variant-hero.has-photometric{grid-template-columns:minmax(0,380px) minmax(0,1fr)!important;grid-template-areas:"media-heading media-heading" "gallery copy" "photometric photometric"!important}
+  .variant-photometric-panel{margin-top:10px}
+  .variant-photometric-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .product-variant-page,.family-breadcrumb{padding-left:18px!important;padding-right:18px!important}
+  .variant-hero,.variant-hero.has-photometric{grid-template-columns:1fr!important;grid-template-areas:"media-heading" "gallery" "copy" "photometric"!important}
+  .variant-gallery,.variant-main-figure,.variant-dimension-figure,.variant-gallery-layout-stacked .variant-product-media,.variant-gallery-layout-strip .variant-product-media,.variant-gallery-layout-stacked .variant-dimension-figure,.variant-gallery-layout-strip .variant-dimension-figure,.variant-gallery-layout-switcher,.variant-gallery-layout-technical_below .variant-product-media{width:100%!important}
+  .variant-photometric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media print{
+  .site-header,.site-footer,.family-breadcrumb,.variant-actions,.variant-section,.variant-siblings{display:none!important}
+  .product-variant-page{max-width:none!important;padding:0!important}
+}
+
+/* V6.12.27: photometric curves in one vertical column, up to four items. */
+.variant-photometric-grid{
+  grid-template-columns:1fr!important;
+  gap:10px!important;
+}
+.variant-photometric-grid figure{
+  width:100%;
+  aspect-ratio:1/1;
+}
+@media(max-width:1050px){
+  .variant-photometric-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:760px){
+  .variant-photometric-grid{grid-template-columns:1fr!important}
+}
+
+/* V6.12.28: keep photometric curves in one column but restore compact thumbnail size. */
+.variant-photometric-grid{
+  justify-items:start!important;
+  align-items:start!important;
+}
+.variant-photometric-grid figure{
+  width:min(220px,100%)!important;
+  max-width:220px!important;
+  aspect-ratio:1/1!important;
+  justify-self:start!important;
+}
+.variant-photometric-grid img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+}
+@media(max-width:760px){
+  .variant-photometric-grid figure{
+    width:min(190px,100%)!important;
+    max-width:190px!important;
+  }
+}
+
+
+/* V6.12.29: two optional angle images below the dimension drawing. */
+.variant-angle-figure{
+  margin:0;
+  width:min(100%,var(--variant-main-square));
+  max-width:var(--variant-main-square);
+  aspect-ratio:1/1;
+  border:1px solid var(--line);
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position:relative;
+}
+.variant-angle-figure img{width:100%;height:100%;object-fit:contain;background:#fff}
+.variant-angle-figure figcaption{position:absolute;left:18px;bottom:16px;color:#777;font-size:10px;text-transform:uppercase;letter-spacing:.13em;background:rgba(255,255,255,.9);padding:3px 5px}
+.variant-gallery-layout-stacked,.variant-gallery-layout-strip{row-gap:2px!important}
+.product-angle-upload-block{margin-top:16px;padding:16px;border:1px solid #dfe3e8;background:#fafbfc}
+.product-angle-upload-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:12px}
+.product-angle-upload-head strong{font-size:15px}.product-angle-upload-head span{font-size:12px;color:#68707c;max-width:560px}
+@media(max-width:720px){.variant-angle-figure{width:100%;max-width:none}.product-angle-upload-head{display:block}.product-angle-upload-head span{display:block;margin-top:6px}}
+
+
+/* V6.12.30: remove right photometric column; place curves below dimension drawing. */
+.variant-hero,
+.variant-hero.has-photometric{
+  grid-template-columns:minmax(0,360px) minmax(0,1fr)!important;
+  grid-template-areas:"media-heading media-heading" "gallery copy"!important;
+}
+.variant-photometric-panel{display:none!important}
+.variant-photometric-under-dimension{
+  width:100%;
+  max-width:360px;
+  margin:8px 0 0;
+}
+.variant-photometric-under-dimension>header{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:0 0 8px;margin:0 0 8px;border-bottom:1px solid var(--line);
+}
+.variant-photometric-under-dimension>header span{font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;color:var(--artdon-red)}
+.variant-photometric-under-dimension>header strong{font-size:11px;color:#777;font-weight:500}
+.variant-photometric-under-dimension .variant-photometric-grid{display:grid;grid-template-columns:1fr!important;gap:6px!important;justify-items:start}
+.variant-photometric-under-dimension .variant-photometric-grid figure{width:220px!important;height:220px!important;max-width:100%;margin:0}
+.variant-angle-figure{display:none!important}
+@media(max-width:900px){
+ .variant-hero,.variant-hero.has-photometric{grid-template-columns:1fr!important;grid-template-areas:"media-heading" "gallery" "copy"!important}
+ .variant-photometric-under-dimension{max-width:360px}
+}
+@media(max-width:720px){
+ .variant-photometric-under-dimension .variant-photometric-grid figure{width:190px!important;height:190px!important}
+}
+
+/* V6.12.31: remove obsolete empty right rail and narrow the product sheet. */
+.product-variant-page{
+  max-width:1240px!important;
+  padding-left:42px!important;
+  padding-right:42px!important;
+}
+.variant-hero,
+.variant-hero.has-photometric{
+  width:100%!important;
+  max-width:1120px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  grid-template-columns:minmax(0,340px) minmax(0,1fr)!important;
+  grid-template-areas:"media-heading media-heading" "gallery copy"!important;
+  column-gap:34px!important;
+  row-gap:14px!important;
+}
+.variant-copy{
+  width:100%!important;
+  max-width:690px!important;
+  min-width:0!important;
+}
+.variant-hero-spec-table{
+  width:100%!important;
+  max-width:690px!important;
+}
+.variant-media-heading{
+  width:100%!important;
+}
+.variant-photometric-panel{
+  display:none!important;
+  width:0!important;
+  min-width:0!important;
+  max-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  overflow:hidden!important;
+}
+@media(max-width:1050px){
+  .product-variant-page{padding-left:30px!important;padding-right:30px!important}
+  .variant-hero,.variant-hero.has-photometric{
+    max-width:920px!important;
+    grid-template-columns:minmax(0,320px) minmax(0,1fr)!important;
+    column-gap:26px!important;
+  }
+}
+@media(max-width:900px){
+  .variant-hero,.variant-hero.has-photometric{
+    max-width:680px!important;
+    grid-template-columns:1fr!important;
+    grid-template-areas:"media-heading" "gallery" "copy"!important;
+  }
+  .variant-copy,.variant-hero-spec-table{max-width:none!important}
+}
+@media(max-width:720px){
+  .product-variant-page{padding-left:18px!important;padding-right:18px!important}
+}

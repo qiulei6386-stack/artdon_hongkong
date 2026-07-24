@@ -1,0 +1,171 @@
+/*
+ * Artdon Website V7.0.8
+ * Catalogue master layout: outer whitespace, compact filter-to-card spacing.
+ *
+ * Desktop geometry at the recommended 270px card width:
+ *   filter 270px + middle gap 20px + 3 cards (270px × 3 + 20px × 2)
+ *   = 1140px total, centred in the page.
+ *
+ * This moves the empty space to the two outside edges instead of leaving it
+ * between the filter and the first product card.
+ */
+
+.catalog-v50{
+  --catalog-filter-width:270px;
+  --catalog-layout-gap:20px;
+}
+
+/* The filter and result grid are one centred master group. */
+.catalog-v50 .catalog-layout{
+  display:grid!important;
+  grid-template-columns:var(--catalog-filter-width) minmax(0,var(--catalog-grid-max,850px))!important;
+  gap:var(--catalog-layout-gap)!important;
+  width:min(100%,calc(var(--catalog-filter-width) + var(--catalog-layout-gap) + var(--catalog-grid-max,850px)))!important;
+  max-width:calc(var(--catalog-filter-width) + var(--catalog-layout-gap) + var(--catalog-grid-max,850px))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  align-items:start!important;
+}
+
+.catalog-v50 .catalog-filters{
+  width:var(--catalog-filter-width)!important;
+  min-width:0!important;
+  max-width:var(--catalog-filter-width)!important;
+  padding-right:0!important;
+}
+
+.catalog-v50 .catalog-results{
+  width:100%!important;
+  max-width:var(--catalog-grid-max,850px)!important;
+  min-width:0!important;
+  margin:0!important;
+}
+
+/* Headings, active filters and cards use the exact result-column edges. */
+.catalog-v50 .catalog-results .catalog-results-head,
+.catalog-v50 .catalog-results .catalog-active-filters,
+.catalog-v50 .catalog-results .catalog-empty{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+  display:grid!important;
+  width:100%!important;
+  max-width:none!important;
+  grid-template-columns:repeat(auto-fit,minmax(var(--catalog-card-width,270px),var(--catalog-card-width,270px)))!important;
+  grid-auto-flow:row!important;
+  column-gap:var(--catalog-card-gap,20px)!important;
+  row-gap:var(--catalog-card-gap,20px)!important;
+  justify-content:start!important;
+  justify-items:start!important;
+  align-content:start!important;
+  align-items:stretch!important;
+  padding:20px 0 0!important;
+  margin:0!important;
+}
+
+.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider{
+  grid-column:1/-1!important;
+  width:100%!important;
+  max-width:100%!important;
+  justify-self:stretch!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card,
+.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+  width:var(--catalog-card-width,270px)!important;
+  min-width:0!important;
+  max-width:var(--catalog-card-width,270px)!important;
+  height:100%!important;
+  margin:0!important;
+  justify-self:start!important;
+  align-self:stretch!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-link{
+  width:100%!important;
+  height:100%!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-body{
+  box-sizing:border-box!important;
+  min-height:238px!important;
+  height:100%!important;
+  padding:21px 20px 22px!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-body h3{
+  margin-bottom:12px!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-subtitle{
+  margin-bottom:10px!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-detail-list{
+  margin-bottom:15px!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-view-button{
+  margin-top:auto!important;
+}
+
+/* Medium desktop/tablet: retain the same compact centre gap, let results shrink. */
+@media (max-width:1180px) and (min-width:801px){
+  .catalog-v50{
+    --catalog-filter-width:240px;
+    --catalog-layout-gap:20px;
+  }
+  .catalog-v50 .catalog-layout{
+    grid-template-columns:var(--catalog-filter-width) minmax(0,1fr)!important;
+    width:min(100%,calc(var(--catalog-filter-width) + var(--catalog-layout-gap) + var(--catalog-grid-max,850px)))!important;
+    max-width:100%!important;
+  }
+  .catalog-v50 .catalog-results{
+    max-width:none!important;
+  }
+}
+
+/* Existing mobile filter drawer behaviour remains unchanged. */
+@media (max-width:800px){
+  .catalog-v50 .catalog-layout{
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+  }
+  .catalog-v50 .catalog-filters,
+  .catalog-v50 .catalog-results,
+  .catalog-v50 .catalog-results .catalog-results-head,
+  .catalog-v50 .catalog-results .catalog-active-filters,
+  .catalog-v50 .catalog-results .catalog-empty,
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .catalog-v50 .catalog-filters{
+    padding-right:0!important;
+  }
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+    justify-content:center!important;
+    justify-items:start!important;
+  }
+}
+
+@media (max-width:580px){
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+    grid-template-columns:minmax(0,1fr)!important;
+    justify-items:center!important;
+  }
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card,
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+    width:min(100%,420px)!important;
+    max-width:420px!important;
+    justify-self:center!important;
+  }
+}

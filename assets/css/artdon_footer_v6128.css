@@ -1,0 +1,121 @@
+/* Artdon V6.12.8 footer layout and contrast safety layer.
+   Loaded from the footer partial so cache changes cannot leave the footer half-updated. */
+.footer-v6122 .footer-v611__primary{
+  display:grid;
+  grid-template-areas:"brand menus contact";
+  grid-template-columns:minmax(250px,.82fr) minmax(650px,2.35fr) minmax(320px,1fr);
+  align-items:stretch;
+  width:100%;
+}
+.footer-v6122 .footer-v611__brand{grid-area:brand}
+.footer-v6122 .footer-v611__menus{grid-area:menus;min-width:0;width:100%}
+.footer-v6122 .footer-v611__contact{grid-area:contact;min-width:0}
+
+/* The grid must remain correct even when an area is intentionally hidden. */
+.footer-v6122 .footer-v611__primary.without-brand.has-contact{
+  grid-template-areas:"menus contact";
+  grid-template-columns:minmax(0,1fr) minmax(320px,360px);
+}
+.footer-v6122 .footer-v611__primary.has-brand.without-contact{
+  grid-template-areas:"brand menus";
+  grid-template-columns:minmax(250px,300px) minmax(0,1fr);
+}
+.footer-v6122 .footer-v611__primary.without-brand.without-contact{
+  grid-template-areas:"menus";
+  grid-template-columns:minmax(0,1fr);
+}
+
+.footer-v6122 .footer-v611__menu,
+.footer-v6122 .footer-v611__menu a,
+.footer-v6122 .footer-v611__menu h2{
+  min-width:0;
+  word-break:normal!important;
+  overflow-wrap:break-word!important;
+  hyphens:none;
+}
+.footer-v6122 .footer-v611__menu a{
+  line-height:1.45;
+}
+
+/* Theme-aware separators. */
+.footer-v6122 .footer-v611__primary,
+.footer-v6122 .footer-v611__brand,
+.footer-v6122 .footer-v611__menu,
+.footer-v6122 .footer-v611__contact,
+.footer-v6122 .footer-v611__newsletter,
+.footer-v6122 .footer-v611__bottom{
+  border-color:var(--footer-line,#353535)!important;
+}
+
+@media(max-width:1400px){
+  .footer-v6122 .footer-v611__primary.has-brand.has-contact{
+    grid-template-columns:minmax(220px,240px) minmax(500px,1fr) minmax(285px,310px);
+  }
+  .footer-v6122 .footer-v611__primary.without-brand.has-contact{
+    grid-template-columns:minmax(0,1fr) minmax(285px,310px);
+  }
+  .footer-v6122 .footer-v611__primary.has-brand.without-contact{
+    grid-template-columns:minmax(220px,240px) minmax(0,1fr);
+  }
+}
+
+@media(max-width:1120px){
+  .footer-v6122 .footer-v611__primary.has-brand.has-contact{
+    grid-template-areas:
+      "brand menus"
+      "contact contact";
+    grid-template-columns:240px minmax(0,1fr);
+  }
+  .footer-v6122 .footer-v611__primary.without-brand.has-contact{
+    grid-template-areas:
+      "menus"
+      "contact";
+    grid-template-columns:minmax(0,1fr);
+  }
+  .footer-v6122 .footer-v611__primary.has-brand.without-contact{
+    grid-template-areas:"brand menus";
+    grid-template-columns:240px minmax(0,1fr);
+  }
+  .footer-v6122 .footer-v611__primary.without-brand.without-contact{
+    grid-template-areas:"menus";
+    grid-template-columns:minmax(0,1fr);
+  }
+  .footer-v6122 .footer-v611__contact{
+    border-left:0!important;
+    border-top:1px solid var(--footer-line,#353535)!important;
+  }
+}
+
+@media(max-width:720px){
+  .footer-v6122 .footer-v611__primary,
+  .footer-v6122 .footer-v611__primary.has-brand.has-contact,
+  .footer-v6122 .footer-v611__primary.without-brand.has-contact,
+  .footer-v6122 .footer-v611__primary.has-brand.without-contact,
+  .footer-v6122 .footer-v611__primary.without-brand.without-contact{
+    display:block;
+  }
+}
+
+
+/* V6.12.8: automatic contrast for light footer backgrounds. */
+.footer-v6128 .footer-v611__logo img{opacity:1!important;visibility:visible!important}
+.footer-v6128.is-light-theme .footer-v611__social-icon{
+  color:var(--footer-text,#111)!important;
+  border-color:var(--footer-field-line,#c9c9c9)!important;
+  background:transparent!important;
+}
+.footer-v6128.is-light-theme .footer-v611__social-icon.is-disabled{
+  color:var(--footer-soft,#666)!important;
+  opacity:.62!important;
+}
+.footer-v6128.is-light-theme .footer-v611__brand p,
+.footer-v6128.is-light-theme .footer-v611__menu a{
+  color:var(--footer-muted,#444)!important;
+}
+.footer-v6128.is-light-theme .footer-v611__menu h2,
+.footer-v6128.is-light-theme .footer-v611__contact h2,
+.footer-v6128.is-light-theme .footer-v611__newsletter h2,
+.footer-v6128.is-light-theme .footer-v611__contact strong,
+.footer-v6128.is-light-theme .footer-v611__wordmark{
+  color:var(--footer-text,#111)!important;
+}

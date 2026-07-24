@@ -1,0 +1,853 @@
+/* Extracted from products.php inline catalogue styles. */
+
+/* products.php inline style block 1 */
+/* V7.1.8.86: left Filter keeps the approved locked behaviour, but it must stop
+   before the footer. 3 states on desktop:
+   1) normal in the left column before the catalogue reaches the viewport;
+   2) fixed while the product list scrolls;
+   3) docked to the bottom of the catalogue area before the footer starts.
+   No inner scrollbars are added. Mobile keeps the original flow. */
+@media (min-width:801px){
+  html,body{height:auto!important;min-height:100%!important;overflow-y:auto!important;overflow-x:hidden!important;}
+  main.catalog-v50,
+  main.catalog-v50 .catalog-layout,
+  main.catalog-v50 .catalog-filters,
+  main.catalog-v50 .catalog-filters form,
+  main.catalog-v50 .catalog-results{
+    height:auto!important;min-height:0!important;max-height:none!important;
+    overflow:visible!important;overscroll-behavior:auto!important;
+  }
+  main.catalog-v50 .catalog-layout{
+    display:grid!important;
+    grid-template-columns:280px minmax(0,1fr)!important;
+    column-gap:48px!important;
+    align-items:start!important;
+    width:min(100%,var(--catalog-layout-max,1140px))!important;
+    max-width:var(--catalog-layout-max,1140px)!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:0!important;
+    padding-top:38px!important;
+    position:relative!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+  main.catalog-v50 .catalog-filters{
+    grid-column:1!important;
+    grid-row:1!important;
+    position:relative!important;
+    left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;
+    width:280px!important;min-width:280px!important;max-width:280px!important;
+    z-index:20!important;
+    background:#fff!important;
+    padding-right:14px!important;
+    box-sizing:border-box!important;
+    border-right:1px solid rgba(0,0,0,.08)!important;
+    transform:none!important;
+  }
+  main.catalog-v50 .catalog-results{
+    grid-column:2!important;
+    grid-row:1!important;
+    position:relative!important;
+    z-index:1!important;
+    width:auto!important;min-width:0!important;max-width:none!important;
+    margin:0!important;padding:0!important;box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+  main.catalog-v50 .catalog-filter-head{
+    position:relative!important;
+    left:auto!important;top:auto!important;
+    background:#fff!important;
+    z-index:22!important;
+    box-sizing:border-box!important;
+  }
+  main.catalog-v50 .catalog-results-head{position:relative!important;top:auto!important;background:#fff!important;}
+
+  /* Locked while scrolling through the product list. */
+  main.catalog-v50.artdon-filter-locked-v71886 .catalog-filters{
+    position:fixed!important;
+    left:var(--artdon-v71886-filter-left, 24px)!important;
+    top:var(--artdon-v71886-filter-top, 0px)!important;
+    width:var(--artdon-v71886-filter-width, 280px)!important;
+    min-width:var(--artdon-v71886-filter-width, 280px)!important;
+    max-width:var(--artdon-v71886-filter-width, 280px)!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+    z-index:900!important;
+    box-shadow:0 10px 24px rgba(255,255,255,.92)!important;
+  }
+
+  /* Docked before footer: it stays inside catalogue area and cannot cover footer. */
+  main.catalog-v50.artdon-filter-docked-v71886 .catalog-filters{
+    position:absolute!important;
+    left:0!important;
+    top:auto!important;
+    bottom:0!important;
+    width:var(--artdon-v71886-filter-width, 280px)!important;
+    min-width:var(--artdon-v71886-filter-width, 280px)!important;
+    max-width:var(--artdon-v71886-filter-width, 280px)!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+    z-index:25!important;
+    background:#fff!important;
+    box-shadow:none!important;
+  }
+  main.catalog-v50.artdon-filter-locked-v71886 .catalog-filter-head,
+  main.catalog-v50.artdon-filter-docked-v71886 .catalog-filter-head{
+    position:relative!important;
+    top:auto!important;
+  }
+}
+@media (max-width:800px){
+  main.catalog-v50 .catalog-layout{display:block!important;width:auto!important;max-width:none!important;padding-left:0!important;}
+  main.catalog-v50 .catalog-filters,
+  main.catalog-v50 .catalog-filter-head,
+  main.catalog-v50 .catalog-results,
+  main.catalog-v50 .catalog-results-head{
+    position:relative!important;left:auto!important;top:auto!important;bottom:auto!important;width:auto!important;min-width:0!important;max-width:none!important;max-height:none!important;overflow:visible!important;
+  }
+}
+
+/* products.php inline style block 2 */
+/* V7.1.8.104: remove the old top-right intro search placement and put search in
+   the former Sort position inside .catalog-results-head. Sort UI is removed. */
+main.catalog-v50 .catalog-intro{grid-template-columns:1fr!important;}
+main.catalog-v50 .catalog-intro > div{max-width:none!important;}
+main.catalog-v50 .catalog-results-head{align-items:flex-end!important;gap:32px!important;}
+main.catalog-v50 .catalog-results-head .catalog-results-search-v718104{
+  flex:0 0 min(420px,44%)!important;
+  width:min(420px,44%)!important;
+  max-width:420px!important;
+  margin:0 0 0 auto!important;
+  align-self:flex-end!important;
+}
+main.catalog-v50 .catalog-results-head .catalog-results-search-v718104 label{
+  display:block!important;
+  margin:0 0 8px!important;
+  font-size:13px!important;
+  font-weight:700!important;
+  color:#111!important;
+}
+main.catalog-v50 .catalog-results-head .catalog-results-search-v718104 > div{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  border-bottom:1px solid #111!important;
+}
+main.catalog-v50 .catalog-results-head .catalog-results-search-v718104 input{
+  min-width:0!important;
+  border:0!important;
+  padding:10px 0!important;
+  outline:0!important;
+  background:transparent!important;
+  font-size:16px!important;
+}
+main.catalog-v50 .catalog-results-head .catalog-results-search-v718104 button{
+  border:0!important;
+  background:transparent!important;
+  padding:0 0 0 18px!important;
+  font-weight:700!important;
+  cursor:pointer!important;
+  color:#111!important;
+}
+main.catalog-v50 .catalog-results-head .catalog-sort{display:none!important;}
+@media (max-width:800px){
+  main.catalog-v50 .catalog-results-head{display:block!important;}
+  main.catalog-v50 .catalog-results-head .catalog-results-search-v718104{
+    width:100%!important;
+    max-width:none!important;
+    margin:18px 0 0!important;
+  }
+}
+
+/* products.php inline style block 3 */
+/* V7.1.8.105: remove the Home / Products breadcrumb and PRODUCTS eyebrow on
+   the catalogue page. Collapse their vertical space so the whole products page
+   starts higher. */
+main.catalog-v50 .catalog-breadcrumb,
+main.catalog-v50 .catalog-eyebrow{display:none!important;margin:0!important;padding:0!important;height:0!important;overflow:hidden!important;}
+main.catalog-v50 .catalog-intro{margin-top:0!important;padding-top:0!important;}
+main.catalog-v50 .catalog-intro h1{margin-top:0!important;}
+@media (min-width:801px){
+  main.catalog-v50{padding-top:24px!important;}
+}
+@media (max-width:800px){
+  main.catalog-v50{padding-top:18px!important;}
+}
+
+/* products.php inline style block 4 */
+/* V7.1.8.160: critical catalogue grid CSS in <head> to prevent 3-col to 4-col flash. */
+	@media (min-width:801px){
+	  main.catalog-v50{
+	    width:min(calc(100% - 48px),1500px)!important;
+	    margin-left:auto!important;
+	    margin-right:auto!important;
+	  }
+	  main.catalog-v50 .catalog-layout{
+	    width:min(100%,var(--catalog-layout-max,1140px))!important;
+	    max-width:var(--catalog-layout-max,1140px)!important;
+	    margin-left:auto!important;
+	    margin-right:auto!important;
+	    grid-template-columns:280px minmax(0,1fr)!important;
+	  }
+	  main.catalog-v50 .catalog-results{
+	    width:100%!important;
+	    max-width:var(--catalog-grid-max,850px)!important;
+	    min-width:0!important;
+	    justify-self:stretch!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    display:grid!important;
+	    width:100%!important;
+	    max-width:var(--catalog-grid-max,850px)!important;
+	    min-width:0!important;
+	    grid-auto-flow:row!important;
+	    column-gap:var(--catalog-card-gap-x,var(--catalog-card-gap,20px))!important;
+	    row-gap:var(--catalog-card-gap-y,var(--catalog-card-gap,20px))!important;
+	    justify-content:stretch!important;
+	    justify-items:stretch!important;
+	    align-items:stretch!important;
+	    margin-left:0!important;
+	    margin-right:0!important;
+	    padding-left:0!important;
+	    padding-right:0!important;
+	    overflow:visible!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card],
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+	    width:100%!important;
+	    max-width:none!important;
+	    min-width:0!important;
+	    justify-self:stretch!important;
+	    align-self:stretch!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider{
+	    margin:22px 0 0!important;
+	    padding-bottom:0!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider:first-child{margin-top:0!important;}
+	  main.catalog-v50 .catalog-family-intro{margin-bottom:0!important;}
+	}
+	@media (min-width:1281px){
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:repeat(var(--catalog-grid-columns,3),minmax(0,1fr))!important;
+	  }
+	}
+	@media (min-width:1081px) and (max-width:1280px){
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+	  }
+	}
+	@media (min-width:801px) and (max-width:1080px){
+	  main.catalog-v50{
+	    width:min(calc(100% - 56px),1500px)!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+	  }
+	}
+	@media (max-width:800px){
+	  main.catalog-v50{
+	    width:min(calc(100% - 28px),1500px)!important;
+	    margin-left:auto!important;
+	    margin-right:auto!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:1fr!important;
+	    justify-items:stretch!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card],
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+	    width:100%!important;
+	    max-width:none!important;
+	    justify-self:stretch!important;
+	  }
+	}
+
+/* products.php inline style block 5 */
+/* V7.1.8.109: backend card spacing, text and grey-border controls.
+   This only controls card-to-card gaps and title/parameter typography. Card frame,
+   image ratio, card body padding and parameter structure are not changed. */
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h2,
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h3,
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h4{
+  font-size:var(--catalog-card-title-font-size,18px)!important;
+  font-weight:var(--catalog-card-title-font-weight,900)!important;
+}
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list,
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list dt,
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list dd{
+  font-size:var(--catalog-card-param-font-size,13px)!important;
+}
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list dt{
+  font-weight:var(--catalog-card-param-label-font-weight,400)!important;
+}
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list dd{
+  font-weight:var(--catalog-card-param-value-font-weight,800)!important;
+}
+main.catalog-v50 article.catalog-card.catalog-card-v51,
+main.catalog-v50 .catalog-card.catalog-card-v51.catalog-rich-card{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-width:var(--catalog-card-border-width,1px)!important;
+  border-color:var(--catalog-card-border-color,#d7d7d7)!important;
+}
+
+/* products.php inline style block 6 */
+/* V7.1.8.107: grouped catalogue layout with backend 3/4-column switch.
+   Each lighting family keeps its own header. Column count only widens/narrows
+   the centred result area; card internals, image ratio and parameter layout stay unchanged. */
+@media (min-width:1101px){
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51,
+  body main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+    display:grid!important;
+    grid-template-columns:repeat(var(--catalog-grid-columns,3), minmax(0, 1fr))!important;
+    column-gap:var(--catalog-card-gap-x,var(--catalog-card-gap,20px))!important;
+    row-gap:var(--catalog-card-gap-y,var(--catalog-card-gap,20px))!important;
+    align-items:start!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+  }
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider,
+  body main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider{
+    grid-column:1 / -1!important;
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:34px 0 8px!important;
+    clear:both!important;
+  }
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider:first-child{margin-top:0!important;}
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card],
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card,
+  body main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card]{
+    grid-column:auto!important;
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    float:none!important;
+  }
+}
+@media (min-width:801px) and (max-width:1100px){
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:var(--catalog-card-gap-x,var(--catalog-card-gap,20px))!important;row-gap:var(--catalog-card-gap-y,var(--catalog-card-gap,20px))!important;}
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider{grid-column:1/-1!important;}
+}
+@media (max-width:800px){
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{display:grid!important;grid-template-columns:1fr!important;column-gap:var(--catalog-card-gap-x,var(--catalog-card-gap,20px))!important;row-gap:var(--catalog-card-gap-y,var(--catalog-card-gap,18px))!important;}
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider{grid-column:1/-1!important;}
+}
+main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card][hidden],
+main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card].artdon-v71898-hidden,
+main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card].artdon-v71895-hidden,
+main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card].artdon-filter-hidden-v71889,
+main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider[hidden],
+main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider.artdon-v71898-hidden,
+main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider.artdon-v71895-hidden,
+main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider.artdon-filter-hidden-v71889{
+  display:none!important;
+}
+
+/* products.php inline style block 7 */
+main.catalog-v50 .catalog-family-divider h3{
+  width:100%!important;
+  margin:0!important;
+}
+main.catalog-v50 .catalog-family-divider h3 > a,
+main.catalog-v50 .catalog-family-divider h3{
+  display:flex!important;
+  align-items:baseline!important;
+  justify-content:space-between!important;
+  gap:24px!important;
+}
+main.catalog-v50 .catalog-family-divider h3 > a{
+  width:100%!important;
+  color:inherit!important;
+  text-decoration:none!important;
+}
+main.catalog-v50 .catalog-family-label{
+  display:inline-flex!important;
+  align-items:baseline!important;
+  gap:.28em!important;
+  min-width:0!important;
+}
+main.catalog-v50 .catalog-family-count{
+  margin-left:auto!important;
+  min-width:2.2em!important;
+  text-align:right!important;
+  color:#666!important;
+  font-size:16px!important;
+  font-weight:400!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+  flex:0 0 auto!important;
+}
+@media (max-width:800px){
+  main.catalog-v50 .catalog-family-divider h3 > a,
+  main.catalog-v50 .catalog-family-divider h3{gap:14px!important;}
+  main.catalog-v50 .catalog-family-count{min-width:1.8em!important;font-size:14px!important;}
+}
+
+/* products.php inline style block 8 */
+/* V7.1.8.127: final category family text controls.
+   No more percentage values. No hidden search-form height. The backend px gap is written directly on the grid. */
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127{
+  display:block!important;
+  position:relative!important;
+  margin:0!important;
+  padding:0 70px 0 0!important;
+  background:#fff!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow:visible!important;
+}
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 > div{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 .catalog-results-search-v718104{
+  display:none!important;
+}
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 h2,
+main.catalog-v50 .catalog-family-label{
+  font-size:var(--catalog-family-title-font-size,64px)!important;
+  line-height:1.08!important;
+}
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 > div > p:not(.catalog-results-family-intro){
+  position:absolute!important;
+  right:0!important;
+  top:calc(var(--catalog-family-title-font-size,64px) * .42)!important;
+  margin:0!important;
+  padding:0!important;
+  color:#666!important;
+  font-size:16px!important;
+  line-height:1!important;
+  font-weight:400!important;
+  text-align:right!important;
+  white-space:nowrap!important;
+}
+main.catalog-v50 .catalog-results-family-intro,
+main.catalog-v50 .catalog-family-intro{
+  display:block!important;
+  max-width:min(900px,100%)!important;
+  margin:6px 0 0!important;
+  padding:0!important;
+  color:#4a4a4a!important;
+  font-size:var(--catalog-family-intro-font-size,24px)!important;
+  line-height:var(--catalog-family-intro-line-height,34px)!important;
+  font-weight:400!important;
+  letter-spacing:0!important;
+  white-space:pre-line!important;
+}
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 + .catalog-grid.catalog-grid-v51,
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 + .catalog-active-filters + .catalog-grid.catalog-grid-v51{
+  margin-top:var(--catalog-family-to-cards-gap,18px)!important;
+  padding-top:0!important;
+}
+main.catalog-v50 .catalog-grid-grouped .catalog-family-divider .catalog-family-intro{
+  margin-top:6px!important;
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+}
+@media(max-width:800px){
+  main.catalog-v50 .catalog-results-head.has-family-intro-v718127{padding-right:44px!important;}
+  main.catalog-v50 .catalog-results-head.has-family-intro-v718127 h2,
+  main.catalog-v50 .catalog-family-label{font-size:calc(var(--catalog-family-title-font-size,64px) * .72)!important;}
+  main.catalog-v50 .catalog-results-family-intro,
+  main.catalog-v50 .catalog-family-intro{font-size:calc(var(--catalog-family-intro-font-size,24px) * .78)!important;line-height:calc(var(--catalog-family-intro-line-height,34px) * .80)!important;}
+  main.catalog-v50 .catalog-results-head.has-family-intro-v718127 > div > p:not(.catalog-results-family-intro){top:calc(var(--catalog-family-title-font-size,64px) * .30)!important;font-size:14px!important;}
+}
+
+/* products.php inline style block 9 */
+/* V7.1.8.156: lock product/all-products card positions after width scaling.
+	   The grid tracks use the same width as the card frame, so visual size and layout
+	   occupancy cannot drift apart when the backend card width is changed. */
+	@media (min-width:1101px){
+	  main.catalog-v50 .catalog-layout{
+	    width:min(100%,var(--catalog-layout-max,1140px))!important;
+	    max-width:var(--catalog-layout-max,1140px)!important;
+	    grid-template-columns:280px minmax(0,var(--catalog-grid-max,850px))!important;
+	  }
+	  main.catalog-v50 .catalog-results{
+	    width:var(--catalog-grid-max,850px)!important;
+	    max-width:var(--catalog-grid-max,850px)!important;
+	    min-width:0!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    display:grid!important;
+	    grid-template-columns:repeat(var(--catalog-grid-columns,3), minmax(var(--catalog-card-width,270px), var(--catalog-card-width,270px)))!important;
+	    grid-auto-flow:row!important;
+	    grid-auto-columns:var(--catalog-card-width,270px)!important;
+	    column-gap:var(--catalog-card-gap-x,var(--catalog-card-gap,20px))!important;
+	    row-gap:var(--catalog-card-gap-y,var(--catalog-card-gap,20px))!important;
+	    width:var(--catalog-grid-max,850px)!important;
+	    max-width:var(--catalog-grid-max,850px)!important;
+	    min-width:0!important;
+	    justify-content:start!important;
+	    justify-items:start!important;
+	    align-items:stretch!important;
+	    margin:0!important;
+	    padding-left:0!important;
+	    padding-right:0!important;
+	    transform:none!important;
+	  }
+	}
+	@media (min-width:801px) and (max-width:1100px){
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+	    justify-items:stretch!important;
+	  }
+	}
+	main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card],
+	main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+	  position:relative!important;
+	  grid-column:auto!important;
+	  width:100%!important;
+	  min-width:0!important;
+	  max-width:100%!important;
+	  margin:0!important;
+	  float:none!important;
+	  clear:none!important;
+	  transform:none!important;
+	  justify-self:stretch!important;
+	  align-self:stretch!important;
+	  box-sizing:border-box!important;
+	  overflow:hidden!important;
+	}
+	@media (min-width:1101px){
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card],
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+	    width:var(--catalog-card-width,270px)!important;
+	    max-width:var(--catalog-card-width,270px)!important;
+	    justify-self:start!important;
+	  }
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-link{
+	  display:grid!important;
+	  grid-template-rows:auto minmax(0,1fr)!important;
+	  width:100%!important;
+	  max-width:100%!important;
+	  min-width:0!important;
+	  height:100%!important;
+	  box-sizing:border-box!important;
+	  transform:none!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-image{
+	  width:100%!important;
+	  max-width:100%!important;
+	  min-width:0!important;
+	  aspect-ratio:1/1!important;
+	  overflow:hidden!important;
+	  box-sizing:border-box!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-image img{
+	  max-width:100%!important;
+	  max-height:100%!important;
+	  object-fit:contain!important;
+	  object-position:center center!important;
+	  transform:none!important;
+	}
+	main.catalog-v50 .catalog-grid.catalog-grid-v51 > .catalog-family-divider{
+	  grid-column:1/-1!important;
+	  width:100%!important;
+	  max-width:100%!important;
+	  justify-self:stretch!important;
+	}
+
+/* products.php inline style block 10 */
+/* V7.1.8.157: keep product card bottoms aligned while the viewport narrows.
+	   Text areas are clamped and each grid row uses one shared card height. */
+	main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	  grid-auto-rows:1fr!important;
+	  align-items:stretch!important;
+	}
+	main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card],
+	main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+	  display:flex!important;
+	  flex-direction:column!important;
+	  height:100%!important;
+	  min-height:0!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-link{
+	  flex:1 1 auto!important;
+	  display:grid!important;
+	  grid-template-rows:auto 1fr!important;
+	  height:100%!important;
+	  min-height:0!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body{
+	  display:flex!important;
+	  flex-direction:column!important;
+	  height:100%!important;
+	  min-height:clamp(250px,18vw,330px)!important;
+	  box-sizing:border-box!important;
+	  overflow:hidden!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-series-label{
+	  flex:0 0 auto!important;
+	  min-height:14px!important;
+	  margin-bottom:8px!important;
+	  white-space:nowrap!important;
+	  overflow:hidden!important;
+	  text-overflow:ellipsis!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h2,
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h3,
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h4{
+	  flex:0 0 auto!important;
+	  display:-webkit-box!important;
+	  -webkit-box-orient:vertical!important;
+	  -webkit-line-clamp:2!important;
+	  overflow:hidden!important;
+	  min-height:calc(var(--catalog-card-title-font-size,18px) * 2.32)!important;
+	  line-height:1.16!important;
+	  margin-bottom:10px!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-subtitle{
+	  flex:0 0 auto!important;
+	  display:-webkit-box!important;
+	  -webkit-box-orient:vertical!important;
+	  -webkit-line-clamp:2!important;
+	  overflow:hidden!important;
+	  min-height:42px!important;
+	  margin-bottom:12px!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list{
+	  flex:0 0 auto!important;
+	  display:grid!important;
+	  align-content:end!important;
+	  grid-auto-rows:max-content!important;
+	  min-height:112px!important;
+	  max-height:112px!important;
+	  overflow:hidden!important;
+	  margin:0!important;
+	  row-gap:6px!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list div{
+	  min-height:0!important;
+	}
+	main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-tags{
+	  flex:0 0 auto!important;
+	  min-height:30px!important;
+	  max-height:66px!important;
+	  overflow:hidden!important;
+	  margin-top:6px!important;
+	  align-content:flex-start!important;
+	}
+	@media (max-width:800px){
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{grid-auto-rows:auto!important;}
+	  main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body{min-height:0!important;overflow:visible!important;}
+	  main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list{max-height:none!important;}
+	  main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-tags{max-height:none!important;}
+	}
+
+/* products.php inline style block 11 */
+/* V7.1.8.160: body copy matches the critical <head> rules; no late layout jump.
+	   Cards shrink with the result column while gaps stay fixed; when cards become
+	   too narrow, the grid steps down to 3, 2 and 1 columns. */
+	@media (min-width:801px){
+	  main.catalog-v50{
+	    width:min(calc(100% - 48px),1500px)!important;
+	    margin-left:auto!important;
+	    margin-right:auto!important;
+	  }
+	  main.catalog-v50 .catalog-layout{
+	    width:min(100%,var(--catalog-layout-max,1140px))!important;
+	    max-width:var(--catalog-layout-max,1140px)!important;
+	    margin-left:auto!important;
+	    margin-right:auto!important;
+	    grid-template-columns:280px minmax(0,1fr)!important;
+	  }
+	  main.catalog-v50 .catalog-results{
+	    width:100%!important;
+	    max-width:var(--catalog-grid-max,850px)!important;
+	    min-width:0!important;
+	    justify-self:stretch!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    display:grid!important;
+	    width:100%!important;
+	    max-width:var(--catalog-grid-max,850px)!important;
+	    min-width:0!important;
+	    grid-auto-flow:row!important;
+	    column-gap:var(--catalog-card-gap-x,var(--catalog-card-gap,20px))!important;
+	    row-gap:var(--catalog-card-gap-y,var(--catalog-card-gap,20px))!important;
+	    justify-content:stretch!important;
+	    justify-items:stretch!important;
+	    align-items:stretch!important;
+	    margin-left:0!important;
+	    margin-right:0!important;
+	    padding-left:0!important;
+	    padding-right:0!important;
+	    overflow:visible!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card],
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+	    width:100%!important;
+	    max-width:none!important;
+	    min-width:0!important;
+	    justify-self:stretch!important;
+	    align-self:stretch!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider{
+	    margin:22px 0 0!important;
+	    padding-bottom:0!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider:first-child{margin-top:0!important;}
+	  main.catalog-v50 .catalog-family-intro{margin-bottom:0!important;}
+	}
+	@media (min-width:1281px){
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:repeat(var(--catalog-grid-columns,3),minmax(0,1fr))!important;
+	  }
+	}
+	@media (min-width:1081px) and (max-width:1280px){
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+	  }
+	}
+	@media (min-width:801px) and (max-width:1080px){
+	  main.catalog-v50{
+	    width:min(calc(100% - 56px),1500px)!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+	  }
+	}
+	@media (max-width:800px){
+	  main.catalog-v50{
+	    width:min(calc(100% - 28px),1500px)!important;
+	    margin-left:auto!important;
+	    margin-right:auto!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+	    grid-template-columns:1fr!important;
+	    justify-items:stretch!important;
+	  }
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card],
+	  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+	    width:100%!important;
+	    max-width:none!important;
+	    justify-self:stretch!important;
+	  }
+	}
+
+/* products.php inline style block 12 */
+main.catalog-v50 .catalog-grid [data-artdon-filter-card].artdon-v718103-hidden,
+main.catalog-v50 .catalog-family-divider.artdon-v718103-hidden{display:none!important;}
+main.catalog-v50 .catalog-filter-group label.is-zero-count{opacity:.38;}
+
+/* products.php inline style block 13 */
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127{
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+  border-bottom:0!important;
+}
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 .catalog-results-family-intro{
+  font-size:20px!important;
+  line-height:28px!important;
+  max-width:850px!important;
+  margin-top:6px!important;
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+}
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 + .catalog-grid.catalog-grid-v51,
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 + .catalog-active-filters + .catalog-grid.catalog-grid-v51{
+  margin-top:0!important;
+  padding-top:0!important;
+  row-gap:var(--catalog-card-gap-y,var(--catalog-card-gap,20px))!important;
+  align-content:start!important;
+  align-items:start!important;
+  grid-auto-rows:auto!important;
+}
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 + .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card]:first-child,
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 + .catalog-active-filters + .catalog-grid.catalog-grid-v51 > [data-artdon-filter-card]:first-child{
+  margin-top:0!important;
+  align-self:start!important;
+}
+main.catalog-v50 .catalog-grid.catalog-grid-v51.catalog-grid-grouped{
+  grid-auto-rows:auto!important;
+  align-items:start!important;
+}
+main.catalog-v50 .catalog-grid.catalog-grid-v51.catalog-grid-grouped > .catalog-family-divider{
+  align-self:start!important;
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+}
+main.catalog-v50 .catalog-grid.catalog-grid-v51.catalog-grid-grouped > .catalog-family-divider .catalog-family-intro{
+  margin-bottom:0!important;
+  padding-bottom:0!important;
+}
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h2,
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h3,
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body > h4{
+  min-height:0!important;
+  margin-bottom:5px!important;
+}
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-subtitle{
+  min-height:0!important;
+  margin-bottom:6px!important;
+  line-height:1.35!important;
+}
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body{
+  min-height:clamp(242px,16vw,246px)!important;
+}
+
+/* V7.1.8.174: visible product-list card specs gap. */
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list,
+main.catalog-v50 .catalog-card.catalog-card-v51.catalog-rich-card .catalog-card-detail-list{
+  display:grid!important;
+  align-content:end!important;
+  grid-auto-rows:max-content!important;
+  margin-top:auto!important;
+  margin-bottom:0!important;
+  row-gap:6px!important;
+}
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list div,
+main.catalog-v50 .catalog-card.catalog-card-v51.catalog-rich-card .catalog-card-detail-list div{
+  min-height:0!important;
+  min-width:0!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere!important;
+  line-height:1.32!important;
+}
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list dt,
+main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list dd{
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere!important;
+}
+@media(max-width:1180px){
+  main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list,
+  main.catalog-v50 .catalog-card.catalog-card-v51.catalog-rich-card .catalog-card-detail-list{margin-top:auto!important;}
+}
+
+/* V7.1.8.184: prevent spec rows from being clipped as four-column cards narrow. */
+@media(min-width:1181px) and (max-width:1360px){
+  main.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:1360px){
+  main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-body{
+    overflow:visible!important;
+  }
+  main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list,
+  main.catalog-v50 .catalog-card.catalog-card-v51.catalog-rich-card .catalog-card-detail-list{
+    max-height:none!important;
+    min-height:auto!important;
+    overflow:visible!important;
+  }
+  main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-link{
+    grid-template-rows:auto minmax(0,auto)!important;
+  }
+}

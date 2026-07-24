@@ -1,0 +1,661 @@
+(function () {
+  'use strict';
+
+  var MAX_FILE_SIZE = 2 * 1024 * 1024;
+  var state = {
+    ies: null,
+    worker: null,
+    jobId: 0,
+    activeJobId: null,
+    mode: 'spacing',
+    view: 'layout',
+    customLayout: false,
+    luminaires: [],
+    selectedId: null,
+    result: null,
+    dragId: null,
+    watchdog: null,
+    pendingInput: null,
+    placingManual: false,
+    hoverPoint: null,
+    snapSpacing: 0.25
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function all(selector, root) { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
+  function readNumber(id) { return Number($(id).value); }
+  function fmt(value, digits) {
+    if (value == null || !Number.isFinite(Number(value))) return 'N/A';
+    return Number(value).toLocaleString('en-US', { maximumFractionDigits: digits == null ? 1 : digits, minimumFractionDigits: 0 });
+  }
+  function setMessage(text, type) {
+    var el = $('lcMessage');
+    if (!el) return;
+    el.textContent = text || '';
+    el.className = 'lc-message' + (type ? ' is-' + type : '');
+  }
+  function setFieldError(id, text) {
+    var el = $(id);
+    if (el) el.textContent = text || '';
+  }
+  function setStatus(label, type) {
+    var el = $('lcTargetStatus');
+    el.textContent = label;
+    el.className = 'lc-status ' + (type || 'is-neutral');
+  }
+  function markRecalculation() {
+    state.result = null;
+    setStatus('NEEDS RECALCULATION', 'is-neutral');
+    updateLayout();
+  }
+  function roomInput() {
+    return {
+      length: readNumber('lcRoomLength'),
+      width: readNumber('lcRoomWidth'),
+      height: readNumber('lcRoomHeight'),
+      mountingHeight: readNumber('lcMountHeight'),
+      workplaneHeight: readNumber('lcWorkHeight')
+    };
+  }
+  function validateRoom(room) {
+    if (!(room.length > 0) || !(room.width > 0) || !(room.height > 0)) throw new Error('Room dimensions must be greater than zero.');
+    if (room.mountingHeight > room.height) throw new Error('Luminaire mounting height cannot exceed room height.');
+    if (room.workplaneHeight >= room.mountingHeight) throw new Error('Work plane height must be lower than luminaire mounting height.');
+    return {
+      length: room.length,
+      width: room.width,
+      height: room.height,
+      mountingHeight: room.mountingHeight,
+      workplaneHeight: room.workplaneHeight,
+      effectiveHeight: room.mountingHeight - room.workplaneHeight
+    };
+  }
+  function offsetsInput() {
+    return {
+      leftOffset: readNumber('lcLeftOffset'),
+      rightOffset: readNumber('lcRightOffset'),
+      frontOffset: readNumber('lcFrontOffset'),
+      backOffset: readNumber('lcBackOffset')
+    };
+  }
+  function assertOffsets(room, offsets) {
+    ['leftOffset', 'rightOffset', 'frontOffset', 'backOffset'].forEach(function (key) {
+      if (!Number.isFinite(offsets[key]) || offsets[key] < 0) throw new Error('Wall offsets cannot be negative.');
+    });
+    if (offsets.leftOffset + offsets.rightOffset >= room.length) throw new Error('Left and right offsets exceed the room length.');
+    if (offsets.frontOffset + offsets.backOffset >= room.width) throw new Error('Front and back offsets exceed the room width.');
+  }
+  function makeLuminaire(id, x, y) {
+    return { id: id, x: x, y: y, rotation: 0 };
+  }
+  function generateBySpacing(room, offsets) {
+    var xSpacing = readNumber('lcXSpacing');
+    var ySpacing = readNumber('lcYSpacing');
+    if (!(xSpacing > 0) || !(ySpacing > 0)) throw new Error('Luminaire spacing must be greater than zero.');
+    var usableX = room.length - offsets.leftOffset - offsets.rightOffset;
+    var usableY = room.width - offsets.frontOffset - offsets.backOffset;
+    var cols = Math.floor(usableX / xSpacing) + 1;
+    var rows = Math.floor(usableY / ySpacing) + 1;
+    if (cols < 1 || rows < 1) throw new Error('The layout must contain at least one luminaire.');
+    var luminaires = [];
+    for (var r = 0; r < rows; r += 1) {
+      for (var c = 0; c < cols; c += 1) {
+        luminaires.push(makeLuminaire('L' + (luminaires.length + 1), offsets.leftOffset + c * xSpacing, offsets.frontOffset + r * ySpacing));
+      }
+    }
+    return { room: room, luminaires: luminaires, meta: Object.assign({}, offsets, { rows: rows, cols: cols, total: luminaires.length, actualXSpacing: cols > 1 ? xSpacing : null, actualYSpacing: rows > 1 ? ySpacing : null }) };
+  }
+  function readInteger(id, label) {
+    var value = readNumber(id);
+    if (!Number.isInteger(value) || value < 1) throw new Error(label + ' must be a positive integer.');
+    return value;
+  }
+  function generateByQuantity(room, offsets) {
+    var cols = readInteger('lcCols', 'Columns');
+    var rows = readInteger('lcRows', 'Rows');
+    var usableX = room.length - offsets.leftOffset - offsets.rightOffset;
+    var usableY = room.width - offsets.frontOffset - offsets.backOffset;
+    var xSpacing = cols > 1 ? usableX / (cols - 1) : 0;
+    var ySpacing = rows > 1 ? usableY / (rows - 1) : 0;
+    if (cols > 1 && xSpacing <= 0) throw new Error('X spacing must be greater than zero.');
+    if (rows > 1 && ySpacing <= 0) throw new Error('Y spacing must be greater than zero.');
+    var luminaires = [];
+    for (var r = 0; r < rows; r += 1) {
+      for (var c = 0; c < cols; c += 1) {
+        var x = cols === 1 ? offsets.leftOffset + usableX / 2 : offsets.leftOffset + c * xSpacing;
+        var y = rows === 1 ? offsets.frontOffset + usableY / 2 : offsets.frontOffset + r * ySpacing;
+        luminaires.push(makeLuminaire('L' + (luminaires.length + 1), x, y));
+      }
+    }
+    return { room: room, luminaires: luminaires, meta: Object.assign({}, offsets, { rows: rows, cols: cols, total: luminaires.length, actualXSpacing: cols > 1 ? xSpacing : null, actualYSpacing: rows > 1 ? ySpacing : null }) };
+  }
+  function autoLayout() {
+    var room = validateRoom(roomInput());
+    var offsets = offsetsInput();
+    assertOffsets(room, offsets);
+    if (state.mode === 'manual') {
+      return { room: room, luminaires: [], meta: Object.assign({}, offsets, { rows: null, cols: null, total: 0, actualXSpacing: null, actualYSpacing: null }) };
+    }
+    return state.mode === 'spacing' ? generateBySpacing(room, offsets) : generateByQuantity(room, offsets);
+  }
+  function currentLayout() {
+    var layout = autoLayout();
+    if (state.customLayout || state.mode === 'manual') {
+      layout.luminaires = state.luminaires.map(function (lum, index) {
+        return makeLuminaire(lum.id || ('L' + (index + 1)), Math.max(0, Math.min(layout.room.length, lum.x)), Math.max(0, Math.min(layout.room.width, lum.y)));
+      });
+      layout.meta.total = layout.luminaires.length;
+      layout.meta.cols = null;
+      layout.meta.rows = null;
+    } else {
+      state.luminaires = layout.luminaires.map(function (lum) { return Object.assign({}, lum); });
+    }
+    return layout;
+  }
+  function updateEffectiveHeight() {
+    var room = roomInput();
+    var effective = room.mountingHeight - room.workplaneHeight;
+    $('lcEffectiveHeight').textContent = Number.isFinite(effective) ? fmt(effective, 2) + ' m' : '-';
+    setFieldError('lcMountError', effective > 0 ? '' : 'Work plane height must be lower than luminaire mounting height.');
+  }
+  function updateLayoutSummary(layout) {
+    var meta = layout && layout.meta;
+    var text = meta && meta.cols && meta.rows ? meta.cols + ' × ' + meta.rows + ' = ' + meta.total + ' Total Luminaires' : (layout ? layout.luminaires.length + ' Total Luminaires' : '-');
+    $('lcLayoutSummary').textContent = text;
+    $('lcLayoutState').textContent = state.customLayout ? 'CUSTOM LAYOUT' : 'AUTO LAYOUT';
+    $('lcLayoutState').classList.toggle('is-custom', state.customLayout);
+  }
+  function updateLayout() {
+    updateEffectiveHeight();
+    try {
+      var layout = currentLayout();
+      setFieldError('lcLayoutError', '');
+      updateLayoutSummary(layout);
+      window.ArtdonRoomLayout.render($('lcLayoutPreview'), layout, { view: state.view, result: state.result, selectedId: state.selectedId, placementPoint: state.hoverPoint });
+      updateSelectionButtons();
+      $('lcLayoutMeta').textContent = metaText(layout);
+      attachCanvasEvents();
+    } catch (error) {
+      setFieldError('lcLayoutError', error.message || 'Layout is invalid.');
+      $('lcLayoutMeta').textContent = '';
+      updateLayoutSummary(null);
+    }
+  }
+  function metaText(layout) {
+    var meta = layout.meta || {};
+    var parts = [layout.luminaires.length + ' luminaires'];
+    if (meta.actualXSpacing) parts.push('X spacing ' + fmt(meta.actualXSpacing, 2) + ' m');
+    if (meta.actualYSpacing) parts.push('Y spacing ' + fmt(meta.actualYSpacing, 2) + ' m');
+    if (state.result && state.result.points) parts.push(state.result.points.length + ' grid points');
+    return parts.join(', ') + '.';
+  }
+  function renderInfo(ies) {
+    var info = $('lcIesInfo');
+    var rows = ies ? [
+      ['Power', ies.inputWatts ? fmt(ies.inputWatts, 2) + ' W' : 'N/A'],
+      ['Vertical angles', ies.verticalAngles.length],
+      ['Horizontal angles', ies.horizontalAngles.length]
+    ] : [['Power', 'N/A'], ['Vertical angles', '-'], ['Horizontal angles', '-']];
+    info.innerHTML = rows.map(function (row) { return '<div><dt>' + row[0] + '</dt><dd>' + row[1] + '</dd></div>'; }).join('');
+  }
+  function clearFile() {
+    state.ies = null;
+    $('lcIesFile').value = '';
+    $('lcFilebar').hidden = true;
+    $('lcFileName').textContent = '';
+    renderInfo(null);
+    setMessage('', '');
+    markRecalculation();
+  }
+  function purgeIesAfterUse() {
+    state.ies = null;
+    $('lcIesFile').value = '';
+    $('lcFilebar').hidden = true;
+    $('lcFileName').textContent = '';
+    renderInfo(null);
+  }
+  function parseFile(file) {
+    if (!file) return;
+    if (!/\.ies$/i.test(file.name)) { setMessage('Only .ies files are supported.', 'error'); return; }
+    if (file.size > MAX_FILE_SIZE) { setMessage('The IES file is too large. Maximum size is 2 MB.', 'error'); return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        state.ies = window.ArtdonIesParser.parse(String(reader.result || ''), { fileName: file.name });
+        $('lcFileName').textContent = file.name;
+        $('lcFilebar').hidden = false;
+        renderInfo(state.ies);
+        setMessage('IES file loaded successfully.', 'ok');
+        markRecalculation();
+      } catch (error) {
+        clearFile();
+        setMessage(error && error.message ? error.message : 'The IES file could not be parsed.', 'error');
+      }
+    };
+    reader.onerror = function () { setMessage('The IES file could not be read.', 'error'); };
+    reader.readAsText(file);
+  }
+  function payload(layout) {
+    return {
+      room: {
+        length: layout.room.length,
+        width: layout.room.width,
+        mountingHeight: layout.room.mountingHeight,
+        workplaneHeight: layout.room.workplaneHeight
+      },
+      layout: { luminaires: layout.luminaires },
+      gridSpacing: readNumber('lcGridSpacing'),
+      maintenanceFactor: readNumber('lcMaintenance'),
+      timeoutMs: 8000
+    };
+  }
+  function ensureWorker() {
+    if (state.worker) return state.worker;
+    state.worker = new Worker('/assets/js/lighting-calculator/lux-worker.js?v=3.1.0');
+    state.worker.onmessage = onWorkerMessage;
+    state.worker.onerror = function (event) {
+      event.preventDefault();
+      runFallbackCalculation('The background calculator could not start. Running a local fallback calculation.');
+    };
+    state.worker.onmessageerror = function () {
+      runFallbackCalculation('The background calculator response could not be read. Running a local fallback calculation.');
+    };
+    return state.worker;
+  }
+  function setBusy(busy) {
+    $('lcCalculate').disabled = busy;
+    $('lcCancel').disabled = !busy;
+    $('lcLoading').hidden = !busy;
+    $('lcCalculate').textContent = busy ? 'CALCULATING' : 'CALCULATE';
+  }
+  function calculate() {
+    if (!state.ies) { setMessage('Upload a valid IES file before calculating.', 'error'); return; }
+    var layout;
+    try { layout = currentLayout(); } catch (error) { setMessage(error.message || 'Layout is invalid.', 'error'); return; }
+    if (!layout.luminaires.length) { setMessage('Add at least one luminaire before calculating.', 'error'); return; }
+    if (state.activeJobId && state.worker) state.worker.postMessage({ type: 'cancel', jobId: state.activeJobId });
+    setBusy(true);
+    setMessage('Calculation started.', '');
+    state.activeJobId = 'job-' + (++state.jobId);
+    state.pendingInput = payload(layout);
+    clearWatchdog();
+    state.watchdog = window.setTimeout(function () {
+      runFallbackCalculation('The background calculation did not respond. Running a local fallback calculation.');
+    }, 12000);
+    try {
+      ensureWorker().postMessage({ type: 'calculate', jobId: state.activeJobId, ies: state.ies, input: state.pendingInput });
+    } catch (error) {
+      runFallbackCalculation(error && error.message ? error.message : 'The background calculator could not be started.');
+    }
+  }
+  function cancel() {
+    if (state.worker && state.activeJobId) state.worker.postMessage({ type: 'cancel', jobId: state.activeJobId });
+    state.activeJobId = null;
+    clearWatchdog();
+    setBusy(false);
+    setMessage('Calculation cancelled.', '');
+  }
+  function clearWatchdog() {
+    if (state.watchdog) window.clearTimeout(state.watchdog);
+    state.watchdog = null;
+  }
+  function resetWorker() {
+    if (state.worker) {
+      try { state.worker.terminate(); } catch (error) {}
+    }
+    state.worker = null;
+  }
+  function runFallbackCalculation(reason) {
+    if (!state.activeJobId || !state.pendingInput) return;
+    clearWatchdog();
+    resetWorker();
+    var jobId = state.activeJobId;
+    setMessage(reason, 'error');
+    window.setTimeout(function () {
+      if (state.activeJobId !== jobId) return;
+      try {
+        var startedAt = Date.now();
+        var result = window.ArtdonLuxEngine.calculate(state.ies, state.pendingInput);
+        result.metrics = result.metrics || {};
+        result.metrics.calculationTimeMs = Date.now() - startedAt;
+        state.activeJobId = null;
+        state.result = result;
+        setBusy(false);
+        state.view = 'heatmap';
+        syncTabs();
+        renderResults(result);
+        updateLayout();
+        purgeIesAfterUse();
+        setMessage('Calculation completed. The IES file has been removed from this page memory.', 'ok');
+      } catch (error) {
+        state.activeJobId = null;
+        setBusy(false);
+        setMessage(error && error.message ? error.message : 'Calculation failed.', 'error');
+      }
+    }, 30);
+  }
+  function resultRows(result) {
+    var m = result.metrics || {};
+    return [
+      ['Average Illuminance', fmt(m.eavg, 0) + ' lx'],
+      ['Minimum Illuminance', fmt(m.emin, 0) + ' lx'],
+      ['Maximum Illuminance', fmt(m.emax, 0) + ' lx'],
+      ['Uniformity', fmt(m.uniformity, 2)],
+      ['Total Luminaires', fmt(m.luminaireCount, 0)],
+      ['Total Power', m.totalPower ? fmt(m.totalPower, 1) + ' W' : 'N/A'],
+      ['Grid Points', fmt(result.points ? result.points.length : 0, 0)],
+      ['Calculation Time', fmt(m.calculationTimeMs || 0, 0) + ' ms']
+    ];
+  }
+  function renderResults(result) {
+    $('lcResults').innerHTML = resultRows(result).map(function (row) {
+      return '<div><dt>' + row[0] + '</dt><dd>' + row[1] + '</dd></div>';
+    }).join('');
+    var target = readNumber('lcTargetLux');
+    if (result.metrics.eavg >= target) setStatus('TARGET ACHIEVED', 'is-ok');
+    else setStatus('BELOW TARGET', 'is-low');
+  }
+  function onWorkerMessage(event) {
+    var data = event.data || {};
+    if (data.jobId && state.activeJobId && data.jobId !== state.activeJobId) return;
+    if (data.type === 'progress') { setMessage('Calculating ' + data.done + ' of ' + data.total + ' grid points...', ''); return; }
+    if (data.type === 'result') {
+      clearWatchdog();
+      state.activeJobId = null;
+      state.result = data.result;
+      setBusy(false);
+      state.view = 'heatmap';
+      syncTabs();
+      renderResults(data.result);
+      updateLayout();
+      purgeIesAfterUse();
+      setMessage('Calculation completed. The IES file has been removed from this page memory.', 'ok');
+      return;
+    }
+    if (data.type === 'cancelled') { clearWatchdog(); state.activeJobId = null; setBusy(false); return; }
+    if (data.type === 'error') { clearWatchdog(); state.activeJobId = null; setBusy(false); setMessage(data.message || 'Calculation failed.', 'error'); }
+  }
+  function updateSelectionButtons() {
+    var hasSelection = !!state.selectedId;
+    $('lcCopyLuminaire').disabled = !hasSelection;
+    $('lcDeleteLuminaire').disabled = !hasSelection || state.luminaires.length <= 1;
+    var xInput = $('lcSelectedX');
+    var yInput = $('lcSelectedY');
+    if (!xInput || !yInput) return;
+    var lum = state.luminaires.find(function (item) { return String(item.id) === String(state.selectedId); });
+    xInput.disabled = !lum;
+    yInput.disabled = !lum;
+    if (lum) {
+      xInput.value = Number(lum.x).toFixed(2);
+      yInput.value = Number(lum.y).toFixed(2);
+    } else {
+      xInput.value = '';
+      yInput.value = '';
+    }
+  }
+  function selectLuminaire(id) {
+    state.selectedId = id;
+    updateLayout();
+  }
+  function copySelected() {
+    var lum = state.luminaires.find(function (item) { return String(item.id) === String(state.selectedId); });
+    if (!lum) return;
+    var room = validateRoom(roomInput());
+    var copy = makeCopy(lum, room);
+    state.customLayout = true;
+    state.luminaires.push(copy);
+    state.selectedId = copy.id;
+    markRecalculation();
+  }
+  function makeCopy(lum, room) {
+    var id = 'L' + (Date.now() % 100000);
+    return { id: id, x: Math.min(room.length, lum.x + 0.3), y: Math.min(room.width, lum.y + 0.3), rotation: lum.rotation || 0 };
+  }
+  function deleteSelected() {
+    if (state.luminaires.length <= 1) return;
+    state.luminaires = state.luminaires.filter(function (item) { return String(item.id) !== String(state.selectedId); });
+    state.selectedId = null;
+    state.customLayout = true;
+    markRecalculation();
+  }
+  function restoreAuto() {
+    state.mode = 'spacing';
+    syncMode();
+    state.customLayout = false;
+    state.selectedId = null;
+    state.placingManual = false;
+    state.hoverPoint = null;
+    markRecalculation();
+  }
+  function snapPoint(point) {
+    if (!$('lcSnapEnabled') || !$('lcSnapEnabled').checked) return point;
+    var step = Number(state.snapSpacing || 0.25);
+    if (!(step > 0)) return point;
+    var room = validateRoom(roomInput());
+    return {
+      x: Math.max(0, Math.min(room.length, Math.round(point.x / step) * step)),
+      y: Math.max(0, Math.min(room.width, Math.round(point.y / step) * step))
+    };
+  }
+  function nextLuminaireId() {
+    var max = 0;
+    state.luminaires.forEach(function (lum) {
+      var match = String(lum.id || '').match(/^L(\d+)$/);
+      if (match) max = Math.max(max, Number(match[1]));
+    });
+    return 'L' + (max + 1);
+  }
+  function startManualPlacement() {
+    state.mode = 'manual';
+    state.customLayout = true;
+    state.placingManual = true;
+    syncMode();
+    $('lcManualHint').textContent = 'Move over the room and click to place the luminaire.';
+    updateLayout();
+  }
+  function clearManualLayout() {
+    state.mode = 'manual';
+    state.customLayout = true;
+    state.luminaires = [];
+    state.selectedId = null;
+    state.placingManual = false;
+    state.hoverPoint = null;
+    syncMode();
+    $('lcManualHint').textContent = 'Click Add Luminaire, then click inside the room to place it.';
+    markRecalculation();
+  }
+  function placeManualLuminaire(point) {
+    var p = snapPoint(point);
+    var lum = makeLuminaire(nextLuminaireId(), p.x, p.y);
+    state.luminaires.push(lum);
+    state.selectedId = lum.id;
+    state.customLayout = true;
+    state.placingManual = false;
+    state.hoverPoint = null;
+    $('lcManualHint').textContent = 'Luminaire placed. Select or drag it to adjust position.';
+    markRecalculation();
+  }
+  function moveSelectedFromInputs() {
+    var lum = state.luminaires.find(function (item) { return String(item.id) === String(state.selectedId); });
+    if (!lum) return;
+    var room = validateRoom(roomInput());
+    var x = readNumber('lcSelectedX');
+    var y = readNumber('lcSelectedY');
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    lum.x = Math.max(0, Math.min(room.length, x));
+    lum.y = Math.max(0, Math.min(room.width, y));
+    state.customLayout = true;
+    markRecalculation();
+  }
+  function attachCanvasEvents() {
+    var preview = $('lcLayoutPreview');
+    var svg = preview.querySelector('svg');
+    if (!svg) return;
+    all('[data-lum-id]', svg).forEach(function (node) {
+      node.addEventListener('pointerdown', function (event) {
+        event.preventDefault();
+        state.dragId = node.getAttribute('data-lum-id');
+        state.selectedId = state.dragId;
+        svg.setPointerCapture(event.pointerId);
+        updateSelectionButtons();
+      });
+    });
+    svg.onpointermove = function (event) {
+      var p = window.ArtdonRoomLayout.svgToRoom(svg, event.clientX, event.clientY);
+      if (state.placingManual) p = snapPoint(p);
+      var lux = nearestLux(p);
+      var room = validateRoom(roomInput());
+      $('lcHoverReadout').textContent = 'X ' + fmt(p.x, 2) + ' m, Y ' + fmt(p.y, 2) + ' m, Left ' + fmt(p.x, 2) + ' m, Right ' + fmt(room.length - p.x, 2) + ' m, Front ' + fmt(p.y, 2) + ' m, Back ' + fmt(room.width - p.y, 2) + ' m' + (lux == null ? '' : ', ' + fmt(lux, 1) + ' lx');
+      if (state.placingManual && !state.dragId) {
+        state.hoverPoint = p;
+        window.ArtdonRoomLayout.render(preview, currentLayout(), { view: state.view, result: state.result, selectedId: state.selectedId, placementPoint: p });
+        attachCanvasEvents();
+        return;
+      }
+      if (!state.dragId) return;
+      var lum = state.luminaires.find(function (item) { return String(item.id) === String(state.dragId); });
+      if (!lum) return;
+      p = snapPoint(p);
+      state.hoverPoint = p;
+      lum.x = p.x;
+      lum.y = p.y;
+      state.customLayout = true;
+      setStatus('NEEDS RECALCULATION', 'is-neutral');
+      window.ArtdonRoomLayout.render(preview, currentLayout(), { view: state.view, result: state.result, selectedId: state.selectedId, placementPoint: p });
+      attachCanvasEvents();
+    };
+    svg.onpointerup = function () {
+      if (state.dragId) {
+        state.dragId = null;
+        state.hoverPoint = null;
+        markRecalculation();
+      }
+    };
+    svg.onclick = function (event) {
+      var target = event.target.closest && event.target.closest('[data-lum-id]');
+      if (target) {
+        selectLuminaire(target.getAttribute('data-lum-id'));
+        return;
+      }
+      if (state.placingManual) {
+        placeManualLuminaire(window.ArtdonRoomLayout.svgToRoom(svg, event.clientX, event.clientY));
+      }
+    };
+    svg.onpointerleave = function () {
+      if (!state.dragId && state.hoverPoint) {
+        state.hoverPoint = null;
+        updateLayout();
+      }
+    };
+  }
+  function nearestLux(point) {
+    if (!state.result || !state.result.points || !state.result.points.length) return null;
+    var best = state.result.points[0];
+    for (var i = 1; i < state.result.points.length; i += 1) {
+      var p = state.result.points[i];
+      if (Math.hypot(p.x - point.x, p.y - point.y) < Math.hypot(best.x - point.x, best.y - point.y)) best = p;
+    }
+    return best.lux;
+  }
+  function syncTabs() {
+    all('.lc-tabs [data-view]').forEach(function (button) { button.classList.toggle('is-active', button.dataset.view === state.view); });
+  }
+  function resetAll() {
+    ['lcRoomLength','lcRoomWidth','lcRoomHeight','lcMountHeight','lcWorkHeight','lcXSpacing','lcYSpacing','lcLeftOffset','lcRightOffset','lcFrontOffset','lcBackOffset','lcGridSpacing','lcMaintenance','lcTargetLux'].forEach(function (id) {
+      var defaults = { lcRoomLength:10, lcRoomWidth:6, lcRoomHeight:3, lcMountHeight:3, lcWorkHeight:0.8, lcXSpacing:2, lcYSpacing:2, lcLeftOffset:1, lcRightOffset:1, lcFrontOffset:1, lcBackOffset:1, lcGridSpacing:0.5, lcMaintenance:0.8, lcTargetLux:500 };
+      $(id).value = defaults[id];
+    });
+    $('lcCols').value = 5;
+    $('lcRows').value = 3;
+    state.mode = 'spacing';
+    state.customLayout = false;
+    state.selectedId = null;
+    state.placingManual = false;
+    state.hoverPoint = null;
+    state.result = null;
+    syncMode();
+    markRecalculation();
+  }
+  function syncMode() {
+    $('lcSpacingPanel').hidden = state.mode !== 'spacing';
+    $('lcQuantityPanel').hidden = state.mode !== 'quantity';
+    $('lcManualPanel').hidden = state.mode !== 'manual';
+    $('lcModeSpacing').classList.toggle('is-active', state.mode === 'spacing');
+    $('lcModeQuantity').classList.toggle('is-active', state.mode === 'quantity');
+    $('lcModeManual').classList.toggle('is-active', state.mode === 'manual');
+  }
+  function bind() {
+    var dropzone = $('lcDropzone');
+    $('lcIesFile').addEventListener('change', function (event) { parseFile(event.target.files && event.target.files[0]); });
+    $('lcReplaceFile').addEventListener('click', function () { $('lcIesFile').click(); });
+    $('lcClearFile').addEventListener('click', clearFile);
+    $('lcCalculate').addEventListener('click', calculate);
+    $('lcCancel').addEventListener('click', cancel);
+    $('lcReset').addEventListener('click', resetAll);
+    $('lcRestoreAuto').addEventListener('click', restoreAuto);
+    $('lcCopyLuminaire').addEventListener('click', copySelected);
+    $('lcDeleteLuminaire').addEventListener('click', deleteSelected);
+    all('[data-layout-mode]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        var nextMode = button.dataset.layoutMode;
+        if (nextMode === 'manual') {
+          if (!state.luminaires.length) {
+            try { state.luminaires = currentLayout().luminaires.map(function (lum) { return Object.assign({}, lum); }); } catch (error) { state.luminaires = []; }
+          }
+          state.customLayout = true;
+        } else {
+          state.customLayout = false;
+          state.placingManual = false;
+          state.hoverPoint = null;
+        }
+        state.mode = nextMode;
+        syncMode();
+        markRecalculation();
+      });
+    });
+    $('lcAddLuminaire').addEventListener('click', startManualPlacement);
+    $('lcClearManual').addEventListener('click', clearManualLayout);
+    $('lcSelectedX').addEventListener('change', moveSelectedFromInputs);
+    $('lcSelectedY').addEventListener('change', moveSelectedFromInputs);
+    all('[data-snap]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        state.snapSpacing = Number(button.dataset.snap || 0.25);
+        all('[data-snap]').forEach(function (snapButton) { snapButton.classList.toggle('is-active', snapButton === button); });
+      });
+    });
+    all('.lc-tabs [data-view]').forEach(function (button) {
+      button.addEventListener('click', function () { state.view = button.dataset.view; syncTabs(); updateLayout(); });
+    });
+    all('[data-grid]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        $('lcGridSpacing').value = button.dataset.grid;
+        all('[data-grid]').forEach(function (b) { b.classList.toggle('is-active', b === button); });
+        markRecalculation();
+      });
+    });
+    all('[data-recalc]').forEach(function (input) {
+      input.addEventListener('input', function () {
+        if (!state.customLayout && ['lcRoomLength','lcRoomWidth','lcLeftOffset','lcRightOffset','lcFrontOffset','lcBackOffset','lcXSpacing','lcYSpacing','lcCols','lcRows'].indexOf(input.id) >= 0) state.selectedId = null;
+        markRecalculation();
+      });
+    });
+    ['dragenter', 'dragover'].forEach(function (type) {
+      dropzone.addEventListener(type, function (event) { event.preventDefault(); dropzone.classList.add('is-dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(function (type) {
+      dropzone.addEventListener(type, function (event) { event.preventDefault(); dropzone.classList.remove('is-dragover'); });
+    });
+    dropzone.addEventListener('drop', function (event) { parseFile(event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]); });
+    renderInfo(null);
+    syncMode();
+    updateLayout();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+
+  window.ArtdonCalculatorApp = {
+    generateBySpacing: generateBySpacing,
+    generateByQuantity: generateByQuantity,
+    validateRoom: validateRoom
+  };
+})();

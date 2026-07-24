@@ -1,0 +1,2213 @@
+/* Extracted from product.php normal detail page inline styles. */
+
+/* product.php inline style block 1 */
+.product-variant-page .variant-dimension-figure[data-dimension-scale],
+.product-variant-page .variant-layout-b-dimension[data-dimension-scale],
+.product-variant-page .variant-dimension-technical-section figure[data-dimension-scale]{overflow:hidden!important;}
+.product-variant-page .variant-dimension-figure[data-dimension-scale] img,
+.product-variant-page .variant-layout-b-dimension[data-dimension-scale] img,
+.product-variant-page .variant-dimension-technical-section figure[data-dimension-scale] img{
+  transform:none!important;
+  transform-origin:center center!important;
+  transition:none!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+}
+
+/* product.php inline style block 2 */
+/* V7.1.8.12: lock product detail, photometric, accessories, downloads and other-size sections to one narrower shell.
+   Keep V7.1.8.11 curve/accessory card sizing; only normalize section width, columns and side alignment. */
+.product-variant-page{
+  --artdon-detail-shell:1240px;
+  --artdon-detail-viewport-inset:120px;
+  --artdon-detail-left:clamp(300px,25vw,360px);
+  --artdon-detail-gap:clamp(30px,3vw,46px);
+  --artdon-detail-cell-gap:clamp(14px,1.2vw,20px);
+  --artdon-detail-pad-y:clamp(56px,5.4vw,82px);
+  --artdon-detail-line:rgba(0,0,0,.13);
+}
+
+/* One real left/right boundary for every visible product-detail block. */
+.product-variant-page .catalog-breadcrumb.family-breadcrumb,
+.product-variant-page .variant-hero:not(.variant-layout-b),
+.product-variant-page .variant-hero.variant-layout-b-sheet,
+.product-variant-page .variant-dimension-technical-section,
+.product-variant-page .variant-section,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves,
+.product-variant-page .variant-section.variant-accessories,
+.product-variant-page #technical-files,
+.product-variant-page .variant-siblings{
+  width:min(100%,var(--artdon-detail-shell))!important;
+  max-width:calc(100vw - var(--artdon-detail-viewport-inset))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+}
+
+/* Detail hero: same outer shell as all lower modules. */
+.product-variant-page .variant-hero:not(.variant-layout-b){
+  padding-left:0!important;
+  padding-right:0!important;
+}
+.product-variant-page .variant-hero:not(.variant-layout-b),
+.product-variant-page .variant-section,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves,
+.product-variant-page .variant-section.variant-accessories,
+.product-variant-page #technical-files,
+.product-variant-page .variant-dimension-technical-section{
+  display:grid!important;
+  grid-template-columns:var(--artdon-detail-left) minmax(0,1fr)!important;
+  column-gap:var(--artdon-detail-gap)!important;
+  row-gap:0!important;
+  align-items:start!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  border-top:1px solid var(--artdon-detail-line)!important;
+  border-bottom:0!important;
+  min-height:0!important;
+  overflow:visible!important;
+}
+.product-variant-page .variant-section,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves,
+.product-variant-page .variant-section.variant-accessories,
+.product-variant-page #technical-files,
+.product-variant-page .variant-dimension-technical-section{
+  padding-top:var(--artdon-detail-pad-y)!important;
+  padding-bottom:var(--artdon-detail-pad-y)!important;
+}
+.product-variant-page .variant-section.variant-overview-photometric.has-curves{
+  align-items:center!important;
+}
+.product-variant-page .variant-section.variant-accessories{
+  align-items:start!important;
+  padding-top:clamp(52px,5vw,76px)!important;
+}
+
+/* Kill old pseudo lines / overhang helpers. */
+.product-variant-page .variant-section::before,
+.product-variant-page .variant-section::after,
+.product-variant-page .variant-overview-photometric::before,
+.product-variant-page .variant-overview-photometric::after,
+.product-variant-page .variant-accessories::before,
+.product-variant-page .variant-accessories::after,
+.product-variant-page #technical-files::before,
+.product-variant-page #technical-files::after{
+  content:none!important;
+  display:none!important;
+}
+
+/* Left column headers align with the product detail left edge. */
+.product-variant-page .variant-section>header,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves>header,
+.product-variant-page .variant-section.variant-accessories>header,
+.product-variant-page #technical-files>header,
+.product-variant-page .variant-dimension-technical-section>header{
+  grid-column:1!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  align-self:start!important;
+}
+.product-variant-page .variant-section.variant-overview-photometric.has-curves>header{align-self:center!important;}
+.product-variant-page .variant-section.variant-overview-photometric.has-curves>header h2,
+.product-variant-page .variant-section.variant-accessories>header h2,
+.product-variant-page #technical-files>header h2,
+.product-variant-page .variant-dimension-technical-section>header h2{
+  margin:0!important;
+  padding:0!important;
+  font-size:clamp(34px,3.35vw,54px)!important;
+  line-height:.98!important;
+  letter-spacing:-.045em!important;
+}
+
+/* Right column content shares the same right edge. */
+.product-variant-page .variant-overview-content,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves>.variant-overview-content,
+.product-variant-page .variant-section.variant-accessories>.variant-accessory-grid,
+.product-variant-page .variant-downloads,
+.product-variant-page #technical-files>div,
+.product-variant-page .variant-dimension-technical-section>figure{
+  grid-column:2!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  justify-self:stretch!important;
+  overflow:visible!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.product-variant-page .variant-section.variant-overview-photometric.has-curves>.variant-overview-content{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+/* Photometric curves: fixed 4-column grid, card size locked by the shared right column. */
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:var(--artdon-detail-cell-gap)!important;
+  align-items:start!important;
+  justify-items:stretch!important;
+  transform:none!important;
+  overflow:visible!important;
+}
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  display:block!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure::before,
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure::after{
+  content:none!important;
+  display:none!important;
+}
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure img{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  height:auto!important;
+  aspect-ratio:1/1!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  margin:0 auto!important;
+  padding:0!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure figcaption{
+  position:static!important;
+  inset:auto!important;
+  display:block!important;
+  width:100%!important;
+  margin:16px 0 0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#777!important;
+  font-size:clamp(12px,.9vw,14px)!important;
+  line-height:1.25!important;
+  letter-spacing:.02em!important;
+  text-align:center!important;
+  opacity:.96!important;
+  transform:none!important;
+  pointer-events:none!important;
+}
+
+/* Accessories: same 4-column grid and same cell size as photometric curves. Incomplete rows align right. */
+.product-variant-page .variant-section.variant-accessories .variant-accessory-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:var(--artdon-detail-cell-gap)!important;
+  align-items:start!important;
+  justify-items:stretch!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-card{
+  grid-column:auto!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  display:block!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+@media(min-width:981px){
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid.count-1 .variant-accessory-card:first-child{grid-column-start:4!important;}
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid.count-2 .variant-accessory-card:first-child{grid-column-start:3!important;}
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid.count-3 .variant-accessory-card:first-child{grid-column-start:2!important;}
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid.count-5 .variant-accessory-card:nth-child(5){grid-column-start:4!important;}
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid.count-6 .variant-accessory-card:nth-child(5){grid-column-start:3!important;}
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid.count-7 .variant-accessory-card:nth-child(5){grid-column-start:2!important;}
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-card figure{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1/1!important;
+  min-height:0!important;
+  margin:0 0 14px!important;
+  padding:clamp(12px,1.7vw,26px)!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:1px solid var(--artdon-detail-line)!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-card figure::before,
+.product-variant-page .variant-section.variant-accessories .variant-accessory-card figure::after{
+  content:none!important;
+  display:none!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-card figure img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  border:0!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  transform:none!important;
+  opacity:1!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy{
+  position:static!important;
+  inset:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  min-height:0!important;
+  transform:none!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy p{
+  margin:0 0 7px!important;
+  padding:0!important;
+  color:#d71920!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+  letter-spacing:.18em!important;
+  font-weight:900!important;
+  text-transform:uppercase!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy h3{
+  margin:0!important;
+  padding:0!important;
+  color:#111!important;
+  font-size:clamp(17px,1.18vw,22px)!important;
+  line-height:1.12!important;
+  font-weight:900!important;
+  letter-spacing:-.025em!important;
+  border:0!important;
+  background:transparent!important;
+  word-break:normal!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy span{
+  display:block!important;
+  margin:7px 0 0!important;
+  color:#666!important;
+  font-size:13px!important;
+  line-height:1.45!important;
+}
+
+/* Downloads and other sizes use exactly the same outer boundary. */
+.product-variant-page #technical-files .variant-downloads,
+.product-variant-page #technical-files>div{
+  grid-column:2!important;
+}
+.product-variant-page .variant-siblings{
+  padding-left:0!important;
+  padding-right:0!important;
+  border-top:1px solid var(--artdon-detail-line)!important;
+  border-bottom:0!important;
+  overflow:visible!important;
+}
+.product-variant-page .variant-siblings>header,
+.product-variant-page .variant-siblings>div{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  box-sizing:border-box!important;
+}
+
+@media(max-width:980px){
+  .product-variant-page{
+    --artdon-detail-viewport-inset:36px;
+    --artdon-detail-left:1fr;
+  }
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb,
+  .product-variant-page .variant-hero:not(.variant-layout-b),
+  .product-variant-page .variant-hero.variant-layout-b-sheet,
+  .product-variant-page .variant-dimension-technical-section,
+  .product-variant-page .variant-section,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves,
+  .product-variant-page .variant-section.variant-accessories,
+  .product-variant-page #technical-files,
+  .product-variant-page .variant-siblings{
+    width:min(100%,calc(100vw - 36px))!important;
+    max-width:calc(100vw - 36px)!important;
+  }
+  .product-variant-page .variant-hero:not(.variant-layout-b),
+  .product-variant-page .variant-section,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves,
+  .product-variant-page .variant-section.variant-accessories,
+  .product-variant-page #technical-files,
+  .product-variant-page .variant-dimension-technical-section{
+    grid-template-columns:1fr!important;
+    row-gap:28px!important;
+    padding-top:56px!important;
+    padding-bottom:56px!important;
+  }
+  .product-variant-page .variant-section>header,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves>header,
+  .product-variant-page .variant-section.variant-accessories>header,
+  .product-variant-page #technical-files>header,
+  .product-variant-page .variant-dimension-technical-section>header,
+  .product-variant-page .variant-overview-content,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves>.variant-overview-content,
+  .product-variant-page .variant-section.variant-accessories>.variant-accessory-grid,
+  .product-variant-page .variant-downloads,
+  .product-variant-page #technical-files>div,
+  .product-variant-page .variant-dimension-technical-section>figure{
+    grid-column:1!important;
+  }
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-card{
+    grid-column:auto!important;
+  }
+}
+@media(max-width:560px){
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid{
+    grid-template-columns:1fr!important;
+  }
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-card{
+    grid-column:auto!important;
+  }
+}
+
+/* product.php inline style block 3 */
+/* V7.1.8.13: final right-edge hard lock.
+   V7.1.8.12 aligned the left edge; this block forces the actual inner content
+   on the right column to stretch to the same right boundary in product detail,
+   photometric curves, accessories, downloads and other-size blocks. */
+.product-variant-page{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  --artdon-detail-shell:1240px;
+  --artdon-detail-viewport-inset:120px;
+  --artdon-detail-left:clamp(300px,25vw,360px);
+  --artdon-detail-gap:clamp(30px,3vw,46px);
+  --artdon-detail-cell-gap:clamp(14px,1.2vw,20px);
+}
+.product-variant-page *,
+.product-variant-page *::before,
+.product-variant-page *::after{box-sizing:border-box!important;}
+
+/* Every major section uses the same centered shell. */
+.product-variant-page .catalog-breadcrumb.family-breadcrumb,
+.product-variant-page .variant-hero:not(.variant-layout-b),
+.product-variant-page .variant-hero.variant-layout-b-sheet,
+.product-variant-page .variant-dimension-technical-section,
+.product-variant-page .variant-section,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves,
+.product-variant-page .variant-section.variant-accessories,
+.product-variant-page #technical-files,
+.product-variant-page .variant-siblings{
+  width:min(var(--artdon-detail-shell),calc(100vw - var(--artdon-detail-viewport-inset)))!important;
+  max-width:min(var(--artdon-detail-shell),calc(100vw - var(--artdon-detail-viewport-inset)))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  box-sizing:border-box!important;
+}
+
+/* Normal product-detail hero: left media and right specs now end exactly at the shell edge. */
+.product-variant-page .variant-hero:not(.variant-layout-b){
+  display:grid!important;
+  grid-template-columns:var(--artdon-detail-left) minmax(0,1fr)!important;
+  column-gap:var(--artdon-detail-gap)!important;
+  grid-template-areas:"media-heading media-heading" "gallery copy"!important;
+  align-items:start!important;
+}
+.product-variant-page .variant-media-heading{grid-area:media-heading!important;width:100%!important;max-width:none!important;}
+.product-variant-page .variant-gallery,
+.product-variant-page .variant-gallery.variant-gallery-layout-stacked,
+.product-variant-page .variant-gallery.variant-gallery-layout-strip,
+.product-variant-page .variant-gallery.variant-gallery-layout-split,
+.product-variant-page .variant-gallery.variant-gallery-layout-switcher,
+.product-variant-page .variant-gallery.variant-gallery-layout-technical_below{
+  grid-area:gallery!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  justify-self:stretch!important;
+}
+.product-variant-page .variant-copy{
+  grid-area:copy!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  justify-self:stretch!important;
+}
+.product-variant-page .variant-product-media,
+.product-variant-page .variant-main-figure,
+.product-variant-page .variant-dimension-figure,
+.product-variant-page .variant-gallery-layout-stacked .variant-product-media,
+.product-variant-page .variant-gallery-layout-strip .variant-product-media,
+.product-variant-page .variant-gallery-layout-stacked .variant-dimension-figure,
+.product-variant-page .variant-gallery-layout-strip .variant-dimension-figure,
+.product-variant-page .variant-gallery-layout-technical_below .variant-product-media{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+}
+.product-variant-page .variant-copy .variant-hero-spec-table,
+.product-variant-page .variant-hero-spec-table,
+.product-variant-page .variant-copy .variant-actions,
+.product-variant-page .variant-actions{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+}
+
+/* Layout-B / split product detail also uses the same right boundary. */
+.product-variant-page .variant-hero.variant-layout-b-sheet{
+  display:block!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  border-top:0!important;
+}
+.product-variant-page .variant-layout-b-grid{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  display:grid!important;
+  grid-template-columns:var(--artdon-detail-left) minmax(0,1fr)!important;
+  column-gap:var(--artdon-detail-gap)!important;
+  row-gap:18px!important;
+  align-items:start!important;
+}
+.product-variant-page .variant-layout-b-visual{grid-column:1!important;width:100%!important;max-width:none!important;min-width:0!important;}
+.product-variant-page .variant-layout-b-technical{grid-column:2!important;width:100%!important;max-width:none!important;min-width:0!important;}
+.product-variant-page .variant-layout-b-side{grid-column:1 / -1!important;width:100%!important;max-width:none!important;min-width:0!important;}
+.product-variant-page .variant-layout-b-product,
+.product-variant-page .variant-layout-b-secondary,
+.product-variant-page .variant-layout-b-dimension,
+.product-variant-page .variant-layout-b-specs,
+.product-variant-page .variant-layout-b-actions{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+}
+.product-variant-page .variant-layout-b-actions{
+  margin-left:calc(var(--artdon-detail-left) + var(--artdon-detail-gap))!important;
+  margin-right:0!important;
+  width:calc(100% - var(--artdon-detail-left) - var(--artdon-detail-gap))!important;
+}
+
+/* Lower two-column modules: header column and content column share one exact grid. */
+.product-variant-page .variant-section,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves,
+.product-variant-page .variant-section.variant-accessories,
+.product-variant-page #technical-files,
+.product-variant-page .variant-dimension-technical-section{
+  display:grid!important;
+  grid-template-columns:var(--artdon-detail-left) minmax(0,1fr)!important;
+  column-gap:var(--artdon-detail-gap)!important;
+}
+.product-variant-page .variant-section>header,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves>header,
+.product-variant-page .variant-section.variant-accessories>header,
+.product-variant-page #technical-files>header,
+.product-variant-page .variant-dimension-technical-section>header{
+  grid-column:1!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  justify-self:stretch!important;
+}
+.product-variant-page .variant-overview-content,
+.product-variant-page .variant-section.variant-overview-photometric.has-curves>.variant-overview-content,
+.product-variant-page .variant-section.variant-accessories>.variant-accessory-grid,
+.product-variant-page .variant-downloads,
+.product-variant-page #technical-files>div,
+.product-variant-page .variant-dimension-technical-section>figure{
+  grid-column:2!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  justify-self:stretch!important;
+}
+
+/* Grids fill the right column completely, so their last item touches the same right line. */
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves,
+.product-variant-page .variant-section.variant-accessories .variant-accessory-grid{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:var(--artdon-detail-cell-gap)!important;
+  justify-items:stretch!important;
+  align-items:start!important;
+}
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure,
+.product-variant-page .variant-section.variant-accessories .variant-accessory-card{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+}
+.product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure img,
+.product-variant-page .variant-section.variant-accessories .variant-accessory-card figure{
+  width:100%!important;
+  max-width:none!important;
+  aspect-ratio:1/1!important;
+}
+
+/* Downloads stretch across the same right column instead of stopping early. */
+.product-variant-page .variant-downloads{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr))!important;
+  gap:var(--artdon-detail-cell-gap)!important;
+  align-items:stretch!important;
+}
+.product-variant-page .variant-downloads a{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+}
+
+/* Other sizes: same outer shell, full-width grid, no old internal max-width. */
+.product-variant-page .variant-siblings{
+  overflow:visible!important;
+}
+.product-variant-page .variant-siblings>header,
+.product-variant-page .variant-siblings>div{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  padding-left:0!important;
+  padding-right:0!important;
+}
+.product-variant-page .variant-siblings>div{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:var(--artdon-detail-cell-gap)!important;
+}
+.product-variant-page .variant-siblings>div>a{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+}
+
+@media(max-width:980px){
+  .product-variant-page{
+    --artdon-detail-viewport-inset:36px;
+    --artdon-detail-left:1fr;
+  }
+  .product-variant-page .variant-hero:not(.variant-layout-b),
+  .product-variant-page .variant-layout-b-grid,
+  .product-variant-page .variant-section,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves,
+  .product-variant-page .variant-section.variant-accessories,
+  .product-variant-page #technical-files,
+  .product-variant-page .variant-dimension-technical-section{
+    grid-template-columns:1fr!important;
+    grid-template-areas:none!important;
+  }
+  .product-variant-page .variant-media-heading,
+  .product-variant-page .variant-gallery,
+  .product-variant-page .variant-copy,
+  .product-variant-page .variant-layout-b-visual,
+  .product-variant-page .variant-layout-b-technical,
+  .product-variant-page .variant-layout-b-side,
+  .product-variant-page .variant-section>header,
+  .product-variant-page .variant-overview-content,
+  .product-variant-page .variant-section.variant-accessories>.variant-accessory-grid,
+  .product-variant-page .variant-downloads,
+  .product-variant-page #technical-files>div,
+  .product-variant-page .variant-dimension-technical-section>figure{
+    grid-column:1!important;
+    grid-area:auto!important;
+  }
+  .product-variant-page .variant-layout-b-actions{
+    margin-left:0!important;
+    width:100%!important;
+  }
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid,
+  .product-variant-page .variant-siblings>div{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+@media(max-width:560px){
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid,
+  .product-variant-page .variant-siblings>div,
+  .product-variant-page .variant-downloads{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* product.php inline style block 4 */
+/* V7.1.8.16: More products cards now use the same parameter extraction logic as the series page cards. */
+.product-variant-page .variant-siblings.artdon-v71816-siblings{
+  --s717-red:#d71920;
+  --s717-panel:#f3f3f3;
+  --s717-line:#d8d8d8;
+  padding-top:clamp(58px,5.2vw,82px)!important;
+  padding-bottom:clamp(58px,5.2vw,82px)!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings>header{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:28px!important;
+  margin:0 0 24px!important;
+  padding:0!important;
+  border:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings>header p{
+  margin:0 0 12px!important;
+  color:var(--s717-red)!important;
+  text-transform:uppercase!important;
+  letter-spacing:.28em!important;
+  font-size:12px!important;
+  font-weight:950!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings>header h2{
+  margin:0!important;
+  max-width:920px!important;
+  font-size:clamp(34px,3.2vw,56px)!important;
+  line-height:1.04!important;
+  letter-spacing:-.05em!important;
+  font-weight:950!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings>header>a{
+  flex:0 0 auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:42px!important;
+  padding:0 18px!important;
+  border:1px solid #111!important;
+  color:#111!important;
+  background:#fff!important;
+  text-transform:uppercase!important;
+  letter-spacing:.12em!important;
+  font-size:11px!important;
+  line-height:1!important;
+  font-weight:950!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings>.s717-variants-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:22px!important;
+  align-items:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card{
+  border:1px solid var(--s717-line)!important;
+  background:var(--s717-panel)!important;
+  display:block!important;
+  color:#111!important;
+  min-width:0!important;
+  overflow:hidden!important;
+  text-decoration:none!important;
+  box-shadow:none!important;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card:hover{
+  transform:translateY(-2px)!important;
+  border-color:#bcbcbc!important;
+  box-shadow:0 18px 42px rgba(0,0,0,.06)!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card figure{
+  position:relative!important;
+  margin:0!important;
+  aspect-ratio:1/1!important;
+  background:#d1d4d5!important;
+  overflow:hidden!important;
+  border:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card figure img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body{
+  padding:28px 30px 32px!important;
+  background:var(--s717-panel)!important;
+  min-height:285px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card h3{
+  font-size:clamp(21px,1.25vw,26px)!important;
+  line-height:1.08!important;
+  letter-spacing:-.045em!important;
+  margin:0 0 22px!important;
+  font-weight:950!important;
+  color:#111!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs{
+  display:grid!important;
+  gap:10px!important;
+  font-size:14px!important;
+  line-height:1.48!important;
+  color:#222!important;
+  width:100%!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs p{margin:0!important;padding:0!important;color:#222!important;}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs b{font-weight:950!important;color:#111!important;}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags{
+  display:flex!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+  margin-top:24px!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags span{
+  background:#dedede!important;
+  padding:9px 15px!important;
+  font-size:13px!important;
+  color:#333!important;
+  line-height:1!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessories{
+  width:100%!important;
+  margin-top:22px!important;
+  padding-top:18px!important;
+  border-top:1px solid #dedede!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessories-title{
+  display:block!important;
+  margin:0 0 12px!important;
+  font-size:11px!important;
+  letter-spacing:.18em!important;
+  text-transform:uppercase!important;
+  font-weight:950!important;
+  color:#777!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessory-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessory{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:48px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:center!important;
+  background:#e6e6e6!important;
+  padding:8px!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessory img{
+  width:48px!important;
+  height:48px!important;
+  object-fit:cover!important;
+  background:#d4d4d4!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessory b{
+  display:block!important;
+  font-size:11px!important;
+  line-height:1.2!important;
+  font-weight:950!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessory em{
+  display:block!important;
+  margin-top:3px!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  color:#777!important;
+  font-style:normal!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+@media(max-width:1180px){
+  .product-variant-page .variant-siblings.artdon-v71816-siblings>.s717-variants-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+}
+@media(max-width:980px){
+  .product-variant-page .variant-siblings.artdon-v71816-siblings>header{display:block!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings>header>a{margin-top:20px!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings>.s717-variants-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+}
+@media(max-width:560px){
+  .product-variant-page .variant-siblings.artdon-v71816-siblings>.s717-variants-grid{grid-template-columns:1fr!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body{min-height:0!important;padding:24px!important;}
+}
+
+/* product.php inline style block 5 */
+/* V7.1.8.18: final override for the live product detail page.
+   1) Downloads must be a true vertical list.
+   2) More products cards must use the series-page card typography, not old product-detail uppercase styles. */
+
+/* Downloads: left heading + right vertical rows. */
+.product-variant-page #technical-files{
+  align-items:start!important;
+}
+.product-variant-page #technical-files>.variant-downloads,
+.product-variant-page #technical-files>div.variant-downloads{
+  grid-column:2!important;
+  display:flex!important;
+  flex-direction:column!important;
+  grid-template-columns:none!important;
+  gap:0!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.product-variant-page #technical-files>.variant-downloads>a,
+.product-variant-page #technical-files>div.variant-downloads>a{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:24px!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  min-height:72px!important;
+  margin:0!important;
+  padding:22px 0!important;
+  border:0!important;
+  border-top:1px solid var(--artdon-detail-line,#d9d9d9)!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#111!important;
+  text-decoration:none!important;
+}
+.product-variant-page #technical-files>.variant-downloads>a:last-child,
+.product-variant-page #technical-files>div.variant-downloads>a:last-child{
+  border-bottom:1px solid var(--artdon-detail-line,#d9d9d9)!important;
+}
+.product-variant-page #technical-files>.variant-downloads>a>span,
+.product-variant-page #technical-files>div.variant-downloads>a>span{
+  flex:1 1 auto!important;
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  color:#111!important;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  font-size:clamp(17px,1.08vw,22px)!important;
+  line-height:1.25!important;
+  font-weight:500!important;
+  letter-spacing:-.01em!important;
+  text-transform:none!important;
+}
+.product-variant-page #technical-files>.variant-downloads>a>strong,
+.product-variant-page #technical-files>div.variant-downloads>a>strong{
+  flex:0 0 auto!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  margin:0!important;
+  padding:0!important;
+  color:#111!important;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  font-size:12px!important;
+  line-height:1!important;
+  font-weight:950!important;
+  letter-spacing:.16em!important;
+  text-transform:uppercase!important;
+  white-space:nowrap!important;
+}
+
+/* More products: hard reset old .variant-siblings text rules, then match series.php .s717 card typography. */
+.product-variant-page .variant-siblings.artdon-v71816-siblings,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body *{
+  box-sizing:border-box!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body p,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body h3,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body span,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body b,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body em{
+  margin-left:0!important;
+  margin-right:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card h3{
+  display:block!important;
+  margin:0 0 22px!important;
+  padding:0!important;
+  color:#111!important;
+  font-size:clamp(21px,1.25vw,26px)!important;
+  line-height:1.08!important;
+  letter-spacing:-.045em!important;
+  text-transform:none!important;
+  font-weight:950!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs{
+  display:grid!important;
+  gap:10px!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  color:#222!important;
+  font-size:14px!important;
+  line-height:1.48!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs p{
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  color:#222!important;
+  font-size:14px!important;
+  line-height:1.48!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  font-weight:400!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs b{
+  display:inline!important;
+  margin:0!important;
+  padding:0!important;
+  color:#111!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  font-weight:950!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags{
+  display:flex!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+  margin:24px 0 0!important;
+  padding:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags span{
+  display:inline-block!important;
+  margin:0!important;
+  padding:9px 15px!important;
+  background:#dedede!important;
+  color:#333!important;
+  font-size:13px!important;
+  line-height:1!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  font-weight:400!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessories-title{
+  display:block!important;
+  margin:0 0 12px!important;
+  padding:0!important;
+  color:#777!important;
+  font-size:11px!important;
+  line-height:1!important;
+  letter-spacing:.18em!important;
+  text-transform:uppercase!important;
+  font-weight:950!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessory b{
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  color:#111!important;
+  font-size:11px!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  font-weight:950!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessory em{
+  display:block!important;
+  margin:3px 0 0!important;
+  padding:0!important;
+  color:#777!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  font-style:normal!important;
+  font-weight:400!important;
+}
+
+@media(max-width:980px){
+  .product-variant-page #technical-files>.variant-downloads,
+  .product-variant-page #technical-files>div.variant-downloads{
+    grid-column:1!important;
+  }
+}
+@media(max-width:560px){
+  .product-variant-page #technical-files>.variant-downloads,
+  .product-variant-page #technical-files>div.variant-downloads{
+    display:flex!important;
+    flex-direction:column!important;
+    grid-template-columns:none!important;
+  }
+  .product-variant-page #technical-files>.variant-downloads>a,
+  .product-variant-page #technical-files>div.variant-downloads>a{
+    min-height:64px!important;
+    padding:19px 0!important;
+    gap:14px!important;
+  }
+  .product-variant-page #technical-files>.variant-downloads>a>strong,
+  .product-variant-page #technical-files>div.variant-downloads>a>strong{
+    font-size:11px!important;
+    letter-spacing:.12em!important;
+  }
+}
+
+/* product.php inline style block 6 */
+/* V7.1.8.21: fourth action button for sharing current product link. */
+.product-variant-page .variant-actions .artdon-share-wrap{
+  position:relative!important;
+  display:inline-flex!important;
+  align-items:stretch!important;
+  flex:0 0 auto!important;
+  min-width:0!important;
+}
+.product-variant-page .variant-actions .artdon-share-action{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:52px!important;
+  margin:0!important;
+  padding:16px 22px!important;
+  border:1px solid #111!important;
+  border-radius:0!important;
+  background:#fff!important;
+  color:#111!important;
+  font:inherit!important;
+  font-size:inherit!important;
+  line-height:1!important;
+  font-weight:700!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+  box-shadow:none!important;
+}
+.product-variant-page .variant-actions .artdon-share-action:hover,
+.product-variant-page .variant-actions .artdon-share-wrap.is-open .artdon-share-action{
+  border-color:var(--artdon-red,#c82b2f)!important;
+  color:var(--artdon-red,#c82b2f)!important;
+  background:#fff!important;
+}
+.product-variant-page .variant-actions .artdon-share-menu[hidden]{display:none!important;}
+.product-variant-page .variant-actions .artdon-share-menu{
+  position:absolute!important;
+  z-index:80!important;
+  top:calc(100% + 10px)!important;
+  right:0!important;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:6px!important;
+  width:190px!important;
+  margin:0!important;
+  padding:8px!important;
+  border:1px solid #111!important;
+  background:#fff!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.12)!important;
+}
+.product-variant-page .variant-actions .artdon-share-menu:before{
+  content:""!important;
+  position:absolute!important;
+  top:-7px!important;
+  right:24px!important;
+  width:12px!important;
+  height:12px!important;
+  background:#fff!important;
+  border-left:1px solid #111!important;
+  border-top:1px solid #111!important;
+  transform:rotate(45deg)!important;
+}
+.product-variant-page .variant-actions .artdon-share-menu a,
+.product-variant-page .variant-actions .artdon-share-menu button{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  width:100%!important;
+  min-height:40px!important;
+  margin:0!important;
+  padding:11px 12px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#f4f4f4!important;
+  color:#111!important;
+  font:inherit!important;
+  font-size:13px!important;
+  line-height:1!important;
+  font-weight:750!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  text-decoration:none!important;
+  text-align:left!important;
+  cursor:pointer!important;
+}
+.product-variant-page .variant-actions .artdon-share-menu a:hover,
+.product-variant-page .variant-actions .artdon-share-menu button:hover{
+  background:#111!important;
+  color:#fff!important;
+}
+.product-variant-page .variant-actions .artdon-share-menu small{
+  display:block!important;
+  margin:3px 0 0!important;
+  color:#777!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+  font-weight:400!important;
+}
+@media(max-width:560px){
+  .product-variant-page .variant-actions .artdon-share-wrap,
+  .product-variant-page .variant-actions .artdon-share-action{
+    width:100%!important;
+  }
+  .product-variant-page .variant-actions .artdon-share-menu{
+    left:0!important;
+    right:auto!important;
+    width:min(100%,240px)!important;
+  }
+  .product-variant-page .variant-actions .artdon-share-menu:before{
+    left:24px!important;
+    right:auto!important;
+  }
+}
+
+/* product.php inline style block 7 */
+/* V7.1.8.24: editable text block under SPECTRUM title. */
+.product-variant-page .variant-hero-intro-v24{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:8px 0 32px!important;
+  padding:0!important;
+  color:#1f1f1f!important;
+  font-size:clamp(15px,.95vw,18px)!important;
+  line-height:1.58!important;
+  font-weight:430!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  white-space:pre-line!important;
+  overflow-wrap:break-word!important;
+}
+.product-variant-page .variant-hero-intro-v24:empty{display:none!important;}
+.product-variant-page .variant-layout-b-sheet>.variant-hero-intro-v24{
+  grid-column:1 / -1!important;
+  max-width:1180px!important;
+  margin-top:2px!important;
+  margin-bottom:34px!important;
+}
+.product-variant-page .variant-hero:not(.variant-layout-b-sheet)>.variant-hero-intro-v24{
+  grid-column:1 / -1!important;
+}
+@media(max-width:760px){
+  .product-variant-page .variant-hero-intro-v24{
+    margin:10px 0 24px!important;
+    font-size:15px!important;
+    line-height:1.62!important;
+  }
+}
+
+/* product.php inline style block 8 */
+/* V7.1.8.25: keep the title intro visible and make Share link a clean modal window. */
+.product-variant-page .variant-hero-intro-v24{
+  display:block!important;
+  grid-column:1 / -1!important;
+  max-width:min(900px,100%)!important;
+  margin:4px 0 34px!important;
+  color:#202020!important;
+  font-size:clamp(15px,.92vw,17px)!important;
+  line-height:1.62!important;
+  font-weight:420!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  white-space:pre-line!important;
+}
+.product-variant-page .variant-layout-b-sheet>.variant-hero-intro-v24{
+  max-width:min(900px,100%)!important;
+  margin-top:4px!important;
+  margin-bottom:34px!important;
+}
+.product-variant-page .variant-actions .artdon-share-open-v25{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:54px!important;
+  height:54px!important;
+  margin:0!important;
+  padding:0 28px!important;
+  border:1px solid #111!important;
+  border-radius:0!important;
+  background:#fff!important;
+  color:#111!important;
+  font:inherit!important;
+  font-size:inherit!important;
+  line-height:1!important;
+  font-weight:700!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+  box-shadow:none!important;
+}
+.product-variant-page .variant-actions .artdon-share-open-v25:hover,
+.product-variant-page .variant-actions .artdon-share-open-v25:focus-visible{
+  border-color:var(--artdon-red,#c82b2f)!important;
+  color:var(--artdon-red,#c82b2f)!important;
+  outline:none!important;
+}
+.artdon-share-modal-v25[hidden]{display:none!important;}
+.artdon-share-modal-v25{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:22px!important;
+  box-sizing:border-box!important;
+}
+.artdon-share-modal-v25-backdrop{
+  position:absolute!important;
+  inset:0!important;
+  background:rgba(0,0,0,.38)!important;
+  backdrop-filter:blur(2px)!important;
+}
+.artdon-share-modal-v25-panel{
+  position:relative!important;
+  z-index:1!important;
+  width:min(430px,calc(100vw - 44px))!important;
+  margin:0!important;
+  padding:28px!important;
+  border:1px solid #111!important;
+  background:#fff!important;
+  box-shadow:0 26px 80px rgba(0,0,0,.28)!important;
+  box-sizing:border-box!important;
+  color:#111!important;
+}
+.artdon-share-modal-v25-close{
+  position:absolute!important;
+  right:14px!important;
+  top:12px!important;
+  width:34px!important;
+  height:34px!important;
+  border:0!important;
+  background:transparent!important;
+  color:#111!important;
+  font-size:30px!important;
+  line-height:30px!important;
+  font-weight:300!important;
+  cursor:pointer!important;
+}
+.artdon-share-modal-v25-kicker{
+  margin:0 0 10px!important;
+  color:var(--artdon-red,#c82b2f)!important;
+  font-size:12px!important;
+  line-height:1!important;
+  font-weight:900!important;
+  letter-spacing:.22em!important;
+  text-transform:uppercase!important;
+}
+.artdon-share-modal-v25-title{
+  margin:0 42px 16px 0!important;
+  color:#0b0c0f!important;
+  font-size:30px!important;
+  line-height:.98!important;
+  font-weight:950!important;
+  letter-spacing:-.045em!important;
+}
+.artdon-share-modal-v25-input{
+  display:block!important;
+  width:100%!important;
+  height:46px!important;
+  margin:0 0 14px!important;
+  padding:0 12px!important;
+  border:1px solid #d8d8d8!important;
+  background:#f6f6f6!important;
+  color:#333!important;
+  font-size:14px!important;
+  line-height:46px!important;
+  box-sizing:border-box!important;
+}
+.artdon-share-modal-v25-actions{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:10px!important;
+}
+.artdon-share-modal-v25-actions a,
+.artdon-share-modal-v25-actions button{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:48px!important;
+  margin:0!important;
+  padding:0 14px!important;
+  border:1px solid #111!important;
+  border-radius:0!important;
+  background:#fff!important;
+  color:#111!important;
+  font:inherit!important;
+  font-size:15px!important;
+  line-height:1!important;
+  font-weight:750!important;
+  letter-spacing:0!important;
+  text-decoration:none!important;
+  cursor:pointer!important;
+  box-sizing:border-box!important;
+}
+.artdon-share-modal-v25-actions a:hover,
+.artdon-share-modal-v25-actions button:hover{
+  background:#111!important;
+  color:#fff!important;
+}
+.artdon-share-modal-v25-note{
+  margin:14px 0 0!important;
+  color:#777!important;
+  font-size:12px!important;
+  line-height:1.45!important;
+}
+html.artdon-share-modal-lock-v25,
+html.artdon-share-modal-lock-v25 body{
+  overflow:hidden!important;
+}
+@media(max-width:620px){
+  .product-variant-page .variant-actions .artdon-share-open-v25{width:100%!important;height:54px!important;}
+  .artdon-share-modal-v25-panel{padding:24px 20px!important;}
+  .artdon-share-modal-v25-title{font-size:26px!important;}
+  .artdon-share-modal-v25-actions{grid-template-columns:1fr!important;}
+}
+
+/* product.php inline style block 9 */
+/* V7.1.8.26: intro text must sit directly under SPECTRUM title and above the image/spec grid. */
+.product-variant-page .variant-media-heading .variant-hero-intro-v24{
+  display:block!important;
+  width:100%!important;
+  max-width:min(980px,100%)!important;
+  margin:14px 0 0!important;
+  padding:0!important;
+  color:#202020!important;
+  font-size:clamp(15px,.92vw,17px)!important;
+  line-height:1.62!important;
+  font-weight:420!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  white-space:pre-line!important;
+  overflow-wrap:break-word!important;
+}
+.product-variant-page .variant-media-heading.variant-layout-b-heading{
+  margin-bottom:26px!important;
+}
+.product-variant-page .variant-media-heading:not(.variant-layout-b-heading){
+  margin-bottom:26px!important;
+}
+.product-variant-page .variant-layout-b-side .variant-layout-b-description{
+  display:none!important;
+}
+@media(max-width:760px){
+  .product-variant-page .variant-media-heading .variant-hero-intro-v24{
+    margin-top:10px!important;
+    font-size:15px!important;
+    line-height:1.62!important;
+  }
+  .product-variant-page .variant-media-heading.variant-layout-b-heading,
+  .product-variant-page .variant-media-heading:not(.variant-layout-b-heading){
+    margin-bottom:22px!important;
+  }
+}
+
+/* product.php inline style block 10 */
+/* V7.1.8.27: add subtle gray separators above and below the title intro block. */
+.product-variant-page .variant-media-heading .variant-hero-intro-v24{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:12px 0 0!important;
+  padding:12px 0 14px!important;
+  border-top:1px solid #d9d9d9!important;
+  border-bottom:1px solid #d9d9d9!important;
+  box-sizing:border-box!important;
+}
+.product-variant-page .variant-media-heading .variant-hero-intro-v24:empty{
+  display:none!important;
+  border:0!important;
+  padding:0!important;
+  margin:0!important;
+}
+.product-variant-page .variant-media-heading.variant-layout-b-heading,
+.product-variant-page .variant-media-heading:not(.variant-layout-b-heading){
+  margin-bottom:26px!important;
+}
+@media(max-width:760px){
+  .product-variant-page .variant-media-heading .variant-hero-intro-v24{
+    margin-top:10px!important;
+    padding:10px 0 12px!important;
+  }
+}
+
+/* product.php inline style block 11 */
+/* V7.1.8.32: mobile product detail optimization.
+   Desktop layout is unchanged. This block only takes over tablet/phone widths
+   to avoid squeezed columns, over-wide buttons and long vertical blank areas. */
+@media(max-width:980px){
+  html,body{overflow-x:hidden!important;}
+  .product-variant-page{
+    --artdon-mobile-shell:calc(100vw - 32px);
+    --artdon-detail-viewport-inset:32px!important;
+    --artdon-detail-gap:0!important;
+    width:100%!important;
+    max-width:none!important;
+    overflow-x:hidden!important;
+  }
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb,
+  .product-variant-page .variant-hero:not(.variant-layout-b),
+  .product-variant-page .variant-hero.variant-layout-b-sheet,
+  .product-variant-page .variant-dimension-technical-section,
+  .product-variant-page .variant-section,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves,
+  .product-variant-page .variant-section.variant-accessories,
+  .product-variant-page #technical-files,
+  .product-variant-page .variant-siblings{
+    width:var(--artdon-mobile-shell)!important;
+    max-width:var(--artdon-mobile-shell)!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+    padding-left:0!important;
+    padding-right:0!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Breadcrumb: keep one line and allow touch scroll instead of breaking layout. */
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb{
+    display:flex!important;
+    flex-wrap:nowrap!important;
+    gap:6px!important;
+    align-items:center!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-width:none!important;
+    padding:12px 0 10px!important;
+    margin-bottom:14px!important;
+    font-size:12px!important;
+    line-height:1.2!important;
+    white-space:nowrap!important;
+    border-bottom:1px solid rgba(0,0,0,.12)!important;
+  }
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb::-webkit-scrollbar{display:none!important;}
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb a,
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb span,
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb strong{flex:0 0 auto!important;}
+
+  /* Hero: mobile becomes a clean vertical product sheet. */
+  .product-variant-page .variant-hero.variant-layout-b-sheet,
+  .product-variant-page .variant-hero:not(.variant-layout-b){
+    display:block!important;
+    padding-top:0!important;
+    padding-bottom:34px!important;
+    border-top:0!important;
+    overflow:visible!important;
+  }
+  .product-variant-page .variant-media-heading,
+  .product-variant-page .variant-media-heading.variant-layout-b-heading{
+    width:100%!important;
+    margin:0 0 18px!important;
+    padding:0!important;
+  }
+  .product-variant-page .variant-media-heading h1{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    font-size:clamp(38px,10.8vw,50px)!important;
+    line-height:.92!important;
+    letter-spacing:-.065em!important;
+    word-break:normal!important;
+    overflow-wrap:normal!important;
+  }
+  .product-variant-page .variant-media-heading .variant-hero-intro-v24{
+    width:100%!important;
+    max-width:none!important;
+    margin:12px 0 0!important;
+    padding:10px 0 12px!important;
+    border-top:1px solid #d9d9d9!important;
+    border-bottom:1px solid #d9d9d9!important;
+    color:#171717!important;
+    font-size:14px!important;
+    line-height:1.55!important;
+    letter-spacing:0!important;
+  }
+
+  .product-variant-page .variant-layout-b-grid{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+    max-width:100%!important;
+    gap:16px!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  .product-variant-page .variant-layout-b-visual,
+  .product-variant-page .variant-layout-b-technical,
+  .product-variant-page .variant-layout-b-side{
+    display:flex!important;
+    flex-direction:column!important;
+    width:100%!important;
+    max-width:100%!important;
+    gap:14px!important;
+    margin:0!important;
+    padding:0!important;
+    grid-column:auto!important;
+    grid-area:auto!important;
+  }
+  .product-variant-page .variant-gallery,
+  .product-variant-page .variant-copy{
+    width:100%!important;
+    max-width:100%!important;
+    grid-column:auto!important;
+    grid-area:auto!important;
+  }
+  .product-variant-page .variant-product-media,
+  .product-variant-page .variant-main-figure,
+  .product-variant-page .variant-dimension-figure,
+  .product-variant-page .variant-layout-b-product,
+  .product-variant-page .variant-layout-b-secondary,
+  .product-variant-page .variant-layout-b-dimension{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    height:auto!important;
+    max-height:none!important;
+    aspect-ratio:1/1!important;
+    margin:0!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    background:#f4f4f4!important;
+    border:1px solid rgba(0,0,0,.10)!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+  }
+  .product-variant-page .variant-layout-b-secondary,
+  .product-variant-page .variant-layout-b-dimension,
+  .product-variant-page .variant-dimension-figure{
+    background:#fff!important;
+  }
+  .product-variant-page .variant-product-media img,
+  .product-variant-page .variant-main-figure img,
+  .product-variant-page .variant-dimension-figure img,
+  .product-variant-page .variant-layout-b-product img,
+  .product-variant-page .variant-layout-b-secondary img,
+  .product-variant-page .variant-layout-b-dimension img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    max-width:100%!important;
+    max-height:100%!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  .product-variant-page .variant-layout-b-badges{display:none!important;}
+
+  /* Spec table: readable two-column rows without overflow. */
+  .product-variant-page .variant-hero-spec-table,
+  .product-variant-page .variant-copy .variant-hero-spec-table,
+  .product-variant-page .variant-layout-b-specs{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+  }
+  .product-variant-page .variant-hero-spec-row{
+    display:grid!important;
+    grid-template-columns:minmax(118px,42%) minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:12px!important;
+    min-height:46px!important;
+    padding:12px 14px!important;
+    font-size:14px!important;
+    line-height:1.25!important;
+  }
+  .product-variant-page .variant-hero-spec-row span,
+  .product-variant-page .variant-hero-spec-row strong{
+    min-width:0!important;
+    font-size:14px!important;
+    line-height:1.25!important;
+    letter-spacing:0!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  /* Action buttons: 2 x 2, large enough to tap, no horizontal overflow. */
+  .product-variant-page .variant-actions,
+  .product-variant-page .variant-layout-b-actions{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:18px 0 0!important;
+    padding:0!important;
+  }
+  .product-variant-page .variant-actions>a,
+  .product-variant-page .variant-actions>button,
+  .product-variant-page .variant-actions .artdon-share-open-v25{
+    width:100%!important;
+    min-width:0!important;
+    height:50px!important;
+    min-height:50px!important;
+    padding:0 8px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    font-size:14px!important;
+    line-height:1!important;
+    font-weight:850!important;
+    white-space:nowrap!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Lower blocks: single column with compact vertical spacing. */
+  .product-variant-page .variant-section,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves,
+  .product-variant-page .variant-section.variant-accessories,
+  .product-variant-page #technical-files,
+  .product-variant-page .variant-dimension-technical-section,
+  .product-variant-page .variant-siblings{
+    display:block!important;
+    padding-top:38px!important;
+    padding-bottom:38px!important;
+    border-top:1px solid var(--artdon-detail-line,#d9d9d9)!important;
+    overflow:visible!important;
+  }
+  .product-variant-page .variant-section>header,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves>header,
+  .product-variant-page .variant-section.variant-accessories>header,
+  .product-variant-page #technical-files>header,
+  .product-variant-page .variant-dimension-technical-section>header,
+  .product-variant-page .variant-siblings>header{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0 0 22px!important;
+    padding:0!important;
+    display:block!important;
+  }
+  .product-variant-page .variant-section>header p,
+  .product-variant-page .variant-siblings>header p,
+  .product-variant-page #technical-files>header p{
+    margin:0 0 10px!important;
+    font-size:11px!important;
+    letter-spacing:.28em!important;
+    line-height:1.1!important;
+  }
+  .product-variant-page .variant-section>header h2,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves>header h2,
+  .product-variant-page .variant-section.variant-accessories>header h2,
+  .product-variant-page #technical-files>header h2,
+  .product-variant-page .variant-siblings>header h2{
+    margin:0!important;
+    max-width:100%!important;
+    font-size:clamp(34px,9.8vw,46px)!important;
+    line-height:.96!important;
+    letter-spacing:-.055em!important;
+  }
+
+  /* Photometric curves and accessories stay compact: two columns on phones. */
+  .product-variant-page .variant-overview-content,
+  .product-variant-page .variant-section.variant-overview-photometric.has-curves>.variant-overview-content,
+  .product-variant-page .variant-section.variant-accessories>.variant-accessory-grid,
+  .product-variant-page #technical-files>div,
+  .product-variant-page .variant-downloads{
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    grid-column:auto!important;
+  }
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:14px!important;
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-card{
+    width:100%!important;
+    min-width:0!important;
+    grid-column:auto!important;
+  }
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure img,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-card figure{
+    width:100%!important;
+    aspect-ratio:1/1!important;
+    height:auto!important;
+    object-fit:contain!important;
+    object-position:center center!important;
+  }
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves figure figcaption{
+    margin-top:8px!important;
+    font-size:11px!important;
+    line-height:1.25!important;
+  }
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-card figure{
+    margin-bottom:10px!important;
+    padding:12px!important;
+  }
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-copy p{
+    font-size:10px!important;
+    letter-spacing:.16em!important;
+    margin-bottom:5px!important;
+  }
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-copy h3{
+    font-size:14px!important;
+    line-height:1.12!important;
+    letter-spacing:-.02em!important;
+  }
+
+  /* Downloads remain vertical, but rows are mobile-sized. */
+  .product-variant-page #technical-files>.variant-downloads>a,
+  .product-variant-page #technical-files>div.variant-downloads>a{
+    min-height:56px!important;
+    padding:16px 0!important;
+    gap:12px!important;
+  }
+  .product-variant-page #technical-files>.variant-downloads>a>span,
+  .product-variant-page #technical-files>div.variant-downloads>a>span{
+    font-size:15px!important;
+    line-height:1.22!important;
+  }
+  .product-variant-page #technical-files>.variant-downloads>a>strong,
+  .product-variant-page #technical-files>div.variant-downloads>a>strong{
+    font-size:10px!important;
+    letter-spacing:.12em!important;
+  }
+
+  /* More products: full-width cards, series-page typography preserved. */
+  .product-variant-page .variant-siblings.artdon-v71816-siblings>.s717-variants-grid,
+  .product-variant-page .variant-siblings>div{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:18px!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    display:block!important;
+  }
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card figure{
+    width:100%!important;
+    aspect-ratio:1/1!important;
+    height:auto!important;
+    margin:0!important;
+    overflow:hidden!important;
+  }
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card figure img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    object-position:center center!important;
+  }
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body{
+    padding:22px!important;
+    min-height:0!important;
+  }
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card h3{
+    margin-bottom:16px!important;
+    font-size:25px!important;
+  }
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs,
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs p{
+    font-size:15px!important;
+    line-height:1.45!important;
+  }
+}
+
+@media(max-width:420px){
+  .product-variant-page{--artdon-mobile-shell:calc(100vw - 24px);}
+  .product-variant-page .variant-media-heading h1{font-size:clamp(34px,10.6vw,42px)!important;}
+  .product-variant-page .variant-hero-spec-row{
+    grid-template-columns:minmax(102px,40%) minmax(0,1fr)!important;
+    gap:10px!important;
+    padding:11px 12px!important;
+  }
+  .product-variant-page .variant-hero-spec-row span,
+  .product-variant-page .variant-hero-spec-row strong{font-size:13px!important;}
+  .product-variant-page .variant-actions,
+  .product-variant-page .variant-layout-b-actions{gap:8px!important;}
+  .product-variant-page .variant-actions>a,
+  .product-variant-page .variant-actions>button,
+  .product-variant-page .variant-actions .artdon-share-open-v25{
+    height:48px!important;
+    min-height:48px!important;
+    font-size:13px!important;
+  }
+  .product-variant-page .variant-overview-photometric.has-curves .variant-overview-curves,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-grid{gap:12px!important;}
+}
+
+/* product.php inline style block 12 */
+/* V7.1.8.64: product detail breadcrumb full display.
+   Keep the final model code visible like:
+   Home/Products/Track Lights/SPECTRUM TRACK LIGHT/32.04526 */
+.product-variant-page .catalog-breadcrumb.family-breadcrumb{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:0!important;
+  width:min(var(--artdon-detail-shell,1240px),calc(100vw - var(--artdon-detail-viewport-inset,120px)))!important;
+  max-width:min(var(--artdon-detail-shell,1240px),calc(100vw - var(--artdon-detail-viewport-inset,120px)))!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding:22px 0 12px!important;
+  border-bottom:1px solid rgba(0,0,0,.14)!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+  overflow-x:visible!important;
+  overflow-y:visible!important;
+  scrollbar-width:none!important;
+  color:#111!important;
+  font-size:clamp(16px,1.12vw,22px)!important;
+  line-height:1.35!important;
+  letter-spacing:-.02em!important;
+  white-space:nowrap!important;
+  text-overflow:clip!important;
+}
+.product-variant-page .catalog-breadcrumb.family-breadcrumb::-webkit-scrollbar{display:none!important;}
+.product-variant-page .catalog-breadcrumb.family-breadcrumb a,
+.product-variant-page .catalog-breadcrumb.family-breadcrumb span,
+.product-variant-page .catalog-breadcrumb.family-breadcrumb strong{
+  display:inline!important;
+  flex:0 0 auto!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:nowrap!important;
+  color:#111!important;
+  text-decoration:none!important;
+}
+.product-variant-page .catalog-breadcrumb.family-breadcrumb span{
+  padding-left:0!important;
+  padding-right:0!important;
+}
+.product-variant-page .catalog-breadcrumb.family-breadcrumb strong{
+  font-weight:950!important;
+  letter-spacing:-.02em!important;
+}
+@media(max-width:1180px){
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb{
+    --artdon-detail-viewport-inset:40px;
+    width:calc(100vw - 40px)!important;
+    max-width:calc(100vw - 40px)!important;
+    font-size:clamp(13px,1.45vw,18px)!important;
+  }
+}
+@media(max-width:760px){
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb{
+    width:calc(100vw - 28px)!important;
+    max-width:calc(100vw - 28px)!important;
+    padding:14px 0 10px!important;
+    font-size:12px!important;
+    line-height:1.35!important;
+    flex-wrap:wrap!important;
+    white-space:normal!important;
+    row-gap:2px!important;
+  }
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb a,
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb span,
+  .product-variant-page .catalog-breadcrumb.family-breadcrumb strong{
+    white-space:normal!important;
+    flex:0 1 auto!important;
+  }
+}
+
+/* product.php inline style block 13 */
+/* V7.1.8.114：共用配件推送项没有 model 时，保留一行不可见占位。
+   目的：推送配件标题与手动上传配件标题保持同样位置和大小；不改变型号显示规则。 */
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy p.variant-accessory-model-placeholder{
+  visibility:hidden!important;
+}
+
+/* product.php inline style block 14 */
+/* V7.1.8.115：网页 + PDF 配件标题统一基线。
+   共用配件如果没有 model/code，也保留与红色型号同高的占位行；只对齐标题，不改图片/卡片/排列。 */
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy p,
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy p.variant-accessory-model-placeholder{
+  display:block!important;
+  box-sizing:border-box!important;
+  min-height:14.4px!important;
+  height:14.4px!important;
+  margin:0 0 7px!important;
+  padding:0!important;
+  font-size:12px!important;
+  line-height:14.4px!important;
+  font-weight:900!important;
+  letter-spacing:.18em!important;
+  text-transform:uppercase!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy p.variant-accessory-model-placeholder{
+  visibility:hidden!important;
+  color:transparent!important;
+  opacity:0!important;
+  overflow:hidden!important;
+}
+.product-variant-page .variant-section.variant-accessories .variant-accessory-copy h3{
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:clamp(17px,1.18vw,22px)!important;
+  line-height:1.12!important;
+  font-weight:900!important;
+  letter-spacing:-.025em!important;
+}
+@media(max-width:720px){
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-copy p,
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-copy p.variant-accessory-model-placeholder{
+    min-height:12px!important;
+    height:12px!important;
+    margin-bottom:5px!important;
+    font-size:10px!important;
+    line-height:12px!important;
+  }
+  .product-variant-page .variant-section.variant-accessories .variant-accessory-copy h3{
+    font-size:14px!important;
+    line-height:1.12!important;
+  }
+}
+
+/* V7.1.8.184: product detail More products cards match series page variant cards. */
+.product-variant-page .variant-siblings.artdon-v71816-siblings{
+  --s717-panel:#f3f3f3;
+  --s717-line:#d8d8d8;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings>.s717-variants-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:22px!important;
+  align-items:stretch!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessories,
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-accessory{
+  min-width:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card{
+  border:1px solid var(--s717-line)!important;
+  background:var(--s717-panel)!important;
+  display:block!important;
+  color:#111!important;
+  overflow:hidden!important;
+  text-decoration:none!important;
+  box-shadow:none!important;
+  width:100%!important;
+  max-width:none!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card:hover{
+  transform:none!important;
+  border-color:var(--s717-line)!important;
+  box-shadow:0 12px 26px rgba(0,0,0,.04)!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card figure{
+  margin:0!important;
+  aspect-ratio:1/1!important;
+  width:100%!important;
+  height:auto!important;
+  background:#d1d4d5!important;
+  overflow:hidden!important;
+  border:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card figure img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center center!important;
+  display:block!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body{
+  padding:28px 30px 32px!important;
+  background:var(--s717-panel)!important;
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card h3{
+  display:block!important;
+  margin:0 0 34px!important;
+  padding:0!important;
+  color:#111!important;
+  font-size:clamp(21px,1.25vw,26px)!important;
+  line-height:1.08!important;
+  letter-spacing:-.045em!important;
+  text-transform:none!important;
+  font-weight:950!important;
+  max-width:100%!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs{
+  display:grid!important;
+  gap:9px!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  color:#222!important;
+  font-size:14px!important;
+  line-height:1.48!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs p{
+  display:block!important;
+  margin:0!important;
+  padding:0!important;
+  color:#222!important;
+  font-size:14px!important;
+  line-height:1.45!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  font-weight:400!important;
+  max-width:100%!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:anywhere!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs b{
+  display:inline!important;
+  margin:0!important;
+  padding:0!important;
+  color:#111!important;
+  font-size:inherit!important;
+  line-height:inherit!important;
+  letter-spacing:0!important;
+  text-transform:none!important;
+  font-weight:950!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags{
+  display:flex!important;
+  gap:10px!important;
+  flex-wrap:wrap!important;
+  align-items:flex-start!important;
+  margin:24px 0 0!important;
+  padding:0!important;
+}
+.product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags span{
+  display:inline-block!important;
+  margin:0!important;
+  padding:9px 15px!important;
+  background:#dedede!important;
+  color:#333!important;
+  font-size:13px!important;
+  line-height:1.25!important;
+}
+@media(max-width:1180px){
+  .product-variant-page .variant-siblings.artdon-v71816-siblings>.s717-variants-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body{padding:24px 22px 26px!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card h3{font-size:clamp(18px,2.2vw,24px)!important;line-height:1.16!important;margin-bottom:30px!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-specs{font-size:13px!important;line-height:1.45!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags{margin-top:18px!important;gap:8px!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-tags span{padding:8px 11px!important;font-size:12px!important;}
+}
+@media(max-width:760px){
+  .product-variant-page .variant-siblings.artdon-v71816-siblings>.s717-variants-grid{grid-template-columns:1fr!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body{padding:22px 20px 24px!important;}
+  .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card h3{font-size:20px!important;line-height:1.18!important;}
+}

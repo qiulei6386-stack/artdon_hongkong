@@ -1,0 +1,47 @@
+# Runtime / server-local config
+.user.ini
+website_config.php
+website_config*.php
+.well-known/
+
+# Uploaded media and generated files
+uploads/
+storage/
+cache/
+tmp/
+logs/
+
+# Backups, dumps, packages
+backup*/
+_backups/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.sql
+*.bak
+*.bak_*
+*.old
+*.disabled_*
+
+# Local payload / repair artifacts
+payload/
+artdon_v7_1_0_payload/
+APPLY*.txt
+nginx_*.txt
+repair_*.php
+bridge_token_repair.php
+artdon_emergency_*.php
+artdon_static_server_test.html
+mock.html
+admin_iZe2z.zip
+
+# Local Codex helper
+codex_work/
+*.command
+
+# macOS / editor
+.DS_Store
+._*

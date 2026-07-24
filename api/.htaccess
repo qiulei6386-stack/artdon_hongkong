@@ -1,0 +1,4 @@
+Options -Indexes
+<FilesMatch "^(?!internal\.php$).*\.php$">
+  Require all denied
+</FilesMatch>

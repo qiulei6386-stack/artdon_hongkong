@@ -1,0 +1,49 @@
+/* V6.8.4 — component isolation and SVG safety */
+:root{--artdon-red:#c8102e;--artdon-line:#dedede;--artdon-ink:#111}
+
+/* Inline icons must never inherit full-page media dimensions. */
+.why-artdon-icon,
+.partner-reason-icon,
+.home-solution-tag i,
+.footer-social-link,
+.footer-social a{
+  position:relative!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto!important;
+  overflow:hidden!important;
+  transform:none!important;
+}
+.why-artdon-icon{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important}
+.why-artdon-icon svg{width:22px!important;height:22px!important;max-width:22px!important;max-height:22px!important}
+.partner-reason-icon{width:112px!important;height:112px!important;min-width:112px!important;min-height:112px!important;border-radius:50%!important}
+.partner-reason-icon svg{width:64px!important;height:64px!important;max-width:64px!important;max-height:64px!important}
+.home-solution-tag i{width:20px!important;height:20px!important;min-width:20px!important;min-height:20px!important}
+.home-solution-tag svg{width:12px!important;height:12px!important;max-width:12px!important;max-height:12px!important}
+.footer-social-link,.footer-social a{width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;max-width:32px!important;max-height:32px!important;padding:0!important;margin:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important}
+.footer-social-link svg,.footer-social a svg{width:15px!important;height:15px!important;max-width:15px!important;max-height:15px!important}
+.footer-social-link:before,.footer-social-link:after,.footer-social a:before,.footer-social a:after{content:none!important;display:none!important}
+
+/* Keep only intended media full-width. */
+.homepage-sections svg,
+.site-footer svg{
+  object-fit:contain;
+}
+.homepage-sections .why-artdon-icon svg,
+.homepage-sections .partner-reason-icon svg,
+.homepage-sections .home-solution-tag svg,
+.site-footer .footer-social svg{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+}
+
+/* Solutions cards: isolated two-column grid. */
+.home-solutions-section{width:100%;max-width:none;overflow:hidden}
+.home-solutions-grid{width:min(calc(100% - 64px),1480px);margin:0 auto;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}
+.home-solution-card{position:relative!important;display:block!important;aspect-ratio:16/9!important;min-height:0!important;overflow:hidden!important;background:#181818!important}
+.home-solution-card>img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:cover!important;object-position:center!important;transform:none}
+.home-solution-shade{position:absolute!important;inset:0!important;background:linear-gradient(180deg,transparent 32%,rgba(0,0,0,.78) 100%)!important}
+.home-solution-copy{position:absolute!important;left:24px!important;right:24px!important;bottom:22px!important;z-index:2!important}
+@media(max-width:800px){.home-solutions-grid{width:min(calc(100% - 28px),1480px);grid-template-columns:1fr!important}.home-solution-card{aspect-ratio:4/3!important}}

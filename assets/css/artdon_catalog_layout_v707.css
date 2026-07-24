@@ -1,0 +1,119 @@
+/*
+ * Artdon Website V7.0.7
+ * Catalogue cards: compact centre grid with equal side whitespace.
+ * - Backend card width remains adjustable (270px recommended).
+ * - Card-to-card gap is fixed at 20px.
+ * - Desktop shows at most three aligned columns in the results area.
+ * - The complete card group is centred, so left/right whitespace is equal.
+ * - Incomplete rows keep the same column lines instead of spreading apart.
+ */
+
+.catalog-v50 .catalog-layout{
+  align-items:start!important;
+}
+
+.catalog-v50 .catalog-results{
+  width:100%!important;
+  min-width:0!important;
+}
+
+/* The heading, active filters and cards share one centred content boundary. */
+.catalog-v50 .catalog-results .catalog-results-head,
+.catalog-v50 .catalog-results .catalog-active-filters,
+.catalog-v50 .catalog-results .catalog-empty{
+  width:min(100%,var(--catalog-grid-max,850px))!important;
+  max-width:var(--catalog-grid-max,850px)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+  display:grid!important;
+  width:min(100%,var(--catalog-grid-max,850px))!important;
+  max-width:var(--catalog-grid-max,850px)!important;
+  grid-template-columns:repeat(auto-fit,minmax(var(--catalog-card-width,270px),var(--catalog-card-width,270px)))!important;
+  grid-auto-flow:row!important;
+  column-gap:var(--catalog-card-gap,20px)!important;
+  row-gap:var(--catalog-card-gap,20px)!important;
+  justify-content:center!important;
+  justify-items:start!important;
+  align-content:start!important;
+  align-items:stretch!important;
+  padding:20px 0 0!important;
+  margin:0 auto!important;
+}
+
+.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-family-divider{
+  grid-column:1/-1!important;
+  width:100%!important;
+  max-width:100%!important;
+  justify-self:stretch!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+
+.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card,
+.catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+  width:var(--catalog-card-width,270px)!important;
+  min-width:0!important;
+  max-width:var(--catalog-card-width,270px)!important;
+  height:100%!important;
+  margin:0!important;
+  justify-self:start!important;
+  align-self:stretch!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-link{
+  width:100%!important;
+  height:100%!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-body{
+  box-sizing:border-box!important;
+  min-height:238px!important;
+  height:100%!important;
+  padding:21px 20px 22px!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-body h3{
+  margin-bottom:12px!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-subtitle{
+  margin-bottom:10px!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-detail-list{
+  margin-bottom:15px!important;
+}
+
+.catalog-v50 .catalog-card-v51.catalog-rich-card .catalog-card-view-button{
+  margin-top:auto!important;
+}
+
+@media (max-width:800px){
+  .catalog-v50 .catalog-results .catalog-results-head,
+  .catalog-v50 .catalog-results .catalog-active-filters,
+  .catalog-v50 .catalog-results .catalog-empty,
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+    width:100%!important;
+    max-width:100%!important;
+  }
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+    justify-content:center!important;
+    justify-items:start!important;
+  }
+}
+
+@media (max-width:580px){
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51{
+    grid-template-columns:minmax(0,1fr)!important;
+    justify-items:center!important;
+  }
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card,
+  .catalog-v50 .catalog-results .catalog-grid.catalog-grid-v51 > .catalog-card.catalog-card-v51.catalog-rich-card{
+    width:min(100%,420px)!important;
+    max-width:420px!important;
+    justify-self:center!important;
+  }
+}

@@ -1,0 +1,92 @@
+/* Artdon Homepage V5.7 — per-section light / dark theme switch. */
+.home-section-theme{
+  --section-bg:#fff;
+  --section-surface:#fff;
+  --section-surface-alt:#f4f4f4;
+  --section-text:#111;
+  --section-muted:#666;
+  --section-line:#dedede;
+  position:relative;
+  color:var(--section-text)!important;
+  background:var(--section-bg)!important;
+  box-shadow:0 0 0 100vmax var(--section-bg);
+  clip-path:inset(0 -100vmax);
+  transition:background-color .22s ease,color .22s ease;
+}
+.home-theme-light{--section-bg:#fff;--section-surface:#fff;--section-surface-alt:#f4f4f4;--section-text:#111;--section-muted:#666;--section-line:#dedede}
+.home-theme-dark{--section-bg:#111;--section-surface:#181818;--section-surface-alt:#202020;--section-text:#f7f7f7;--section-muted:#b8b8b8;--section-line:rgba(255,255,255,.16)}
+
+/* Common text, links and dividers. */
+.home-theme-dark h2,.home-theme-dark h3,.home-theme-dark h4,.home-theme-dark strong,.home-theme-dark b,.home-theme-dark a{color:var(--section-text)}
+.home-theme-dark p,.home-theme-dark em,.home-theme-dark .clean-copy,.home-theme-dark .featured-project-place,.home-theme-dark .download-hub-copy>p:last-of-type,.home-theme-dark .insights-intro>p:last-child,.home-theme-dark .home-inquiry-copy>span{color:var(--section-muted)}
+.home-theme-dark{border-color:var(--section-line)!important}
+.home-theme-dark .home-eyebrow{color:#e30613!important}
+.home-theme-dark .clean-section-head a,.home-theme-dark .clean-inline-link,.home-theme-dark .featured-projects-more a,.home-theme-dark .insights-all a{border-color:#e30613}
+
+/* Why Artdon. */
+.home-theme-dark .why-artdon-head>p:last-child{color:var(--section-muted)}
+.home-theme-dark .why-artdon-card{background:var(--section-surface);border-color:var(--section-line)}
+.home-theme-dark .why-artdon-card p{color:var(--section-muted)}
+.home-theme-dark .why-artdon-icon{background:rgba(227,6,19,.1)}
+
+/* Six reasons. */
+.home-partner-reasons.home-theme-dark{background:var(--section-bg)!important}
+.home-theme-dark .partner-reasons-intro{color:var(--section-muted)}
+.home-theme-dark .partner-reason-card{background:var(--section-surface);border-color:var(--section-line);box-shadow:none}
+.home-theme-dark .partner-reason-card:hover{border-color:rgba(255,255,255,.3);box-shadow:0 18px 44px rgba(0,0,0,.28)}
+.home-theme-dark .partner-reason-card p{color:var(--section-muted)}
+.home-theme-dark .partner-reason-icon{background:#25211b}
+
+/* Product families. */
+.home-theme-dark .product-family-tabs{border-color:var(--section-line)}
+.home-theme-dark .product-family-tab{color:#bdbdbd;border-color:var(--section-line);background:transparent}
+.home-theme-dark .product-family-tab:hover,.home-theme-dark .product-family-tab.is-active{color:#fff;background:#181818}
+.home-theme-dark .clean-product-grid{border-color:var(--section-line)}
+.home-theme-dark .clean-product-card{background:var(--section-surface);border-color:var(--section-line)}
+.home-theme-dark .clean-product-card figure{background:var(--section-surface-alt)!important}
+.home-theme-dark .clean-product-card div{background:var(--section-surface)}
+.home-theme-dark .clean-product-card h3{color:var(--section-text)}
+.home-theme-dark .clean-product-card p{color:var(--section-muted)}
+
+/* Featured system. */
+.home-theme-dark.home-clean-system{border-color:var(--section-line)}
+.home-theme-dark.home-clean-system figure{background:var(--section-surface-alt);border-color:var(--section-line)}
+.home-theme-dark.home-clean-system ul,.home-theme-dark.home-clean-system li{border-color:var(--section-line)}
+.home-theme-dark.home-clean-system li span{color:var(--section-muted)}
+
+/* Projects. */
+.home-theme-dark .featured-projects-heading>p:last-child{color:var(--section-muted)}
+.home-theme-dark .featured-project-card{background:var(--section-surface);border-color:var(--section-line);box-shadow:none}
+.home-theme-dark .featured-project-copy{background:var(--section-surface)}
+.home-theme-dark .featured-project-description{color:var(--section-muted)}
+
+/* Solutions is dark by default, but can also be switched to white. */
+.home-solutions-section.home-theme-dark{background:#151515!important;color:#fff!important}
+.home-solutions-section.home-theme-light{background:#fff!important;color:#111!important}
+.home-solutions-section.home-theme-light .home-solutions-heading>p:last-child{color:#666}
+.home-solutions-section.home-theme-light .home-solutions-heading h2{color:#111}
+
+/* Downloads. */
+.home-theme-dark .clean-download-list,.home-theme-dark .clean-download-list a{border-color:var(--section-line)}
+.home-theme-dark .clean-download-list span{color:var(--section-muted)}
+.home-theme-dark .clean-download-list em{color:#aaa}
+.home-theme-dark .download-search input{background:var(--section-surface);border-color:var(--section-line);color:#fff}
+.home-theme-dark .download-search input::placeholder{color:#888}
+
+/* Insights. */
+.home-theme-dark .insights-intro>p:last-child{color:var(--section-muted)}
+.home-theme-dark .insight-card{background:var(--section-surface);border-color:var(--section-line);box-shadow:none}
+.home-theme-dark .insight-body{background:var(--section-surface)}
+.home-theme-dark .insight-body p,.home-theme-dark .insight-body footer{color:var(--section-muted)}
+
+/* Inquiry. */
+.home-theme-dark .inquiry-contact-card,.home-theme-dark .inquiry-panel{background:var(--section-surface);border-color:var(--section-line)}
+.home-theme-dark .inquiry-contact-card a{color:#ddd}
+.home-theme-dark .inquiry-field label{color:#eee}
+.home-theme-dark .inquiry-field input,.home-theme-dark .inquiry-field select,.home-theme-dark .inquiry-field textarea{background:#111;border-color:var(--section-line);color:#fff}
+.home-theme-dark .inquiry-field input::placeholder,.home-theme-dark .inquiry-field textarea::placeholder{color:#777}
+.home-theme-dark .inquiry-consent{color:var(--section-muted)}
+
+@media(max-width:760px){
+  .home-section-theme{box-shadow:0 0 0 100vmax var(--section-bg);clip-path:inset(0 -100vmax)}
+}
