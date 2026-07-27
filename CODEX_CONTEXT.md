@@ -1,6 +1,6 @@
 # Codex Context Handoff
 
-Last updated: 2026-07-24
+Last updated: 2026-07-27
 
 ## Workflow Rule
 
@@ -46,6 +46,10 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Updated the series-page hero `Get a Quote` action to open the shared CRM inquiry modal used by the floating inquiry button.
+- Verified the ARMI series page keeps the current URL, opens `Project inquiry`, shows `Inquiry about: ARMI`, and pre-fills `I am interested in ARMI`.
+- Deployed only `includes/floating_actions.php` after creating a production backup.
+- Cleared and regenerated the ARMI series-page micro-cache after deployment.
 - Initialized local Git repository.
 - Connected GitHub with SSH.
 - Synced server code to local.
@@ -57,21 +61,22 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `89310a2` - Open series quote CTA in inquiry modal
 - `aa79f0a` - Initial sync from Hong Kong website server
 - `45f65a1` - Document local GitHub server workflow
 - `8dbc2d9` - Add Codex context handoff rule
 
 ## Server Sync Status
 
+- `includes/floating_actions.php` synced to the Hong Kong server and verified on the live ARMI page.
 - Initial code sync to GitHub completed.
 - `WORKFLOW_RULES.md` synced to server.
 - `CODEX_CONTEXT.md` synced to server.
 
 ## Current Session Closeout
 
-- User requested exit.
-- Context file updated before exit.
-- No open code changes are pending besides this context update.
+- The requested ARMI `Get a Quote` popup behavior is complete.
+- No open code changes are pending.
 - Next session should continue using the default workflow:
 
 ```text
