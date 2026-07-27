@@ -2211,3 +2211,6 @@ html.artdon-share-modal-lock-v25 body{
   .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card-body{padding:22px 20px 24px!important;}
   .product-variant-page .variant-siblings.artdon-v71816-siblings .s717-card h3{font-size:20px!important;line-height:1.18!important;}
 }
+.product-variant-page #technical-files{
+  scroll-margin-top:96px;
+}

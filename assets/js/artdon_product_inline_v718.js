@@ -1,5 +1,17 @@
 /* Extracted from product.php normal detail page inline scripts. */
 
+/* Keep Technical files on the current product page and scroll to its download section. */
+document.addEventListener('click', function(event){
+  if(!event.target || !event.target.closest) return;
+  var trigger = event.target.closest('[data-technical-files-link]');
+  if(!trigger) return;
+  var target = document.getElementById('technical-files');
+  if(!target) return;
+  event.preventDefault();
+  window.history.replaceState(null, '', trigger.getAttribute('href'));
+  target.scrollIntoView({behavior:'smooth', block:'start'});
+});
+
 /* product.php inline script block 1 */
 document.querySelectorAll('[data-variant-image]').forEach(function(button){button.addEventListener('click',function(){var image=document.getElementById('variantMainImage');if(!image)return;image.src=this.dataset.variantImage||'';image.alt=this.dataset.variantAlt||'';var figure=image.closest('.variant-main-figure');if(figure){figure.classList.toggle('is-dimension-view',(this.dataset.variantKind||'')==='dimension');}document.querySelectorAll('[data-variant-image]').forEach(function(item){item.classList.remove('is-active');});this.classList.add('is-active');});});
 

@@ -835,7 +835,7 @@ if (is_file($__artdonCardV7093)) {
 ?>
 <!-- ARTDON_V7093_SIMPLE_BOOT_END -->
 <!-- ARTDON_V7179_DIMENSION_SCALE_START -->
-<link rel="stylesheet" href="assets/css/artdon_product_inline_v718.css?v=7.1.8.184">
+<link rel="stylesheet" href="assets/css/artdon_product_inline_v718.css?v=7.1.8.185">
 <!-- ARTDON_V7179_DIMENSION_SCALE_END -->
 
 <!-- ARTDON_V71812_DETAIL_SECTION_ALIGNMENT_START -->
@@ -941,7 +941,7 @@ if (is_file($__artdonCardV7093)) {
       </aside>
     </div>
 
-    <div class="variant-actions variant-layout-b-actions"><a href="contact.php?product=<?= rawurlencode((string)$variant['name']) ?>&model=<?= rawurlencode((string)$variant['model_code']) ?>">Get a quote</a><?php if($downloadCount>0): ?><a href="<?= web_e($prettyPathV71865 . '#technical-files') ?>">Technical files</a><?php endif; ?><a href="product_pdf.php?slug=<?= rawurlencode((string)$variant['slug']) ?>" target="_blank" rel="noopener">PDF / Print</a><button type="button" class="artdon-share-open-v25" data-artdon-share-modal-open data-share-url="<?= web_e($shareUrl) ?>" data-share-title="<?= web_e($shareTitle) ?>" data-share-text="<?= web_e($shareText) ?>">Share link</button></div>
+    <div class="variant-actions variant-layout-b-actions"><a href="contact.php?product=<?= rawurlencode((string)$variant['name']) ?>&model=<?= rawurlencode((string)$variant['model_code']) ?>">Get a quote</a><?php if($downloadCount>0): ?><a href="<?= web_e($prettyPathV71865 . '#technical-files') ?>" data-technical-files-link>Technical files</a><?php endif; ?><a href="product_pdf.php?slug=<?= rawurlencode((string)$variant['slug']) ?>" target="_blank" rel="noopener">PDF / Print</a><button type="button" class="artdon-share-open-v25" data-artdon-share-modal-open data-share-url="<?= web_e($shareUrl) ?>" data-share-title="<?= web_e($shareTitle) ?>" data-share-text="<?= web_e($shareText) ?>">Share link</button></div>
   </section>
   <?php else: ?>
   <section class="variant-hero variant-hero-layout-<?= web_e($detailLayout) ?> <?= $dimensionImage!==''?'has-dimension':'no-dimension' ?> <?= $photometricImages?'has-photometric':'no-photometric' ?>">
@@ -971,7 +971,7 @@ if (is_file($__artdonCardV7093)) {
         <?php endforeach; ?>
       </div>
       <?php if(!empty($variant['tags'])): ?><div class="variant-tags"><?php foreach(array_slice($variant['tags'],0,6) as $tag): ?><span><?= web_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?>
-      <div class="variant-actions"><a href="contact.php?product=<?= rawurlencode((string)$variant['name']) ?>&model=<?= rawurlencode((string)$variant['model_code']) ?>">Get a quote</a><?php if($downloadCount>0): ?><a href="<?= web_e($prettyPathV71865 . '#technical-files') ?>">Technical files</a><?php endif; ?><a href="product_pdf.php?slug=<?= rawurlencode((string)$variant['slug']) ?>" target="_blank" rel="noopener">PDF / Print</a><button type="button" class="artdon-share-open-v25" data-artdon-share-modal-open data-share-url="<?= web_e($shareUrl) ?>" data-share-title="<?= web_e($shareTitle) ?>" data-share-text="<?= web_e($shareText) ?>">Share link</button></div>
+      <div class="variant-actions"><a href="contact.php?product=<?= rawurlencode((string)$variant['name']) ?>&model=<?= rawurlencode((string)$variant['model_code']) ?>">Get a quote</a><?php if($downloadCount>0): ?><a href="<?= web_e($prettyPathV71865 . '#technical-files') ?>" data-technical-files-link>Technical files</a><?php endif; ?><a href="product_pdf.php?slug=<?= rawurlencode((string)$variant['slug']) ?>" target="_blank" rel="noopener">PDF / Print</a><button type="button" class="artdon-share-open-v25" data-artdon-share-modal-open data-share-url="<?= web_e($shareUrl) ?>" data-share-title="<?= web_e($shareTitle) ?>" data-share-text="<?= web_e($shareText) ?>">Share link</button></div>
     </div>
 
   </section>
@@ -1088,7 +1088,7 @@ if (is_file($__artdonCardV7093)) {
 
 <?php include __DIR__.'/partials/footer.php'; ?>
 <script src="assets/js/artdon_home.js?v=6.4.0" defer></script>
-<script src="assets/js/artdon_product_inline_v718.js?v=7.1.8" defer></script>
+<script src="assets/js/artdon_product_inline_v718.js?v=7.1.8.185" defer></script>
 
 <!-- ARTDON_V71822_SHARE_LINK_SCRIPT_START -->
 
