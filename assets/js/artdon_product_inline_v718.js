@@ -9,7 +9,13 @@ document.addEventListener('click', function(event){
   if(!target) return;
   event.preventDefault();
   window.history.replaceState(null, '', trigger.getAttribute('href'));
-  target.scrollIntoView({behavior:'smooth', block:'start'});
+  trigger.setAttribute('aria-current', 'location');
+  function moveToDownloads(){
+    var top = target.getBoundingClientRect().top + window.pageYOffset - 96;
+    window.scrollTo(0, Math.max(0, top));
+  }
+  window.requestAnimationFrame(moveToDownloads);
+  window.setTimeout(moveToDownloads, 120);
 });
 
 /* product.php inline script block 1 */
