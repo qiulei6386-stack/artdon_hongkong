@@ -481,6 +481,12 @@ if (isset($series) && is_array($series)) {
     });
   }
   var inquiryBtn=q('[data-af-inquiry]',root); if(inquiryBtn) inquiryBtn.addEventListener('click',openInquiry);
+  document.querySelectorAll('.series-v717 .s717-hero-actions .s717-linkline:first-child').forEach(function(trigger){
+    trigger.addEventListener('click',function(e){
+      e.preventDefault();
+      openInquiry();
+    });
+  });
   var copyBtn=q('[data-af-copy]',root); if(copyBtn) copyBtn.addEventListener('click',copyLink);
   var emailLink=q('[data-af-email]',root); if(emailLink) emailLink.addEventListener('click',function(){emailLink.href=mailto()});
   document.addEventListener('click',function(e){if(e.target&&e.target.matches('[data-af-close]'))closeInquiry();});
