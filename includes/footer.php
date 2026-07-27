@@ -131,35 +131,70 @@ function web_footer_unique_links(array $links, int $limit = 12): array
 
 function web_footer_default_columns(array $site): array
 {
-    $nav = web_footer_nav_map($site);
+    // Keep the footer intentionally limited to these four useful groups. The
+    // destinations mirror the current public sections, while the root "All"
+    // links keep this list more concise and task-oriented than the header menu.
     $definitions = [
-        ['key'=>'products', 'title'=>'Products', 'href'=>'products.php', 'fallback'=>'All Products', 'limit'=>6],
-        ['key'=>'solutions', 'title'=>'Solutions', 'href'=>'project.php', 'fallback'=>'All Solutions', 'limit'=>5],
-        ['key'=>'projects', 'title'=>'Projects', 'href'=>'project.php', 'fallback'=>'All Projects', 'limit'=>5],
-        ['key'=>'resources', 'title'=>'Resources', 'href'=>'downloads.php', 'fallback'=>'Download Center', 'limit'=>6],
+        [
+            'title'=>'Products',
+            'links'=>[
+                ['label'=>'All Products', 'href'=>'/products.php'],
+                ['label'=>'Track Lights', 'href'=>'/products.php?category=track-lights'],
+                ['label'=>'Downlights', 'href'=>'/products.php?category=downlights'],
+                ['label'=>'Magnetic Systems', 'href'=>'/products.php?category=magnetic-systems'],
+                ['label'=>'Surface & Pendant Lights', 'href'=>'/products.php?category=surface-pendant-lights'],
+                ['label'=>'Linear Lighting', 'href'=>'/products.php?category=linear-lighting'],
+                ['label'=>'Outdoor Lighting', 'href'=>'/products.php?category=outdoor-lighting'],
+                ['label'=>'LED Strips & Profiles', 'href'=>'/products.php?category=led-strips-profiles'],
+                ['label'=>'Track Systems & Accessories', 'href'=>'/products.php?category=track-systems-accessories'],
+            ],
+        ],
+        [
+            'title'=>'Solutions',
+            'links'=>[
+                ['label'=>'All Solutions', 'href'=>'/solutions.php'],
+                ['label'=>'Retail Lighting', 'href'=>'/solutions-retail.php'],
+                ['label'=>'Hospitality Lighting', 'href'=>'/solutions-hospitality.php'],
+                ['label'=>'Museum & Gallery', 'href'=>'/solutions-museum-gallery.php'],
+                ['label'=>'Office Lighting', 'href'=>'/solutions-office.php'],
+                ['label'=>'Residential Lighting', 'href'=>'/solutions-residential.php'],
+                ['label'=>'Outdoor & Landscape', 'href'=>'/solutions-outdoor-landscape.php'],
+            ],
+        ],
+        [
+            'title'=>'Projects',
+            'links'=>[
+                ['label'=>'All Projects', 'href'=>'/project.php'],
+                ['label'=>'Retail', 'href'=>'/project.php?type=retail'],
+                ['label'=>'Hospitality', 'href'=>'/project.php?type=hospitality'],
+                ['label'=>'Office', 'href'=>'/project.php?type=office'],
+                ['label'=>'Residential', 'href'=>'/project.php?type=residential'],
+                ['label'=>'Museum & Gallery', 'href'=>'/project.php?type=museum'],
+                ['label'=>'Commercial', 'href'=>'/project.php?type=commercial'],
+            ],
+        ],
+        [
+            'title'=>'Resources',
+            'links'=>[
+                ['label'=>'All Resources', 'href'=>'/resources.php'],
+                ['label'=>'Catalogue / Downloads', 'href'=>'/resources-downloads.php'],
+                ['label'=>'Blog & Insights', 'href'=>'/resources-blog.php'],
+                ['label'=>'FAQ', 'href'=>'/resources-faq.php'],
+                ['label'=>'Videos', 'href'=>'/resources-videos.php'],
+            ],
+        ],
     ];
-    $columns = [];
-    foreach ($definitions as $definition) {
-        $menu = $nav[$definition['key']] ?? [];
-        $items = is_array($menu['items'] ?? null) ? $menu['items'] : [];
-        $links = [];
-        $rootHref = trim((string)($menu['href'] ?? $definition['href']));
-        $rootLabel = trim((string)($menu['root_label'] ?? $definition['fallback']));
-        // Add a root link only when the existing first item is not already the same destination/meaning.
-        $first = $items[0] ?? [];
-        $firstLabel = is_array($first) ? trim((string)($first['label'] ?? ($first[0] ?? ''))) : '';
-        $firstHref = is_array($first) ? trim((string)($first['href'] ?? ($first[1] ?? ''))) : '';
-        if ($rootHref !== '' && !($firstHref === $rootHref || strtolower($firstLabel) === strtolower($rootLabel))) {
-            $links[] = ['label'=>$rootLabel, 'href'=>$rootHref];
-        }
-        $links = array_merge($links, $items);
-        $columns[] = [
+
+    return array_map(static fn(array $definition): array => [
             'active' => 1,
-            'title' => trim((string)($menu['label'] ?? $definition['title'])),
-            'links' => web_footer_unique_links($links, (int)$definition['limit']),
-        ];
-    }
-    return $columns;
+            'title' => $definition['title'],
+            'links' => web_footer_unique_links($definition['links'], 12),
+        ], $definitions);
+}
+
+function web_footer_navigation_version(): int
+{
+    return 718173;
 }
 
 function web_footer_default_socials(array $site): array
@@ -247,6 +282,7 @@ function web_footer_defaults(array $site = []): array
     $year = date('Y');
     return [
         'schema_version' => 6128,
+        'navigation_version' => web_footer_navigation_version(),
         'visibility_confirmed' => 1,
         'theme' => [
             'background' => '#101010',
@@ -346,6 +382,9 @@ function web_footer_normalize(array $footer, array $site = []): array
             if (count($normalColumns) >= 8) break;
         }
         if (!$normalColumns) $normalColumns = $defaults['columns'];
+        if ((int)($footer['navigation_version'] ?? 0) < web_footer_navigation_version()) {
+            $normalColumns = $defaults['columns'];
+        }
         $bottom['legal'] = web_footer_unique_links(is_array($bottom['legal'] ?? null) ? $bottom['legal'] : [], 12);
         $bottom['social'] = web_footer_unique_links(is_array($bottom['social'] ?? null) ? $bottom['social'] : [], 12);
         if (web_footer_bool($bottom['social_active'] ?? true) && !$bottom['social']) {
@@ -357,6 +396,7 @@ function web_footer_normalize(array $footer, array $site = []): array
         }
         return [
             'schema_version'=>6128,
+            'navigation_version'=>web_footer_navigation_version(),
             'visibility_confirmed'=>1,
             'visibility_guard_version'=>6128,
             'theme'=>$theme,

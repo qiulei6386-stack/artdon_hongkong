@@ -120,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $saved = [
             'schema_version' => 6128,
+            'navigation_version' => web_footer_navigation_version(),
             'visibility_confirmed' => 1,
             'visibility_guard_version' => 6128,
             'theme' => [
