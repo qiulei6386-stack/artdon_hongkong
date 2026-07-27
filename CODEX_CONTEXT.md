@@ -46,6 +46,9 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Corrected the footer contact CTA from `index.php#about` to `/about.php`, cleared the remaining public-page caches, and verified both `/products.php` and the homepage render the same 9/7/7/5 footer columns.
+- Click-tested the footer `About Us` link from `/products.php`; it opens `/about.php` successfully.
+- Backed up `includes/footer.php` and footer content with tag `20260727_153408`, then moved five remaining page-cache files to `storage/page_cache_backup_footer_about_20260727_153419`.
 - Rebuilt the public footer navigation as exactly four groups: Products, Solutions, Projects and Resources.
 - Added all current product categories, corrected Solutions links to their dedicated pages, completed Projects categories, and replaced legacy Resources destinations with the current Resources pages.
 - Persisted footer navigation version `718173`; the live column link counts are Products 9, Solutions 7, Projects 7 and Resources 5.
@@ -73,6 +76,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `00e23e7` - Point footer About Us to about page
 - `2809ff5` - Align footer navigation with public sections
 - `4ffb825` - Unify quote modal and configure inquiry dispatch fields
 - `89310a2` - Open series quote CTA in inquiry modal
@@ -90,7 +94,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- The requested four-column footer navigation completion and link correction are complete.
+- The requested product-page footer refresh and `About Us` link correction are complete.
 - No open code changes are pending.
 - Next session should continue using the default workflow:
 
