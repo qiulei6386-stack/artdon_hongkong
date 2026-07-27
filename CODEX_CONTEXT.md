@@ -46,6 +46,12 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Simplified the shared series-page Project Support CTA across all product families: removed `Request Sample` and `Download Datasheet`, retained one `Get a quote` button, and right-aligned it at desktop and responsive widths.
+- Corrected both product-detail layouts so `Technical files` points to the current product pretty URL plus `#technical-files`, rather than resolving through `<base href="/">` to the homepage.
+- Added deterministic same-page scrolling to the `Downloads / Planning files` section with a 96px top offset and cache-busted the product CSS/JS references.
+- Verified the live ARMI series page renders exactly one Project Support action with no legacy sample/datasheet buttons; verified the ARMI 73 product page exposes the correct same-product anchor, target heading and updated scroll handler.
+- Deployed `series.php`, `product.php`, `assets/js/artdon_product_inline_v718.js` and `assets/css/artdon_product_inline_v718.css`; production PHP lint and JS syntax checks passed.
+- Created recoverable production backups with tags `20260727_191801`, `20260727_192150` and `20260727_192547`, and moved regenerated public-page caches into matching backup directories.
 - Corrected the footer contact CTA from `index.php#about` to `/about.php`, cleared the remaining public-page caches, and verified both `/products.php` and the homepage render the same 9/7/7/5 footer columns.
 - Click-tested the footer `About Us` link from `/products.php`; it opens `/about.php` successfully.
 - Backed up `includes/footer.php` and footer content with tag `20260727_153408`, then moved five remaining page-cache files to `storage/page_cache_backup_footer_about_20260727_153419`.
@@ -76,6 +82,9 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `8c5c960` - Make files anchor scrolling deterministic
+- `d3bd0e8` - Ensure product files link scrolls to downloads
+- `2023166` - Simplify support CTA and fix files anchor
 - `00e23e7` - Point footer About Us to about page
 - `2809ff5` - Align footer navigation with public sections
 - `4ffb825` - Unify quote modal and configure inquiry dispatch fields
@@ -86,6 +95,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `series.php`, `product.php`, `assets/js/artdon_product_inline_v718.js` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; PHP lint and the product JavaScript syntax check passed.
 - `includes/footer.php` and `admin/footer.php` are synced to the Hong Kong server and passed production PHP lint.
 - `admin/inquiry_routing.php`, `admin/settings.php`, `includes/default_content.php`, `includes/floating_actions.php` and `includes/inquiry_routing.php` are synced to the Hong Kong server and passed production PHP lint.
 - Initial code sync to GitHub completed.
@@ -94,7 +104,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- The requested product-page footer refresh and `About Us` link correction are complete.
+- The series-page CTA cleanup/right alignment and product-page `Technical files` same-page download anchor are complete.
 - No open code changes are pending.
 - Next session should continue using the default workflow:
 
