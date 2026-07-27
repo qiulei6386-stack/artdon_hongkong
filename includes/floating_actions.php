@@ -14,6 +14,11 @@ if (function_exists('web_get_block')) {
     $tmp = web_get_block('site');
     if (is_array($tmp)) $__faSite = $tmp;
 }
+$__faDefaults = function_exists('web_default_content') ? (array)(web_default_content()['site'] ?? []) : [];
+$__faText = static function (string $key, string $fallback) use ($__faSite, $__faDefaults): string {
+    $value = trim((string)($__faSite[$key] ?? $__faDefaults[$key] ?? $fallback));
+    return $value !== '' ? $value : $fallback;
+};
 $__faCompany = trim((string)($__company ?? ($__faSite['company'] ?? '')));
 if ($__faCompany === '') $__faCompany = 'Artdon Lighting Limited';
 $__faEmail = trim((string)($__email ?? ($__faSite['email'] ?? ''))) ?: 'sales@artdon.cn';
@@ -368,44 +373,44 @@ if (isset($series) && is_array($series)) {
     <div class="artdon-fi-shell-v718109">
       <aside class="artdon-fi-aside-v718109">
         <div class="artdon-fi-brand-v718109">
-          <div class="artdon-fi-kicker-v718109">Project support</div>
+          <div class="artdon-fi-kicker-v718109"><?= web_e($__faText('quote_modal_kicker', 'Project support')) ?></div>
           <h3 class="artdon-fi-company-v718109"><?= web_e($__faCompany) ?></h3>
-          <p>Share your project requirement. Our team will route it to the right sales and technical owner.</p>
+          <p><?= nl2br(web_e($__faText('quote_modal_side_text', "Share your project requirement.\nOur team will route it to the right sales and technical owner."))) ?></p>
         </div>
         <div class="artdon-fi-trust-v718109" aria-label="Inquiry workflow notice">
-          <div class="artdon-fi-trust-item-v718109"><span class="artdon-fi-trust-dot-v718109"></span><span>Connected to CRM and dispatch system.</span></div>
-          <div class="artdon-fi-trust-item-v718109"><span class="artdon-fi-trust-dot-v718109"></span><span>Fastest response within 1 hour.</span></div>
-          <div class="artdon-fi-trust-item-v718109"><span class="artdon-fi-trust-dot-v718109"></span><span>Product, sample or project details are tracked clearly.</span></div>
+          <div class="artdon-fi-trust-item-v718109"><span class="artdon-fi-trust-dot-v718109"></span><span><?= web_e($__faText('quote_modal_trust_1', 'Connected to CRM and dispatch system.')) ?></span></div>
+          <div class="artdon-fi-trust-item-v718109"><span class="artdon-fi-trust-dot-v718109"></span><span><?= web_e($__faText('quote_modal_trust_2', 'Fastest response within 1 hour.')) ?></span></div>
+          <div class="artdon-fi-trust-item-v718109"><span class="artdon-fi-trust-dot-v718109"></span><span><?= web_e($__faText('quote_modal_trust_3', 'Product, sample or project details are tracked clearly.')) ?></span></div>
         </div>
       </aside>
       <div class="artdon-fi-main-v718109">
         <div class="artdon-fi-head-v71871">
           <div>
-            <h2 id="artdon-fi-title-v71871">Project inquiry</h2>
-            <p data-af-modal-subtitle>Send us your product or project requirement.</p>
+            <h2 id="artdon-fi-title-v71871"><?= web_e($__faText('quote_modal_title', 'Project inquiry')) ?></h2>
+            <p data-af-modal-subtitle data-template="<?= web_e($__faText('quote_modal_subtitle_template', 'Inquiry about: {project}')) ?>" data-default="<?= web_e($__faText('quote_modal_subtitle_default', 'Send us your product or project requirement.')) ?>"><?= web_e($__faText('quote_modal_subtitle_default', 'Send us your product or project requirement.')) ?></p>
           </div>
           <button type="button" class="artdon-fi-close-v71871" data-af-close aria-label="Close">×</button>
         </div>
-        <div class="artdon-fi-mini-notice-v718109"><strong>CRM + dispatch linked</strong><span>Your inquiry is saved and assigned automatically. Fastest reply within 1 hour.</span></div>
+        <div class="artdon-fi-mini-notice-v718109"><strong><?= web_e($__faText('quote_modal_notice_title', 'CRM + dispatch linked')) ?></strong><span><?= web_e($__faText('quote_modal_notice_text', 'Your inquiry is saved and assigned automatically. Fastest reply within 1 hour.')) ?></span></div>
     <form action="submit_inquiry.php" method="post" data-af-form>
       <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="artdon-fi-hp-v71871" aria-hidden="true">
-      <input type="hidden" name="source" value="homepage">
-      <input type="hidden" name="support_type" value="product">
+      <input type="hidden" name="source" value="global_quote">
+      <input type="hidden" name="support_type" value="quotation">
       <input type="hidden" name="product" data-af-field-product value="">
       <input type="hidden" name="product_link" data-af-field-link value="">
       <input type="hidden" name="page_type" data-af-field-page-type value="">
       <input type="hidden" name="page_title" data-af-field-page-title value="">
       <input type="hidden" name="return_url" data-af-field-return value="index.php">
       <div class="artdon-fi-grid-v71871">
-        <div class="artdon-fi-field-v71871"><label>Name *</label><input name="name" required autocomplete="name"></div>
-        <div class="artdon-fi-field-v71871"><label>Email *</label><input name="email" type="email" required autocomplete="email"></div>
-        <div class="artdon-fi-field-v71871"><label>Company</label><input name="company" autocomplete="organization"></div>
-        <div class="artdon-fi-field-v71871"><label>Country</label><input name="country" autocomplete="country-name"></div>
-        <div class="artdon-fi-field-v71871 full"><label>Requirement</label><textarea name="message" data-af-message placeholder="Tell us quantity, project type, beam angle, CCT or other requirements."></textarea></div>
+        <div class="artdon-fi-field-v71871"><label><?= web_e($__faText('quote_modal_name_label', 'Name *')) ?></label><input name="name" required autocomplete="name"></div>
+        <div class="artdon-fi-field-v71871"><label><?= web_e($__faText('quote_modal_email_label', 'Email *')) ?></label><input name="email" type="email" required autocomplete="email"></div>
+        <div class="artdon-fi-field-v71871"><label><?= web_e($__faText('quote_modal_company_label', 'Company')) ?></label><input name="company" autocomplete="organization"></div>
+        <div class="artdon-fi-field-v71871"><label><?= web_e($__faText('quote_modal_country_label', 'Country')) ?></label><input name="country" autocomplete="country-name"></div>
+        <div class="artdon-fi-field-v71871 full"><label><?= web_e($__faText('quote_modal_requirement_label', 'Project requirement')) ?></label><textarea name="message" data-af-message placeholder="<?= web_e($__faText('quote_modal_requirement_placeholder', 'Tell us quantity, project type, beam angle, CCT or other requirements.')) ?>"></textarea></div>
       </div>
       <div class="artdon-fi-actions-v71871">
-        <button type="button" class="artdon-fi-cancel-v71871" data-af-close>Cancel</button>
-        <button type="submit" class="artdon-fi-submit-v71871" data-af-submit>Submit inquiry</button>
+        <button type="button" class="artdon-fi-cancel-v71871" data-af-close><?= web_e($__faText('quote_modal_cancel_label', 'Cancel')) ?></button>
+        <button type="submit" class="artdon-fi-submit-v71871" data-af-submit data-label="<?= web_e($__faText('quote_modal_submit_label', 'Submit inquiry')) ?>"><?= web_e($__faText('quote_modal_submit_label', 'Submit inquiry')) ?></button>
       </div>
       <div class="artdon-fi-status-v71871" data-af-status aria-live="polite"></div>
     </form>
@@ -428,8 +433,39 @@ if (isset($series) && is_array($series)) {
     if(ctx.model)parts.push(ctx.model);
     if(ctx.size)parts.push(ctx.size);
     if(!parts.length&&ctx.series)parts.push(ctx.series);
-    if(!parts.length)parts.push(pageTitle());
+    if(!parts.length&&(ctx.page_type==='product'||ctx.page_type==='series'))parts.push(pageTitle());
     return clip(parts.join(' / '),80);
+  }
+  function triggerProduct(trigger){
+    if(!trigger)return '';
+    var explicit=clean(trigger.getAttribute('data-quote-product')||'');
+    if(/^(general project quotation|project inquiry)$/i.test(explicit))explicit='';
+    if(explicit)return clip(explicit,80);
+    var href=trigger.getAttribute('href')||'';
+    if(href){
+      try{
+        var targetUrl=new URL(href,location.href);
+        var product=clean(targetUrl.searchParams.get('product')||'');
+        var model=clean(targetUrl.searchParams.get('model')||'');
+        if(product)return clip([product,model].filter(Boolean).join(' / '),80);
+      }catch(e){}
+    }
+    return '';
+  }
+  function triggerLink(trigger){
+    if(!trigger)return currentUrl();
+    var explicit=clean(trigger.getAttribute('data-quote-link')||'');
+    if(!explicit)return currentUrl();
+    try{return new URL(explicit,location.href).href}catch(e){return currentUrl()}
+  }
+  function formatProjectText(template,project,fallback){
+    if(!project)return fallback;
+    return clean(String(template||'Inquiry about: {project}').replace(/\{project\}/gi,project));
+  }
+  function isGetQuoteTrigger(trigger){
+    if(!trigger||trigger.closest('[data-af-modal]'))return false;
+    var label=clean(trigger.textContent||'').replace(/[→›»]+/g,'').trim();
+    return /^get\s+a\s+quote\b/i.test(label);
   }
   function currentUrl(){return location.href.split('#')[0]}
   function legacyReturnUrl(){
@@ -441,16 +477,24 @@ if (isset($series) && is_array($series)) {
   function showToast(t){var toast=q('[data-af-toast]');if(!toast)return;toast.textContent=t||'Link copied';toast.classList.add('show');clearTimeout(toast.__t);toast.__t=setTimeout(function(){toast.classList.remove('show')},1800)}
   function copyLink(){var url=currentUrl();if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){showToast('Link copied')}).catch(fallback)}else fallback();function fallback(){var i=document.createElement('input');i.value=url;document.body.appendChild(i);i.select();document.execCommand('copy');i.remove();showToast('Link copied')}}
   function mailto(){var email=root.getAttribute('data-email')||'sales@artdon.cn';var title=pageTitle();var body=['Hello Artdon,','','I am interested in:',productText(),'','Link:',currentUrl(),''].join('\n');return 'mailto:'+encodeURIComponent(email)+'?subject='+encodeURIComponent('Inquiry about '+title)+'&body='+encodeURIComponent(body)}
-  function openInquiry(){
+  function openInquiry(trigger){
     var modal=q('[data-af-modal]'); if(!modal)return;
-    var prod=productText();
+    var prod=triggerProduct(trigger)||productText();
     setVal('[data-af-field-product]', prod);
-    setVal('[data-af-field-link]', currentUrl());
+    setVal('[data-af-field-link]', triggerLink(trigger));
     setVal('[data-af-field-page-type]', ctx.page_type||'page');
     setVal('[data-af-field-page-title]', pageTitle());
     setVal('[data-af-field-return]', legacyReturnUrl());
-    var subtitle=q('[data-af-modal-subtitle]'); if(subtitle) subtitle.textContent=prod ? ('Inquiry about: '+prod) : 'Send us your product or project requirement.';
-    var msg=q('[data-af-message]'); if(msg && !clean(msg.value)) msg.value = prod ? ('I am interested in '+prod) : '';
+    var subtitle=q('[data-af-modal-subtitle]'); if(subtitle) subtitle.textContent=formatProjectText(subtitle.getAttribute('data-template'),prod,subtitle.getAttribute('data-default')||'Send us your product or project requirement.');
+    var msg=q('[data-af-message]');
+    if(msg){
+      var previousAuto=clean(msg.getAttribute('data-auto-value')||'');
+      if(!clean(msg.value)||clean(msg.value)===previousAuto){
+        var nextAuto=prod ? ('I am interested in '+prod) : '';
+        msg.value=nextAuto;
+        msg.setAttribute('data-auto-value',nextAuto);
+      }
+    }
     var status=q('[data-af-status]'); if(status){status.textContent='';status.className='artdon-fi-status-v71871'}
     modal.hidden=false; modal.setAttribute('aria-hidden','false'); document.documentElement.style.overflow='hidden';
     setTimeout(function(){var name=q('[data-af-form] input[name="name"]'); if(name) name.focus();},60);
@@ -477,16 +521,17 @@ if (isset($series) && is_array($series)) {
           }
         })
         .catch(function(){if(status){status.textContent='Submit failed. Please try again or email us.';status.className='artdon-fi-status-v71871 err'}})
-        .finally(function(){if(btn){btn.disabled=false;btn.textContent='Submit inquiry'}});
+        .finally(function(){if(btn){btn.disabled=false;btn.textContent=btn.getAttribute('data-label')||'Submit inquiry'}});
     });
   }
-  var inquiryBtn=q('[data-af-inquiry]',root); if(inquiryBtn) inquiryBtn.addEventListener('click',openInquiry);
-  document.querySelectorAll('.series-v717 .s717-hero-actions .s717-linkline:first-child').forEach(function(trigger){
-    trigger.addEventListener('click',function(e){
-      e.preventDefault();
-      openInquiry();
-    });
-  });
+  var inquiryBtn=q('[data-af-inquiry]',root); if(inquiryBtn) inquiryBtn.addEventListener('click',function(){openInquiry(inquiryBtn)});
+  document.addEventListener('click',function(e){
+    var target=e.target&&e.target.closest?e.target.closest('a,button'):null;
+    if(!isGetQuoteTrigger(target))return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    openInquiry(target);
+  },true);
   var copyBtn=q('[data-af-copy]',root); if(copyBtn) copyBtn.addEventListener('click',copyLink);
   var emailLink=q('[data-af-email]',root); if(emailLink) emailLink.addEventListener('click',function(){emailLink.href=mailto()});
   document.addEventListener('click',function(e){if(e.target&&e.target.matches('[data-af-close]'))closeInquiry();});

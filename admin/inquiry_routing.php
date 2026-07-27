@@ -496,6 +496,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'create_crm_inquiry' => isset($_POST['create_crm_inquiry']) ? 1 : 0,
             'create_crm_task' => isset($_POST['create_crm_task']) ? 1 : 0,
             'create_dispatch' => isset($_POST['create_dispatch']) ? 1 : 0,
+            'task_title_template' => trim((string)($_POST['task_title_template'] ?? '')),
+            'project_template' => trim((string)($_POST['project_template'] ?? '')),
+            'dispatch_content_template' => trim((string)($_POST['dispatch_content_template'] ?? '')),
             'rules' => [],
         ];
         foreach (web_inquiry_route_types() as $type => $label) {
@@ -552,6 +555,14 @@ $remoteAccountStatus = $GLOBALS['artdon_v71861_remote_account_status'] ?? ['ok'=
     <div class="field"><label><input type="checkbox" name="create_crm_inquiry" value="1"<?= (int)$config['create_crm_inquiry']===1?' checked':'' ?>> 写入暂存池</label></div>
     <div class="field"><label><input type="checkbox" name="create_crm_task" value="1"<?= (int)$config['create_crm_task']===1?' checked':'' ?>> 生成任务提醒</label></div>
     <div class="field"><label><input type="checkbox" name="create_dispatch" value="1"<?= (int)$config['create_dispatch']===1?' checked':'' ?>> 需要跟进</label></div>
+  </div>
+
+  <h2 style="margin-top:28px">任务标题、项目与派工内容</h2>
+  <p>这里决定询盘同步到广州后分别写入哪个内容。三个字段彼此独立，不再混用。</p>
+  <div class="admin-form-grid">
+    <div class="field full"><label>任务标题模板</label><input name="task_title_template" value="<?= web_e($config['task_title_template']) ?>"><span class="help">写入任务标题，例如：<code>官网询价｜{project}｜{name}</code></span></div>
+    <div class="field full"><label>项目模板</label><input name="project_template" value="<?= web_e($config['project_template']) ?>"><span class="help">写入 CRM / 派工的项目字段。旧系统字段较短，建议只用 <code>{project}</code> 或 <code>{product}</code>。</span></div>
+    <div class="field full"><label>派工内容模板</label><textarea name="dispatch_content_template" rows="12"><?= web_e($config['dispatch_content_template']) ?></textarea><span class="help">写入派工详情 / description。可用变量：<code>{name}</code>、<code>{email}</code>、<code>{phone}</code>、<code>{company}</code>、<code>{country}</code>、<code>{support_label}</code>、<code>{product}</code>、<code>{project}</code>、<code>{page_title}</code>、<code>{message}</code>、<code>{page_url}</code>、<code>{submitted_at}</code>、<code>{inquiry_id}</code>。</span></div>
   </div>
 
   <h2 style="margin-top:28px">按询盘类型分配</h2>
