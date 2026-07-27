@@ -46,6 +46,13 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Unified every public `GET A QUOTE` entry through the shared `Project inquiry` modal, including header, homepage hero, series, product-detail and content-page links.
+- Added public modal-copy controls under `admin/settings.php` in the `全站询价弹窗` section.
+- Added separate task-title, project and dispatch-content templates under `admin/inquiry_routing.php`.
+- Changed shared quote submissions to use `source=global_quote` and `support_type=quotation`.
+- Verified live behavior on the homepage, ARMI series page, ARMI 45 model page and About page: current URL is retained, the shared modal opens, the legacy homepage modal stays closed, product context is prefilled, and the browser console has no errors.
+- Deployed five inquiry-related files after creating production backups with tag `20260727_151137`.
+- Moved 31 pre-deployment page-cache files to the recoverable directory `storage/page_cache_backup_quote_unify_20260727_151210`.
 - Updated the series-page hero `Get a Quote` action to open the shared CRM inquiry modal used by the floating inquiry button.
 - Verified the ARMI series page keeps the current URL, opens `Project inquiry`, shows `Inquiry about: ARMI`, and pre-fills `I am interested in ARMI`.
 - Deployed only `includes/floating_actions.php` after creating a production backup.
@@ -61,6 +68,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `4ffb825` - Unify quote modal and configure inquiry dispatch fields
 - `89310a2` - Open series quote CTA in inquiry modal
 - `aa79f0a` - Initial sync from Hong Kong website server
 - `45f65a1` - Document local GitHub server workflow
@@ -68,14 +76,14 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
-- `includes/floating_actions.php` synced to the Hong Kong server and verified on the live ARMI page.
+- `admin/inquiry_routing.php`, `admin/settings.php`, `includes/default_content.php`, `includes/floating_actions.php` and `includes/inquiry_routing.php` are synced to the Hong Kong server and passed production PHP lint.
 - Initial code sync to GitHub completed.
 - `WORKFLOW_RULES.md` synced to server.
 - `CODEX_CONTEXT.md` synced to server.
 
 ## Current Session Closeout
 
-- The requested ARMI `Get a Quote` popup behavior is complete.
+- The requested site-wide `GET A QUOTE` popup unification and configurable inquiry/dispatch wording are complete.
 - No open code changes are pending.
 - Next session should continue using the default workflow:
 
