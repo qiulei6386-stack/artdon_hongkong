@@ -311,7 +311,7 @@ function web_footer_defaults(array $site = []): array
             'mobile_value' => trim((string)($site['mobile'] ?? '+86-13925332972')),
             'whatsapp_number' => preg_replace('/\D+/', '', (string)($site['whatsapp'] ?? '8613925332972')),
             'button_label' => 'About Us',
-            'button_url' => 'index.php#about',
+            'button_url' => '/about.php',
         ],
         'newsletter' => [
             'active' => 1,
