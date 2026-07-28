@@ -641,7 +641,7 @@ function web_product_variant_save(PDO $pdo, array $data, int $id = 0): int
             'description'=>trim((string)($item['description'] ?? '')),
             'alt'=>trim((string)($item['alt'] ?? '')),
         ];
-        if (count($accessoryItems) >= 8) break;
+        if (count($accessoryItems) >= 12) break;
     }
     $angleImages = [];
     foreach (($data['angle_images'] ?? []) as $item) {

@@ -122,7 +122,7 @@ function web_product_accessory_push_decode_items($json): array
             'description' => $description,
             'alt' => $alt,
         ] + array_diff_key($item, ['image'=>1,'title'=>1,'model'=>1,'description'=>1,'alt'=>1]);
-        if (count($out) >= 8) break;
+        if (count($out) >= 12) break;
     }
     return $out;
 }
@@ -166,7 +166,7 @@ function web_product_accessory_push_status(array $items, array $accessory): arra
 {
     $count = count($items);
     $dup = web_product_accessory_push_duplicate($items, $accessory);
-    $full = $count >= 8;
+    $full = $count >= 12;
     $can = !$dup && !$full;
     $reason = $can ? '可新增' : ($dup ? '已存在，跳过' : '配件位已满');
     return ['count'=>$count,'duplicate'=>$dup?1:0,'full'=>$full?1:0,'can_add'=>$can?1:0,'reason'=>$reason];
@@ -307,7 +307,7 @@ function web_product_accessory_push_apply(PDO $pdo, array $accessory, array $var
                 continue;
             }
             $items[] = $payload;
-            $items = array_slice($items, 0, 8);
+            $items = array_slice($items, 0, 12);
             $newJson = json_encode($items, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) ?: '[]';
             $update->execute([$newJson, (int)$row['id']]);
             $summary['added']++;

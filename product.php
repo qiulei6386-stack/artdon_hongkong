@@ -529,7 +529,7 @@ $photometricImages = array_values(array_filter(array_slice($variant['photometric
 // V6.12.36: when exactly two curves are available, repeat them once to form a balanced four-item row.
 $photometricDisplayImages = count($photometricImages) === 2 ? array_merge($photometricImages, $photometricImages) : $photometricImages;
 foreach ($photometricImages as $photo) $schemaImages[] = ['image'=>(string)$photo['image'],'alt'=>(string)($photo['alt'] ?? $photo['label'] ?? $variant['name'])];
-$accessoryItems = array_values(array_filter(array_slice($variant['accessory_items'] ?? [], 0, 8), static fn($item): bool => is_array($item) && trim((string)($item['image'] ?? '')) !== ''));
+$accessoryItems = array_values(array_filter(array_slice($variant['accessory_items'] ?? [], 0, 12), static fn($item): bool => is_array($item) && trim((string)($item['image'] ?? '')) !== ''));
 foreach ($accessoryItems as $accessory) $schemaImages[] = ['image'=>(string)$accessory['image'],'alt'=>(string)($accessory['alt'] ?? $accessory['title'] ?? ($variant['name'].' accessory'))];
 
 $specRows = [
@@ -783,7 +783,7 @@ if (!function_exists('artdon_pd_v71816_sibling_accessories')) {
             $model = trim((string)($item['model'] ?? ''));
             $alt = trim((string)($item['alt'] ?? '')) ?: ($title ?: ($model ?: 'Compatible accessory'));
             $items[] = ['image'=>$img, 'title'=>$title, 'model'=>$model, 'alt'=>$alt];
-            if (count($items) >= 4) break;
+            if (count($items) >= 12) break;
         }
         return $items;
     }
@@ -835,7 +835,7 @@ if (is_file($__artdonCardV7093)) {
 ?>
 <!-- ARTDON_V7093_SIMPLE_BOOT_END -->
 <!-- ARTDON_V7179_DIMENSION_SCALE_START -->
-<link rel="stylesheet" href="assets/css/artdon_product_inline_v718.css?v=7.1.8.185">
+<link rel="stylesheet" href="assets/css/artdon_product_inline_v718.css?v=7.1.8.187">
 <!-- ARTDON_V7179_DIMENSION_SCALE_END -->
 
 <!-- ARTDON_V71812_DETAIL_SECTION_ALIGNMENT_START -->
@@ -1043,7 +1043,7 @@ if (is_file($__artdonCardV7093)) {
     <header><div><p>Other sizes</p><h2>More products in <?= web_e($series['series_name'] ?: $series['name']) ?></h2></div><a href="<?= web_e(artdon_pretty_series_url_v71868($category, $series)) ?>">View family →</a></header>
     <div class="s717-variants-grid">
       <?php foreach($siblings as $siblingIndex=>$sibling): ?>
-      <?php $siblingSpec = artdon_pd_v71816_sibling_specs($sibling, $series, (int)($sibling['_artdon_pd_v71816_index'] ?? $siblingIndex), $seriesVariantTotalV71816); $siblingImg = trim((string)($sibling['cover_image'] ?? '')) ?: trim((string)($series['cover_image'] ?? '')) ?: 'assets/img/product-placeholder.svg'; $siblingAccItems = artdon_pd_v71816_sibling_accessories($sibling); ?>
+      <?php $siblingSpec = artdon_pd_v71816_sibling_specs($sibling, $series, (int)($sibling['_artdon_pd_v71816_index'] ?? $siblingIndex), $seriesVariantTotalV71816); $siblingImg = trim((string)($sibling['cover_image'] ?? '')) ?: trim((string)($series['cover_image'] ?? '')) ?: 'assets/img/product-placeholder.svg'; $siblingAccItems = artdon_pd_v71816_sibling_accessories($sibling); $siblingAccPreview = array_slice($siblingAccItems,0,4); $siblingAccRemaining = max(0,count($siblingAccItems)-count($siblingAccPreview)); ?>
       <a class="s717-card" href="<?= web_e(artdon_pretty_product_url_v71868($category, $series, $sibling)) ?>">
         <figure>
 <!-- ARTDON_V7093_DIRECT_SIBLING_BADGE_START -->
@@ -1060,7 +1060,7 @@ if (is_file($__artdonCardV7093)) {
             <?php if($siblingSpec['beam']!==''): ?><p>Beam Angle: <b><?= web_e($siblingSpec['beam']) ?></b></p><?php endif; ?>
           </div>
           <?php if($siblingSpec['tags']): ?><div class="s717-tags"><?php foreach(array_slice($siblingSpec['tags'],0,4) as $tag): ?><span><?= web_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?>
-          <?php if($siblingAccItems): ?><div class="s717-accessories"><span class="s717-accessories-title">Accessories</span><div class="s717-accessory-list"><?php foreach($siblingAccItems as $acc): ?><span class="s717-accessory"><img src="<?= web_e(web_public_path($acc['image'])) ?>" alt="<?= web_e($acc['alt']) ?>" title="<?= web_e($acc['alt']) ?>" loading="lazy"><span><b><?= web_e($acc['title'] ?: 'Accessory') ?></b><?php if(trim((string)$acc['model']) !== ''): ?><em><?= web_e($acc['model']) ?></em><?php endif; ?></span></span><?php endforeach; ?></div></div><?php endif; ?>
+          <?php if($siblingAccPreview): ?><div class="s717-accessories"><span class="s717-accessories-title">Accessories</span><div class="s717-accessory-list"><?php foreach($siblingAccPreview as $acc): ?><span class="s717-accessory"><img src="<?= web_e(web_public_path($acc['image'])) ?>" alt="<?= web_e($acc['alt']) ?>" title="<?= web_e($acc['alt']) ?>" loading="lazy"><span><b><?= web_e($acc['title'] ?: 'Accessory') ?></b><?php if(trim((string)$acc['model']) !== ''): ?><em><?= web_e($acc['model']) ?></em><?php endif; ?></span></span><?php endforeach; ?></div><?php if($siblingAccRemaining>0): ?><span class="s717-accessory-more">+<?= (int)$siblingAccRemaining ?> more accessories</span><?php endif; ?></div><?php endif; ?>
         </div>
       </a>
       <?php endforeach; ?>

@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($image !== '') $data['photometric_images'][] = ['image'=>$image,'label'=>$label,'alt'=>$alt];
         }
         $data['accessory_items'] = [];
-        for ($accessoryIndex = 0; $accessoryIndex < 8; $accessoryIndex++) {
+        for ($accessoryIndex = 0; $accessoryIndex < 12; $accessoryIndex++) {
             $image = trim((string)($_POST['accessory_items'][$accessoryIndex]['image'] ?? ''));
             $title = trim((string)($_POST['accessory_items'][$accessoryIndex]['title'] ?? ''));
             $model = trim((string)($_POST['accessory_items'][$accessoryIndex]['model'] ?? ''));
@@ -239,9 +239,9 @@ $detailLayouts = [
 ];
 $currentDetailLayout = in_array((string)$variant['detail_layout'], array_keys($detailLayouts), true) ? (string)$variant['detail_layout'] : 'stacked';
 $photoRows = array_pad(array_slice($variant['photometric_images']??[],0,4),4,[]);
-$accessoryRows = array_pad(array_slice($variant['accessory_items']??[],0,8),8,[]);
+$accessoryRows = array_pad(array_slice($variant['accessory_items']??[],0,12),12,[]);
 $primaryAccessoryRows = array_slice($accessoryRows,0,2,true);
-$extraAccessoryRows = array_slice($accessoryRows,2,6,true);
+$extraAccessoryRows = array_slice($accessoryRows,2,10,true);
 $extraAccessoryFilled = count(array_filter($extraAccessoryRows, static function(array $item): bool {
   return trim((string)($item['image']??'')) !== '' || trim((string)($item['title']??'')) !== '' || trim((string)($item['model']??'')) !== '' || trim((string)($item['description']??'')) !== '';
 }));
@@ -405,7 +405,7 @@ DALI / TRIAC dimming available"><?= web_e($variant['detail_intro'] ?? '') ?></te
   <header><div><p>05</p><h2>配件图片与资料</h2></div><span>常用前两个配件直接显示；可从后台菜单「产品中心 → 共用配件库」维护，再在这里下拉选择；也可手动填写。</span></header><div class="accessory-section-tools"><a class="admin-button-secondary" href="products.php?panel=accessories">管理共用配件库</a><span class="muted">选择共用配件后会填入图片、名称、型号、说明、ALT。</span></div>
   <div class="product-accessory-admin-grid product-accessory-primary-grid"><?php foreach($primaryAccessoryRows as $accessoryIndex=>$accessory){ $renderAccessoryCard((int)$accessoryIndex,$accessory); } ?></div>
   <details class="product-accessory-more-details">
-    <summary><span>展开配件 3–8</span><small>已填写 <?= $extraAccessoryFilled ?> 个 · 最多再添加 6 个</small></summary>
+    <summary><span>展开配件 3–12</span><small>已填写 <?= $extraAccessoryFilled ?> 个 · 最多再添加 10 个</small></summary>
     <div class="product-accessory-admin-grid product-accessory-extra-grid"><?php foreach($extraAccessoryRows as $accessoryIndex=>$accessory){ $renderAccessoryCard((int)$accessoryIndex,$accessory); } ?></div>
   </details>
 </section>

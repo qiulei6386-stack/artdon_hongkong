@@ -185,7 +185,7 @@ if($adminPanel === 'accessories'){
                     <label class="accessory-variant-row <?= $canAdd?'':'is-disabled' ?>" data-push-row data-category="<?= web_e($cat['slug']) ?>" data-series="<?= (int)$series['id'] ?>" data-can-add="<?= $canAdd?1:0 ?>" data-duplicate="<?= (int)$variant['duplicate'] ?>" data-full="<?= (int)$variant['full'] ?>" data-title="<?= web_e(trim((string)($series['name'].' / '.$variant['name']))) ?>">
                       <input type="checkbox" name="variant_ids[]" value="<?= (int)$variant['id'] ?>" <?= $canAdd?'':'disabled' ?> data-push-check>
                       <span class="accessory-variant-thumb"><?php if(trim((string)$variant['cover_image'])!==''): ?><img src="../<?= web_e(ltrim((string)$variant['cover_image'],'/')) ?>" alt=""><?php else: ?>无图<?php endif; ?></span>
-                      <span class="accessory-variant-name"><b><?= web_e($variant['name']) ?></b><small><?= web_e($variant['model_code'] ?: $variant['slug']) ?> · 已有配件 <?= (int)$variant['accessory_count'] ?>/8 · <?= !empty($variant['is_published'])?'已发布':'草稿' ?></small></span>
+                      <span class="accessory-variant-name"><b><?= web_e($variant['name']) ?></b><small><?= web_e($variant['model_code'] ?: $variant['slug']) ?> · 已有配件 <?= (int)$variant['accessory_count'] ?>/12 · <?= !empty($variant['is_published'])?'已发布':'草稿' ?></small></span>
                       <span class="accessory-variant-status <?= $canAdd?'':'skip' ?>"><?= web_e($variant['reason']) ?></span>
                     </label>
                     <?php endforeach; ?>
@@ -195,7 +195,7 @@ if($adminPanel === 'accessories'){
               </section>
               <?php endforeach; ?>
             </div>
-            <aside class="accessory-push-summary"><h3>推送预览</h3><div class="accessory-push-kpis"><div><span>已选</span><b id="pushSelectedCount">0</b></div><div><span>可新增</span><b id="pushAddableCount">0</b></div><div><span>跳过重复</span><b id="pushDuplicateCount">0</b></div><div><span>跳过满位</span><b id="pushFullCount">0</b></div></div><div class="accessory-push-selected-list" id="pushSelectedList">尚未选择产品。</div><button class="accessory-push-submit" id="pushSubmitBtn" type="submit" disabled>确认推送</button><div class="accessory-push-note">安全规则：只追加到空位；不覆盖已有配件；重复型号或重复图片自动跳过；每个产品最多 8 个配件；执行记录写入日志。</div></aside>
+            <aside class="accessory-push-summary"><h3>推送预览</h3><div class="accessory-push-kpis"><div><span>已选</span><b id="pushSelectedCount">0</b></div><div><span>可新增</span><b id="pushAddableCount">0</b></div><div><span>跳过重复</span><b id="pushDuplicateCount">0</b></div><div><span>跳过满位</span><b id="pushFullCount">0</b></div></div><div class="accessory-push-selected-list" id="pushSelectedList">尚未选择产品。</div><button class="accessory-push-submit" id="pushSubmitBtn" type="submit" disabled>确认推送</button><div class="accessory-push-note">安全规则：只追加到空位；不覆盖已有配件；重复型号或重复图片自动跳过；每个产品最多 12 个配件；执行记录写入日志。</div></aside>
           </div>
         </form>
       </section>
