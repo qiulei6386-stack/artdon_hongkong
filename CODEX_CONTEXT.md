@@ -1,6 +1,6 @@
 # Codex Context Handoff
 
-Last updated: 2026-07-27
+Last updated: 2026-07-28
 
 ## Workflow Rule
 
@@ -46,6 +46,11 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Expanded product-variant accessory capacity from 8 to 12 across variant editing, normalization and shared accessory push logic.
+- Kept series and sibling product cards compact by showing the first four accessories plus a `+N more accessories` indicator when more exist.
+- Updated product-detail compatible-accessory layouts for up to 12 entries: four columns on desktop, two on tablet and one on mobile, with incomplete final rows centered.
+- Verified the live `1 CIRCUIT TRACK AND ACCESSORIES` series: both products contain eight accessories, each card shows four plus `+4 more accessories`, and each product detail shows all eight in two desktop rows without overflow or console errors.
+- Deployed eight accessory-related files after creating recoverable production backups tagged `accessory12_20260728_164912`; moved the old page cache into `storage/page_cache_backup_accessory12_20260728_164912`.
 - Simplified the shared series-page Project Support CTA across all product families: removed `Request Sample` and `Download Datasheet`, retained one `Get a quote` button, and right-aligned it at desktop and responsive widths.
 - Corrected both product-detail layouts so `Technical files` points to the current product pretty URL plus `#technical-files`, rather than resolving through `<base href="/">` to the homepage.
 - Added deterministic same-page scrolling to the `Downloads / Planning files` section with a 96px top offset and cache-busted the product CSS/JS references.
@@ -82,6 +87,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `6ab03a0` - Expand product accessory display capacity
 - `8c5c960` - Make files anchor scrolling deterministic
 - `d3bd0e8` - Ensure product files link scrolls to downloads
 - `2023166` - Simplify support CTA and fix files anchor
@@ -95,6 +101,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `series.php`, `product.php`, `includes/product_hierarchy.php`, `includes/product_accessories.php`, `admin/product_variant_edit.php`, `admin/products.php`, `admin/assets/admin_v7.css` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; all changed PHP files passed production lint and all eight deployed file checksums match local.
 - `series.php`, `product.php`, `assets/js/artdon_product_inline_v718.js` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; PHP lint and the product JavaScript syntax check passed.
 - `includes/footer.php` and `admin/footer.php` are synced to the Hong Kong server and passed production PHP lint.
 - `admin/inquiry_routing.php`, `admin/settings.php`, `includes/default_content.php`, `includes/floating_actions.php` and `includes/inquiry_routing.php` are synced to the Hong Kong server and passed production PHP lint.
@@ -104,7 +111,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- The series-page CTA cleanup/right alignment and product-page `Technical files` same-page download anchor are complete.
+- Accessory overflow handling for product families with roughly ten accessories is complete and live: cards preview four while detail pages and admin support up to twelve.
 - No open code changes are pending.
 - Next session should continue using the default workflow:
 
