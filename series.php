@@ -639,7 +639,7 @@ $projects = array_slice(array_values(array_filter($content['projects'] ?? [], 'i
 	  .s717-linkline{font-size:11px!important;line-height:1.12!important;min-height:39px!important}
 	}
 
-		/* V7.1.8.56: lock series project/case images to 4:3 on the public page. */
+		/* V7.1.8.188: reduce series project/case image height by 25% through a centered crop, never image distortion. */
 		.s717-project{
 		  align-items:start!important;
 		  grid-template-columns:minmax(0,.88fr) minmax(420px,.9fr)!important;
@@ -648,7 +648,7 @@ $projects = array_slice(array_values(array_filter($content['projects'] ?? [], 'i
 		  width:100%!important;
 		  height:auto!important;
 		  min-height:0!important;
-		  aspect-ratio:4/3!important;
+		  aspect-ratio:16/9!important;
 		  overflow:hidden!important;
 		  align-self:start!important;
 		}
