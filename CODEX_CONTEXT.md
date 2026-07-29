@@ -1,6 +1,6 @@
 # Codex Context Handoff
 
-Last updated: 2026-07-28
+Last updated: 2026-07-29
 
 ## Workflow Rule
 
@@ -46,6 +46,9 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Updated the shared series-page Projects image treatment from 4:3 to 16:9, reducing image-box height by 25% through center cropping (`object-fit: cover`) without distortion.
+- Verified the live EMMA series page: all three project images changed from 597×448 to 597×336, with no horizontal overflow or browser errors.
+- Deployed `series.php` after creating the recoverable backup `series.php.bak_project_crop_20260729_110519` and moving previous page-cache files to `storage/page_cache_backup_project_crop_20260729_110519`.
 - Expanded product-variant accessory capacity from 8 to 12 across variant editing, normalization and shared accessory push logic.
 - Kept series and sibling product cards compact by showing the first four accessories plus a `+N more accessories` indicator when more exist.
 - Updated product-detail compatible-accessory layouts for up to 12 entries: four columns on desktop, two on tablet and one on mobile, with incomplete final rows centered.
@@ -87,6 +90,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `7fd6edb` - Crop series project images to widescreen
 - `6ab03a0` - Expand product accessory display capacity
 - `8c5c960` - Make files anchor scrolling deterministic
 - `d3bd0e8` - Ensure product files link scrolls to downloads
@@ -101,6 +105,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `series.php` is synced to the Hong Kong server with the shared 16:9 center-crop rule for all series Projects images; production PHP lint passed and checksum matches local.
 - `series.php`, `product.php`, `includes/product_hierarchy.php`, `includes/product_accessories.php`, `admin/product_variant_edit.php`, `admin/products.php`, `admin/assets/admin_v7.css` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; all changed PHP files passed production lint and all eight deployed file checksums match local.
 - `series.php`, `product.php`, `assets/js/artdon_product_inline_v718.js` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; PHP lint and the product JavaScript syntax check passed.
 - `includes/footer.php` and `admin/footer.php` are synced to the Hong Kong server and passed production PHP lint.
@@ -111,7 +116,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- Accessory overflow handling for product families with roughly ten accessories is complete and live: cards preview four while detail pages and admin support up to twelve.
+- Series-page Projects images now use a 16:9 center crop across every product family, reducing display height by 25% without stretching source images.
 - No open code changes are pending.
 - Next session should continue using the default workflow:
 
