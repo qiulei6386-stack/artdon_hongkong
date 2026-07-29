@@ -12,6 +12,7 @@ if (!headers_sent()) {
 }
 
 $site = function_exists('web_get_block') ? (array)web_get_block('site') : [];
+$projectPageSettings = function_exists('web_get_block') ? (array)web_get_block('project_page') : [];
 $company = trim((string)($site['company'] ?? 'Artdon Lighting Limited')) ?: 'Artdon Lighting Limited';
 $siteUrl = rtrim((string)($site['site_url'] ?? 'https://artdonlighting.com'), '/');
 
@@ -33,7 +34,12 @@ function project_product_parts(string $products): array
     return array_values(array_filter(array_map('trim', $parts), static fn(string $part): bool => $part !== ''));
 }
 
-$heroImage = project_asset(['assets/img/projects/featured-retail.webp', 'assets/img/hero/hero-track-systems.webp']);
+$heroImage = project_asset([
+    trim((string)($projectPageSettings['hero_image'] ?? '')),
+    'assets/img/projects/featured-retail.webp',
+    'assets/img/hero/hero-track-systems.webp',
+]);
+$heroAlt = trim((string)($projectPageSettings['hero_image_alt'] ?? '')) ?: 'Artdon lighting projects';
 $categories = ['All Projects', 'Retail', 'Hospitality', 'Office', 'Residential', 'Museum & Gallery', 'Commercial'];
 $regions = ['All Regions', 'Asia', 'Europe', 'Middle East', 'North America', 'Oceania'];
 $projects = [
@@ -58,7 +64,6 @@ try {
 } catch (Throwable $e) {
     $projectPdo = null;
 }
-$projectPageSettings = function_exists('web_get_block') ? (array)web_get_block('project_page') : [];
 $projectDisplayLimit = max(0, (int)($projectPageSettings['display_limit'] ?? 0));
 if ($projectDisplayLimit > 0) {
     $projects = array_slice($projects, 0, $projectDisplayLimit);
@@ -193,7 +198,7 @@ $canonical = $siteUrl . '/project.php';
 <?php include __DIR__ . '/partials/header.php'; ?>
 <main class="project-page">
   <section class="project-hero" aria-labelledby="projectTitle">
-    <img src="<?= web_e($heroImage) ?>" alt="Artdon lighting projects" width="1920" height="720">
+    <img src="<?= web_e($heroImage) ?>" alt="<?= web_e($heroAlt) ?>" width="1920" height="720">
     <div class="project-container project-hero-inner">
       <h1 id="projectTitle">PROJECTS</h1>
       <p>Inspiring lighting solutions for retail, hospitality, commercial and more.</p>

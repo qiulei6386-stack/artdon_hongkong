@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/includes/admin_auth.php';
+require_once dirname(__DIR__) . '/includes/upload.php';
 require_once dirname(__DIR__) . '/includes/public_cache.php';
 require_once dirname(__DIR__) . '/includes/project_detail_data.php';
 
@@ -30,11 +31,24 @@ if (!in_array($action, ['hide', 'show', 'create', 'save_list_settings'], true) |
 try {
     if ($action === 'save_list_settings') {
         $settings = function_exists('web_get_block') ? (array)web_get_block('project_page') : [];
-        $settings['display_limit'] = max(0, (int)($_POST['display_limit'] ?? 0));
+        if (array_key_exists('display_limit', $_POST)) {
+            $settings['display_limit'] = max(0, (int)$_POST['display_limit']);
+        }
+        if (array_key_exists('hero_image', $_POST) || !empty($_FILES['project_page_hero_upload'])) {
+            $heroImage = trim((string)($_POST['hero_image'] ?? ($settings['hero_image'] ?? '')));
+            if (!empty($_FILES['project_page_hero_upload']) && ($_FILES['project_page_hero_upload']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+                $uploaded = web_upload_file($_FILES['project_page_hero_upload'], 'image', $pdo, (int)$user['id'], 'Projects 页面顶部横幅', trim((string)($_POST['hero_image_alt'] ?? '')), 'banners');
+                if ($uploaded !== '') $heroImage = $uploaded;
+            }
+            $settings['hero_image'] = $heroImage;
+            $settings['hero_image_alt'] = trim((string)($_POST['hero_image_alt'] ?? ($settings['hero_image_alt'] ?? '')));
+        }
         web_save_block($pdo, 'project_page', $settings, (int)$user['id']);
         web_public_cache_clear('');
-        web_log($pdo, (int)$user['id'], 'update_project_page_settings', 'project_page', 'display_limit', ['display_limit'=>$settings['display_limit']]);
-        $_SESSION['admin_success'] = '前台 Projects 显示数量已保存，项目数据未删除、未隐藏。';
+        web_log($pdo, (int)$user['id'], 'update_project_page_settings', 'project_page', 'settings', ['display_limit'=>(int)($settings['display_limit'] ?? 0), 'hero_image'=>(string)($settings['hero_image'] ?? '')]);
+        $_SESSION['admin_success'] = array_key_exists('hero_image', $_POST) || !empty($_FILES['project_page_hero_upload'])
+            ? 'Projects 页面顶部横幅已保存，前台缓存已清理。'
+            : '前台 Projects 显示数量已保存，项目数据未删除、未隐藏。';
         header('Location: project_details.php' . ($slug !== '' ? '?slug=' . rawurlencode($slug) : ''));
         exit;
     }
