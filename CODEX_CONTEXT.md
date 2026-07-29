@@ -46,6 +46,9 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Made the first large image on `project.php` independently editable in the admin: `Projects 详情页 → 项目页顶部横幅` now supports direct upload, media-library selection, image ALT text and automatic public-cache clearing.
+- The public Projects page prioritizes this saved banner image while retaining the former `featured-retail.webp` image as a safe fallback; project-card images are unaffected.
+- Deployed `project.php`, `admin/project_action.php` and `admin/project_details.php` after creating recoverable production backups tagged `project_banner_admin_20260729_144433` and moving older page-cache files to `storage/page_cache_backup_project_banner_admin_20260729_144433`.
 - Updated the shared series-page Projects image treatment from 4:3 to 16:9, reducing image-box height by 25% through center cropping (`object-fit: cover`) without distortion.
 - Verified the live EMMA series page: all three project images changed from 597×448 to 597×336, with no horizontal overflow or browser errors.
 - Deployed `series.php` after creating the recoverable backup `series.php.bak_project_crop_20260729_110519` and moving previous page-cache files to `storage/page_cache_backup_project_crop_20260729_110519`.
@@ -90,6 +93,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `bb5a939` - Make projects page banner editable
 - `7fd6edb` - Crop series project images to widescreen
 - `6ab03a0` - Expand product accessory display capacity
 - `8c5c960` - Make files anchor scrolling deterministic
@@ -105,6 +109,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `project.php`, `admin/project_action.php` and `admin/project_details.php` are synced to the Hong Kong server with the editable public Projects banner; all three passed production PHP lint and their checksums match local.
 - `series.php` is synced to the Hong Kong server with the shared 16:9 center-crop rule for all series Projects images; production PHP lint passed and checksum matches local.
 - `series.php`, `product.php`, `includes/product_hierarchy.php`, `includes/product_accessories.php`, `admin/product_variant_edit.php`, `admin/products.php`, `admin/assets/admin_v7.css` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; all changed PHP files passed production lint and all eight deployed file checksums match local.
 - `series.php`, `product.php`, `assets/js/artdon_product_inline_v718.js` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; PHP lint and the product JavaScript syntax check passed.
@@ -116,7 +121,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- Series-page Projects images now use a 16:9 center crop across every product family, reducing display height by 25% without stretching source images.
+- The public Projects page top banner can now be changed independently in the admin without affecting the project-list images.
 - No open code changes are pending.
 - Next session should continue using the default workflow:
 
