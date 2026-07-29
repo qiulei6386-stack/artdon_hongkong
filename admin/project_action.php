@@ -34,7 +34,11 @@ try {
         if (array_key_exists('display_limit', $_POST)) {
             $settings['display_limit'] = max(0, (int)$_POST['display_limit']);
         }
-        if (array_key_exists('hero_image', $_POST) || !empty($_FILES['project_page_hero_upload'])) {
+        $hasHeroUpdate = array_key_exists('hero_image', $_POST)
+            || array_key_exists('hero_title', $_POST)
+            || array_key_exists('hero_subtitle', $_POST)
+            || !empty($_FILES['project_page_hero_upload']);
+        if ($hasHeroUpdate) {
             $heroImage = trim((string)($_POST['hero_image'] ?? ($settings['hero_image'] ?? '')));
             if (!empty($_FILES['project_page_hero_upload']) && ($_FILES['project_page_hero_upload']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
                 $uploaded = web_upload_file($_FILES['project_page_hero_upload'], 'image', $pdo, (int)$user['id'], 'Projects 页面顶部横幅', trim((string)($_POST['hero_image_alt'] ?? '')), 'banners');
@@ -42,12 +46,14 @@ try {
             }
             $settings['hero_image'] = $heroImage;
             $settings['hero_image_alt'] = trim((string)($_POST['hero_image_alt'] ?? ($settings['hero_image_alt'] ?? '')));
+            $settings['hero_title'] = trim((string)($_POST['hero_title'] ?? ($settings['hero_title'] ?? '')));
+            $settings['hero_subtitle'] = trim((string)($_POST['hero_subtitle'] ?? ($settings['hero_subtitle'] ?? '')));
         }
         web_save_block($pdo, 'project_page', $settings, (int)$user['id']);
         web_public_cache_clear('');
-        web_log($pdo, (int)$user['id'], 'update_project_page_settings', 'project_page', 'settings', ['display_limit'=>(int)($settings['display_limit'] ?? 0), 'hero_image'=>(string)($settings['hero_image'] ?? '')]);
-        $_SESSION['admin_success'] = array_key_exists('hero_image', $_POST) || !empty($_FILES['project_page_hero_upload'])
-            ? 'Projects 页面顶部横幅已保存，前台缓存已清理。'
+        web_log($pdo, (int)$user['id'], 'update_project_page_settings', 'project_page', 'settings', ['display_limit'=>(int)($settings['display_limit'] ?? 0), 'hero_image'=>(string)($settings['hero_image'] ?? ''), 'hero_title'=>(string)($settings['hero_title'] ?? ''), 'hero_subtitle'=>(string)($settings['hero_subtitle'] ?? '')]);
+        $_SESSION['admin_success'] = $hasHeroUpdate
+            ? 'Projects 页面顶部横幅与文案已保存，前台缓存已清理。'
             : '前台 Projects 显示数量已保存，项目数据未删除、未隐藏。';
         header('Location: project_details.php' . ($slug !== '' ? '?slug=' . rawurlencode($slug) : ''));
         exit;

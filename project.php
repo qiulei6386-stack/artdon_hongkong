@@ -40,6 +40,8 @@ $heroImage = project_asset([
     'assets/img/hero/hero-track-systems.webp',
 ]);
 $heroAlt = trim((string)($projectPageSettings['hero_image_alt'] ?? '')) ?: 'Artdon lighting projects';
+$heroTitle = trim((string)($projectPageSettings['hero_title'] ?? '')) ?: 'PROJECTS';
+$heroSubtitle = trim((string)($projectPageSettings['hero_subtitle'] ?? '')) ?: 'Inspiring lighting solutions for retail, hospitality, commercial and more.';
 $categories = ['All Projects', 'Retail', 'Hospitality', 'Office', 'Residential', 'Museum & Gallery', 'Commercial'];
 $regions = ['All Regions', 'Asia', 'Europe', 'Middle East', 'North America', 'Oceania'];
 $projects = [
@@ -200,8 +202,8 @@ $canonical = $siteUrl . '/project.php';
   <section class="project-hero" aria-labelledby="projectTitle">
     <img src="<?= web_e($heroImage) ?>" alt="<?= web_e($heroAlt) ?>" width="1920" height="720">
     <div class="project-container project-hero-inner">
-      <h1 id="projectTitle">PROJECTS</h1>
-      <p>Inspiring lighting solutions for retail, hospitality, commercial and more.</p>
+      <h1 id="projectTitle"><?= web_e($heroTitle) ?></h1>
+      <p><?= web_e($heroSubtitle) ?></p>
     </div>
   </section>
 
