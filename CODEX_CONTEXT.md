@@ -46,6 +46,8 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Made every editable element of the public Projects top banner available in the admin: image, image ALT, large title and small descriptive copy. The controls are in `Projects 详情页 → 项目页顶部横幅`; saving them clears the public cache and does not affect project-card images.
+- Deployed `project.php`, `admin/project_action.php` and `admin/project_details.php` after recoverable production backups tagged `project_banner_copy_20260729_145645` and moving the prior page-cache files to `storage/page_cache_backup_project_banner_copy_20260729_145645`.
 - Made the first large image on `project.php` independently editable in the admin: `Projects 详情页 → 项目页顶部横幅` now supports direct upload, media-library selection, image ALT text and automatic public-cache clearing.
 - The public Projects page prioritizes this saved banner image while retaining the former `featured-retail.webp` image as a safe fallback; project-card images are unaffected.
 - Deployed `project.php`, `admin/project_action.php` and `admin/project_details.php` after creating recoverable production backups tagged `project_banner_admin_20260729_144433` and moving older page-cache files to `storage/page_cache_backup_project_banner_admin_20260729_144433`.
@@ -93,6 +95,8 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `7a294b5` - Make projects banner copy editable
+- `c1b0cc3` - Document editable projects banner
 - `bb5a939` - Make projects page banner editable
 - `7fd6edb` - Crop series project images to widescreen
 - `6ab03a0` - Expand product accessory display capacity
@@ -109,7 +113,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
-- `project.php`, `admin/project_action.php` and `admin/project_details.php` are synced to the Hong Kong server with the editable public Projects banner; all three passed production PHP lint and their checksums match local.
+- `project.php`, `admin/project_action.php` and `admin/project_details.php` are synced to the Hong Kong server with editable public Projects banner image, ALT, large title and small descriptive copy; all three passed production PHP lint and their checksums match local.
 - `series.php` is synced to the Hong Kong server with the shared 16:9 center-crop rule for all series Projects images; production PHP lint passed and checksum matches local.
 - `series.php`, `product.php`, `includes/product_hierarchy.php`, `includes/product_accessories.php`, `admin/product_variant_edit.php`, `admin/products.php`, `admin/assets/admin_v7.css` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; all changed PHP files passed production lint and all eight deployed file checksums match local.
 - `series.php`, `product.php`, `assets/js/artdon_product_inline_v718.js` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; PHP lint and the product JavaScript syntax check passed.
@@ -121,7 +125,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- The public Projects page top banner can now be changed independently in the admin without affecting the project-list images.
+- The public Projects page top banner can now be changed independently in the admin without affecting the project-list images. Its image, ALT, large title and small descriptive copy are all editable in one form.
 - No open code changes are pending.
 - Next session should continue using the default workflow:
 
