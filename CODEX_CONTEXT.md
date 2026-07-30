@@ -103,6 +103,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `d942bfe` - Manage blog categories in admin
 - `b4a4ec3` - Add editable browser tab icon
 - `ec00724` - Backfill solution application management
 - `0ce648a` - Document solution application category management
@@ -128,8 +129,9 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `admin/resources_blog_categories.php`, `admin/resources_blog.php`, `admin/save_resources_blog.php`, `admin/resources_blog_template.php`, `admin/resources_pages.php`, `admin/_layout.php`, `includes/resources_blog_data.php` and `resources-blog.php` are synced to the Hong Kong server. Blog categories now live in `web_resource_blog_categories`; the original Lighting Knowledge, Industry News and Artdon News categories were backfilled unchanged. PHP lint passed for all updated files, checksums match local, and the live blog page returns HTTP 200 with all three original category anchors. The new admin route is `admin/resources_blog_categories.php` and returns its expected login redirect when unauthenticated.
 - `admin/settings.php`, `includes/bootstrap.php`, `includes/content.php`, `includes/default_content.php` and `assets/img/favicon-artdon.png` are synced to the Hong Kong server. The browser-tab icon is injected once into every public page head, defaults to the supplied Artdon A mark, and can be replaced at `后台 → 网站设置 → 浏览器标签图标（favicon）`. Production PHP lint passed, the site setting was backfilled, and the live Hospitality page returns the expected icon tag and image HTTP 200.
-- GitHub push for commit `b4a4ec3` is temporarily pending: GitHub SSH connections from the local machine close before authentication and the production server has no GitHub deploy key. The working commit remains safely stored locally; production is deployed from the same committed files.
+- GitHub push for commits `b4a4ec3`, `d476de7` and `d942bfe` is temporarily pending: GitHub SSH connections from the local machine close before authentication and the production server has no GitHub deploy key. The working commits remain safely stored locally; production is deployed from the same committed files.
 - `includes/retail_application_data.php` and `includes/solution_page_template.php` are synced to the Hong Kong server with public-to-admin Solution Application backfill. Both passed production PHP lint and checksums match local; the live Hospitality page returns HTTP 200 and database counts verify content in all six categories.
 - `admin/_layout.php`, `admin/retail_applications.php`, `admin/retail_applications_action.php`, `admin/save_retail_application.php`, `includes/retail_application_data.php`, `includes/retail_application_template.php` and `solutions-application.php` are synced to the Hong Kong server with six parent Solution Application categories. All changed files passed production PHP lint and checksums match local; the original retail generic application route returns HTTP 200 and the empty new-category route returns its expected HTTP 404 until an application is created.
 - `admin/retail_applications.php`, `admin/retail_applications_action.php`, `includes/retail_application_data.php` and `solutions-retail-application.php` are synced to the Hong Kong server with dynamic Retail Application create/delete support; all four passed production PHP lint and checksums match local. The generic public route was checked live with the existing Fashion Store application.
@@ -145,8 +147,9 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
+- Blog categories are now managed separately from blog articles at `后台 → 资源中心 → Blog & Insights → 管理博客分类`. Categories can be added, renamed, ordered, hidden and deleted. Category deletion requires choosing a destination category and moves its articles there, so no blog posts are lost.
 - The supplied red-and-black A mark is now the default browser tab icon. Future changes are self-service through the Website Settings page; upload a square PNG (recommended 512 × 512) and save.
-- GitHub is the only outstanding sync step for this change; retry `git push origin main` when the SSH service is available, then deploy the context-file commit and update this note.
+- GitHub is the only outstanding sync step for the favicon and blog-category changes; retry `git push origin main` when the SSH service is available, then deploy the context-file commit and update this note.
 - Existing public application cards are now backfilled under their corresponding Solution Applications category, so the backend is populated rather than blank and remains the source of the front-end application-card list.
 - The five non-Retail solution categories now have their own populated application-management lists inside `Solution Applications`; new child pages can be added in the selected category whenever needed.
 - Retail Applications can now be increased or decreased from the left-side list. Creating an item opens its fully editable template; deleting an item removes it from the public application navigation while retaining uploaded media in the media library.
