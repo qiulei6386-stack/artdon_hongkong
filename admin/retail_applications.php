@@ -132,10 +132,11 @@ function ra_admin_form_end(): void
     <?php
 }
 
+$known = ra_retail_application_db_pages();
+if (!$known) $known = ra_retail_application_pages();
 $slug = ra_admin_slug((string)($_GET['slug'] ?? 'fashion-store'));
-$known = ra_retail_application_pages();
-if (!isset($known[$slug])) $slug = 'fashion-store';
-$page = ra_retail_application_page($slug) ?: $known[$slug];
+if (!isset($known[$slug])) $slug = (string)(array_key_first($known) ?? 'fashion-store');
+$page = ra_retail_application_page($slug) ?: ($known[$slug] ?? []);
 $productChoices = ra_admin_product_choices($pdo);
 
 $apps = [];
@@ -166,10 +167,10 @@ admin_notice();
     <div>
       <p>Solutions 管理</p>
       <h1>Retail Applications</h1>
-      <span>统一管理零售应用详情页模板内容，前台 6 个页面共用同一版型。</span>
+      <span>统一管理零售应用详情页模板内容；可自行新增或删除应用，所有页面共用同一版型。</span>
     </div>
     <div class="ra-head-actions">
-      <a class="admin-button-secondary" href="../solutions-retail-<?= web_e($slug) ?>.php" target="_blank" rel="noopener">预览当前页面</a>
+      <a class="admin-button-secondary" href="../<?= web_e((string)($page['url'] ?? ra_retail_application_url($slug))) ?>" target="_blank" rel="noopener">预览当前页面</a>
       <button class="admin-button" type="button" data-module-open="hero">编辑 Hero</button>
     </div>
   </header>
@@ -189,9 +190,26 @@ admin_notice();
             <span><?= !empty($app['is_active']) ? '显示' : '停用' ?> · 排序 <?= (int)($app['sort_order'] ?? 0) ?></span>
           </div>
         </a>
-        <a class="ra-edit-link" href="retail_applications.php?slug=<?= web_e($appSlug) ?>&module=basic">编辑</a>
+        <div class="ra-app-card-actions">
+          <a class="ra-edit-link" href="retail_applications.php?slug=<?= web_e($appSlug) ?>&module=basic">编辑</a>
+          <form action="retail_applications_action.php" method="post" onsubmit="return confirm('确定删除「<?= web_e((string)($app['label'] ?? '')) ?>」吗？此操作不会删除已上传的图片。');">
+            <input type="hidden" name="csrf" value="<?= web_e(web_csrf_token()) ?>">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="slug" value="<?= web_e($appSlug) ?>">
+            <button type="submit" class="ra-delete-link" <?= count($apps) <= 1 ? 'disabled title="请至少保留一个应用"' : '' ?>>删除</button>
+          </form>
+        </div>
       </article>
       <?php endforeach; ?>
+      <form class="ra-create-form" action="retail_applications_action.php" method="post">
+        <input type="hidden" name="csrf" value="<?= web_e(web_csrf_token()) ?>">
+        <input type="hidden" name="action" value="create">
+        <strong>新增 Retail Application</strong>
+        <label><span>应用名称</span><input type="text" name="label" placeholder="例如: Cosmetics Store" required></label>
+        <label><span>页面标识（可留空）</span><input type="text" name="slug" placeholder="cosmetics-store"></label>
+        <small>留空会按应用名称自动生成；新增后可继续编辑所有模块。</small>
+        <button type="submit" class="admin-button">新增应用</button>
+      </form>
     </aside>
 
     <main class="ra-workbench">
@@ -349,7 +367,7 @@ admin_notice();
 .ra-admin{--red:#d71920;--line:#e5e5e5;--text:#111;--muted:#555;display:grid;gap:18px}
 .ra-admin-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;padding:22px;border:1px solid var(--line);background:#fff;border-radius:10px}
 .ra-admin-head p{margin:0 0 6px;color:var(--red);font-weight:900;text-transform:uppercase;font-size:12px}.ra-admin-head h1{margin:0;color:var(--text);font-size:28px}.ra-admin-head span{display:block;margin-top:6px;color:var(--muted);font-size:13px}.ra-head-actions{display:flex;gap:10px;flex-wrap:wrap}
-.ra-layout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;align-items:start}.ra-apps,.ra-workbench{display:grid;gap:12px}.ra-app-card{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px}.ra-app-card.is-active{border-color:var(--red);box-shadow:0 0 0 1px rgba(215,25,32,.08)}.ra-app-card a:first-child{display:grid;grid-template-columns:76px 1fr;gap:12px;color:inherit;text-decoration:none}.ra-app-card figure{margin:0;width:76px;height:58px;background:#f7f7f7;border:1px solid var(--line);overflow:hidden}.ra-app-card img{width:100%;height:100%;object-fit:cover}.ra-app-card strong{display:block;color:#111;font-size:14px}.ra-app-card small{display:block;color:#777;margin-top:3px}.ra-app-card span{display:block;color:#555;font-size:12px;margin-top:7px}.ra-edit-link{display:inline-flex;margin-top:8px;color:var(--red);font-weight:800;text-decoration:none;font-size:12px}
+.ra-layout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;align-items:start}.ra-apps,.ra-workbench{display:grid;gap:12px}.ra-app-card{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px}.ra-app-card.is-active{border-color:var(--red);box-shadow:0 0 0 1px rgba(215,25,32,.08)}.ra-app-card a:first-child{display:grid;grid-template-columns:76px 1fr;gap:12px;color:inherit;text-decoration:none}.ra-app-card figure{margin:0;width:76px;height:58px;background:#f7f7f7;border:1px solid var(--line);overflow:hidden}.ra-app-card img{width:100%;height:100%;object-fit:cover}.ra-app-card strong{display:block;color:#111;font-size:14px}.ra-app-card small{display:block;color:#777;margin-top:3px}.ra-app-card span{display:block;color:#555;font-size:12px;margin-top:7px}.ra-app-card-actions{display:flex;align-items:center;justify-content:space-between;margin-top:8px}.ra-app-card-actions form{margin:0}.ra-edit-link,.ra-delete-link{display:inline-flex;border:0;padding:0;background:transparent;font:inherit;font-weight:800;text-decoration:none;font-size:12px;cursor:pointer}.ra-edit-link{color:var(--red)}.ra-delete-link{color:#8b1e1e}.ra-delete-link:disabled{color:#a6a6a6;cursor:not-allowed}.ra-create-form{display:grid;gap:10px;padding:14px;border:1px dashed #c9ccd1;border-radius:8px;background:#fff}.ra-create-form strong{color:#111}.ra-create-form label{display:grid;gap:5px;color:#555;font-size:12px;font-weight:800}.ra-create-form input{width:100%;height:38px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font:inherit;background:#fff}.ra-create-form small{color:#777;font-size:11px;line-height:1.45}
 .ra-current{display:flex;justify-content:space-between;gap:16px;align-items:center;border:1px solid var(--line);background:#fff;border-radius:8px;padding:18px}.ra-current h2{margin:0;color:#111}.ra-current span{display:block;color:#555;margin-top:5px;font-size:13px}.ra-current a{color:var(--red);font-weight:800;text-decoration:none}
 .ra-module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.ra-module-card{border:1px solid var(--line);background:#fff;border-radius:8px;padding:18px;display:grid;gap:14px;cursor:pointer}.ra-module-card>div{display:flex;justify-content:space-between;gap:12px}.ra-module-card h3{margin:0;color:#111;font-size:16px}.ra-module-card p{margin:0;color:#555;font-size:13px;min-height:34px}.ra-module-card footer{display:flex;gap:10px}.ra-status{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:#f7f7f7;color:#777;font-size:12px;font-weight:800}.ra-status.is-done{background:rgba(215,25,32,.08);color:var(--red)}
 .ra-drawer-layer[hidden],.ra-drawer[hidden]{display:none}.ra-drawer-layer{position:fixed;inset:0;z-index:1000}.ra-drawer-backdrop{position:absolute;inset:0;border:0;background:rgba(0,0,0,.35)}.ra-drawer{position:absolute;right:0;top:0;bottom:0;width:min(760px,92vw);overflow:auto;background:#fff;box-shadow:-18px 0 50px rgba(0,0,0,.16);padding:0}.ra-drawer header{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 22px;border-bottom:1px solid var(--line);background:#fff}.ra-drawer header h2{margin:2px 0 0;color:#111}.ra-drawer header small{color:#777}.ra-drawer header button{border:0;background:#f7f7f7;width:34px;height:34px;border-radius:50%;font-size:22px;cursor:pointer}

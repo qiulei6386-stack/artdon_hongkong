@@ -13,6 +13,14 @@ function ra_db_json_decode(mixed $value): array
     return is_array($decoded) ? $decoded : [];
 }
 
+function ra_retail_application_url(string $slug): string
+{
+    $slug = preg_replace('/[^a-z0-9-]+/', '-', strtolower(trim($slug))) ?: '';
+    $legacySlugs = ['fashion-store', 'luxury-boutique', 'jewelry-store', 'shopping-mall', 'supermarket', 'showroom'];
+    if (in_array($slug, $legacySlugs, true)) return 'solutions-retail-' . $slug . '.php';
+    return 'solutions-retail-application.php?slug=' . rawurlencode($slug);
+}
+
 function ra_application_common_defaults(): array
 {
     return [
@@ -190,7 +198,7 @@ function ra_retail_application_row_to_page(array $row): array
     $label = (string)($row['title'] ?? ($row['menu_title'] ?? ''));
     return [
         'slug'=>$slug,
-        'url'=>'solutions-retail-' . $slug . '.php',
+        'url'=>ra_retail_application_url($slug),
         'label'=>$label,
         'menu_title'=>(string)($row['menu_title'] ?? $label),
         'title'=>(string)($row['hero_title'] ?? ($row['page_title'] ?? $label)),
@@ -344,7 +352,7 @@ function ra_retail_application_pages(): array
         $sortOrder = (array_search($slug, array_keys($pages), true) + 1) * 10;
         $pages[$slug] = array_replace_recursive($common, [
             'slug'=>$slug,
-            'url'=>'solutions-retail-' . $slug . '.php',
+            'url'=>ra_retail_application_url($slug),
             'is_active'=>1,
             'sort_order'=>$sortOrder,
             'thumbnail_image'=>(string)($page['hero_image'] ?? 'assets/img/projects/featured-retail.webp'),
@@ -393,6 +401,10 @@ function ra_retail_application_saved_content(string $slug): array
 
 function ra_retail_application_page(string $slug): ?array
 {
+    $slug = preg_replace('/[^a-z0-9-]+/', '-', strtolower(trim($slug))) ?: '';
+    if ($slug === '') return null;
+    $dbPages = ra_retail_application_db_pages();
+    if (is_array($dbPages[$slug] ?? null)) return $dbPages[$slug];
     $pages = ra_retail_application_pages();
     if (!isset($pages[$slug])) return null;
     $saved = ra_retail_application_saved_content($slug);
@@ -422,7 +434,7 @@ function ra_retail_application_links(string $currentSlug = ''): array
             'slug'=>$slug,
             'label'=>(string)($page['label'] ?? ''),
             'image'=>(string)($page['thumbnail_image'] ?? ($page['hero_image'] ?? 'assets/img/projects/featured-retail.webp')),
-            'url'=>(string)($page['url'] ?? ('solutions-retail-' . $slug . '.php')),
+            'url'=>(string)($page['url'] ?? ra_retail_application_url($slug)),
             'active'=>$slug === $currentSlug,
             'sort_order'=>(int)($page['sort_order'] ?? 999),
         ];
