@@ -46,6 +46,9 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Expanded the former Retail-only Applications backend into `Solution Applications`. It now provides six selectable parent categories: Retail, Hospitality, Museum & Gallery, Office, Residential and Outdoor & Landscape. Each parent category has its own create/edit/delete application list; the five new categories start empty and publish nothing until an application is deliberately created.
+- Added category-aware application storage, save/delete routing and a generic public route `solutions-application.php?solution=...&slug=...` for all non-Retail application detail pages. Existing Retail application URLs and content remain unchanged.
+- Deployed `admin/_layout.php`, `admin/retail_applications.php`, `admin/retail_applications_action.php`, `admin/save_retail_application.php`, `includes/retail_application_data.php`, `includes/retail_application_template.php` and `solutions-application.php` after recoverable production backups tagged `solution_application_categories_20260730_121334` and moving old page-cache files to `storage/page_cache_backup_solution_application_categories_20260730_121334`.
 - Added create and delete controls to `admin/retail_applications.php`. The left application list now has a form for creating a new Retail Application (name plus optional slug) and every card has a confirmed delete action; one application must remain so the application set can never become empty.
 - New applications receive a full editable default template, appear in the application list immediately, clear public cache on creation/deletion and open through the new dynamic public route `solutions-retail-application.php?slug=...`. The six original application URLs remain unchanged.
 - Deployed `admin/retail_applications.php`, `admin/retail_applications_action.php`, `includes/retail_application_data.php` and `solutions-retail-application.php` after recoverable production backups tagged `retail_application_manage_20260730_115134` and moving old page-cache files to `storage/page_cache_backup_retail_application_manage_20260730_115134`.
@@ -98,6 +101,8 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `ca709ed` - Manage applications for all solution categories
+- `10ae7ca` - Document retail application management controls
 - `0c77153` - Add retail application create and delete controls
 - `46bb946` - Document editable projects banner copy
 - `7a294b5` - Make projects banner copy editable
@@ -118,6 +123,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `admin/_layout.php`, `admin/retail_applications.php`, `admin/retail_applications_action.php`, `admin/save_retail_application.php`, `includes/retail_application_data.php`, `includes/retail_application_template.php` and `solutions-application.php` are synced to the Hong Kong server with six parent Solution Application categories. All changed files passed production PHP lint and checksums match local; the original retail generic application route returns HTTP 200 and the empty new-category route returns its expected HTTP 404 until an application is created.
 - `admin/retail_applications.php`, `admin/retail_applications_action.php`, `includes/retail_application_data.php` and `solutions-retail-application.php` are synced to the Hong Kong server with dynamic Retail Application create/delete support; all four passed production PHP lint and checksums match local. The generic public route was checked live with the existing Fashion Store application.
 - `project.php`, `admin/project_action.php` and `admin/project_details.php` are synced to the Hong Kong server with editable public Projects banner image, ALT, large title and small descriptive copy; all three passed production PHP lint and their checksums match local.
 - `series.php` is synced to the Hong Kong server with the shared 16:9 center-crop rule for all series Projects images; production PHP lint passed and checksum matches local.
@@ -131,6 +137,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
+- The five non-Retail solution categories now have their own empty application-management lists inside `Solution Applications`; create the first child page in a selected category to start publishing its dedicated detail pages.
 - Retail Applications can now be increased or decreased from the left-side list. Creating an item opens its fully editable template; deleting an item removes it from the public application navigation while retaining uploaded media in the media library.
 - The public Projects page top banner can now be changed independently in the admin without affecting the project-list images. Its image, ALT, large title and small descriptive copy are all editable in one form.
 - No open code changes are pending.
