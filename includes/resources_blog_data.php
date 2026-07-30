@@ -10,13 +10,32 @@ function artdon_resource_blog_slug(string $value): string
     return trim($value, '-');
 }
 
-function artdon_resource_blog_categories(): array
+function artdon_resource_blog_default_categories(): array
 {
     return [
-        'lighting-knowledge' => 'Lighting Knowledge',
-        'industry-news' => 'Industry News',
-        'artdon-news' => 'Artdon News',
+        ['slug'=>'lighting-knowledge','label'=>'Lighting Knowledge','section_title'=>'Lighting Knowledge','icon'=>'lighting-knowledge','sort_order'=>10,'is_visible'=>1],
+        ['slug'=>'industry-news','label'=>'Industry News','section_title'=>'Industry News','icon'=>'industry-news','sort_order'=>20,'is_visible'=>1],
+        ['slug'=>'artdon-news','label'=>'Artdon News','section_title'=>'Artdon News','icon'=>'artdon-news','sort_order'=>30,'is_visible'=>1],
     ];
+}
+
+function artdon_resource_blog_default_category_labels(): array
+{
+    $categories = [];
+    foreach (artdon_resource_blog_default_categories() as $row) {
+        $categories[(string)$row['slug']] = (string)$row['label'];
+    }
+    return $categories;
+}
+
+function artdon_resource_blog_categories(?PDO $pdo = null, bool $visibleOnly = false): array
+{
+    if (!$pdo) return artdon_resource_blog_default_category_labels();
+    $categories = [];
+    foreach (artdon_resource_blog_category_rows($pdo, $visibleOnly) as $row) {
+        $categories[(string)$row['slug']] = (string)$row['label'];
+    }
+    return $categories ?: artdon_resource_blog_default_category_labels();
 }
 
 function artdon_resource_blog_default_articles(): array
@@ -104,6 +123,20 @@ function artdon_resource_blog_default_detail_content(array $article): array
 
 function artdon_resource_blog_migrate(PDO $pdo): void
 {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS web_resource_blog_categories (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        slug VARCHAR(80) NOT NULL,
+        label VARCHAR(120) NOT NULL DEFAULT '',
+        section_title VARCHAR(160) NOT NULL DEFAULT '',
+        icon VARCHAR(80) NOT NULL DEFAULT '',
+        sort_order INT NOT NULL DEFAULT 0,
+        is_visible TINYINT(1) NOT NULL DEFAULT 1,
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uniq_slug (slug),
+        KEY idx_visible_sort (is_visible, sort_order)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     $pdo->exec("CREATE TABLE IF NOT EXISTS web_resource_blog_articles (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         slug VARCHAR(160) NOT NULL,
@@ -130,6 +163,38 @@ function artdon_resource_blog_migrate(PDO $pdo): void
     try { $pdo->exec("ALTER TABLE web_resource_blog_articles ADD COLUMN seo_keywords TEXT NULL AFTER seo_description"); } catch (Throwable $e) {}
 }
 
+function artdon_resource_blog_seed_categories(PDO $pdo): void
+{
+    $count = (int)$pdo->query('SELECT COUNT(*) FROM web_resource_blog_categories')->fetchColumn();
+    if ($count > 0) return;
+    $stmt = $pdo->prepare('INSERT INTO web_resource_blog_categories (slug,label,section_title,icon,sort_order,is_visible) VALUES (?,?,?,?,?,?)');
+    foreach (artdon_resource_blog_default_categories() as $category) {
+        $stmt->execute([
+            (string)$category['slug'], (string)$category['label'], (string)$category['section_title'],
+            (string)$category['icon'], (int)$category['sort_order'], (int)$category['is_visible'],
+        ]);
+    }
+}
+
+function artdon_resource_blog_category_rows(PDO $pdo, bool $visibleOnly = false): array
+{
+    artdon_resource_blog_migrate($pdo);
+    artdon_resource_blog_seed_categories($pdo);
+    $sql = 'SELECT * FROM web_resource_blog_categories' . ($visibleOnly ? ' WHERE is_visible=1' : '') . ' ORDER BY sort_order ASC, id ASC';
+    $rows = $pdo->query($sql)->fetchAll() ?: [];
+    return array_map(static function (array $row): array {
+        return [
+            'id'=>(int)($row['id'] ?? 0),
+            'slug'=>(string)($row['slug'] ?? ''),
+            'label'=>trim((string)($row['label'] ?? '')),
+            'section_title'=>trim((string)($row['section_title'] ?? '')),
+            'icon'=>trim((string)($row['icon'] ?? '')),
+            'sort_order'=>(int)($row['sort_order'] ?? 0),
+            'is_visible'=>(int)($row['is_visible'] ?? 1) === 1,
+        ];
+    }, $rows);
+}
+
 function artdon_resource_blog_seeded(PDO $pdo): bool
 {
     try {
@@ -151,6 +216,7 @@ function artdon_resource_blog_mark_seeded(PDO $pdo): void
 function artdon_resource_blog_seed(PDO $pdo): void
 {
     artdon_resource_blog_migrate($pdo);
+    artdon_resource_blog_seed_categories($pdo);
     $count = (int)$pdo->query('SELECT COUNT(*) FROM web_resource_blog_articles')->fetchColumn();
     if ($count > 0) {
         artdon_resource_blog_mark_seeded($pdo);
@@ -174,7 +240,7 @@ function artdon_resource_blog_decode(?string $json): array
     return is_array($data) ? $data : [];
 }
 
-function artdon_resource_blog_normalize(array $row): array
+function artdon_resource_blog_normalize(array $row, ?array $categories = null): array
 {
     $title = (string)($row['title'] ?? '');
     $summary = (string)($row['summary'] ?? '');
@@ -184,7 +250,7 @@ function artdon_resource_blog_normalize(array $row): array
         'slug'=>(string)($row['slug'] ?? artdon_resource_blog_slug($title)),
         'title'=>$title,
         'category'=>(string)($row['category'] ?? 'lighting-knowledge'),
-        'category_label'=>artdon_resource_blog_categories()[(string)($row['category'] ?? '')] ?? 'Lighting Knowledge',
+        'category_label'=>($categories ?? artdon_resource_blog_default_category_labels())[(string)($row['category'] ?? '')] ?? 'Uncategorized',
         'image'=>$image !== '' ? $image : 'assets/img/hero/hero-technical-downloads.webp',
         'alt'=>(string)($row['cover_alt'] ?? $title) ?: $title,
         'summary'=>$summary,
@@ -215,7 +281,8 @@ function artdon_resource_blog_articles(PDO $pdo, bool $publishedOnly = true): ar
     artdon_resource_blog_seed($pdo);
     $sql = 'SELECT * FROM web_resource_blog_articles' . ($publishedOnly ? ' WHERE is_published=1' : '') . ' ORDER BY sort_order ASC, id ASC';
     $rows = $pdo->query($sql)->fetchAll() ?: [];
-    return array_map('artdon_resource_blog_normalize', $rows);
+    $categories = artdon_resource_blog_categories($pdo, false);
+    return array_map(static fn(array $row): array => artdon_resource_blog_normalize($row, $categories), $rows);
 }
 
 function artdon_resource_blog_find(PDO $pdo, string $slug, bool $publishedOnly = true): ?array
@@ -225,5 +292,5 @@ function artdon_resource_blog_find(PDO $pdo, string $slug, bool $publishedOnly =
     $stmt = $pdo->prepare($sql);
     $stmt->execute([artdon_resource_blog_slug($slug)]);
     $row = $stmt->fetch();
-    return $row ? artdon_resource_blog_normalize($row) : null;
+    return $row ? artdon_resource_blog_normalize($row, artdon_resource_blog_categories($pdo, false)) : null;
 }

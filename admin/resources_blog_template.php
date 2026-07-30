@@ -192,7 +192,7 @@ function rb_template_import(PDO $pdo, array $payload, string $fallbackCategory):
     $article = is_array($payload['article'] ?? null) ? $payload['article'] : $payload;
     if (!is_array($article)) throw new RuntimeException('模板格式不正确。');
 
-    $categories = artdon_resource_blog_categories();
+    $categories = artdon_resource_blog_categories($pdo, false);
     $title = rb_template_clean(rb_template_value($article, 'title'));
     if ($title === '') throw new RuntimeException('模板缺少文章标题。');
     $slug = artdon_resource_blog_slug(rb_template_clean(rb_template_value($article, 'slug', $title)));

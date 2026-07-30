@@ -58,8 +58,9 @@ try {
     $title = rb_save_clean($_POST['title'] ?? '');
     if ($title === '') throw new RuntimeException('文章标题不能为空。');
     $slug = artdon_resource_blog_slug(rb_save_clean($_POST['slug'] ?? $title));
-    $category = rb_save_clean($_POST['category'] ?? 'lighting-knowledge');
-    if (!isset(artdon_resource_blog_categories()[$category])) $category = 'lighting-knowledge';
+    $category = artdon_resource_blog_slug(rb_save_clean($_POST['category'] ?? ''));
+    $categories = artdon_resource_blog_categories($pdo, false);
+    if (!isset($categories[$category])) $category = (string)(array_key_first($categories) ?: 'lighting-knowledge');
     $summary = rb_save_clean($_POST['summary'] ?? '');
     $image = rb_save_clean($_POST['cover_image'] ?? '');
     $alt = rb_save_clean($_POST['cover_alt'] ?? '') ?: $title;

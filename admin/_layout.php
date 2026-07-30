@@ -139,7 +139,7 @@ function admin_route_key(string $fallback): string
         'product_bulk_io.php'=>'bulk_io',
         'inquiries.php'=>'inquiries', 'inquiry_routing.php'=>'routing',
         'resources_pages.php'=>'resources_pages', 'save_resources_page.php'=>'resources_pages',
-        'resources_blog.php'=>'resources_blog', 'save_resources_blog.php'=>'resources_blog',
+        'resources_blog.php'=>'resources_blog', 'resources_blog_categories.php'=>'resources_blog', 'save_resources_blog.php'=>'resources_blog',
         'resources_faq.php'=>'resources_faq', 'save_resources_faq.php'=>'resources_faq',
         'resources_videos.php'=>'resources_videos', 'save_resources_video.php'=>'resources_videos',
         'media.php'=>'media', 'media_crop.php'=>'media',

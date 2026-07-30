@@ -13,7 +13,7 @@ web_migrate($pdo);
 artdon_resource_blog_seed($pdo);
 $user = web_require_admin($pdo);
 $articles = artdon_resource_blog_articles($pdo, false);
-$categories = artdon_resource_blog_categories();
+$categories = artdon_resource_blog_categories($pdo, false);
 $isNewArticle = isset($_GET['new']);
 $currentSlug = $isNewArticle ? '' : artdon_resource_blog_slug((string)($_GET['slug'] ?? ($articles[0]['slug'] ?? '')));
 $current = null;
@@ -22,8 +22,8 @@ if (!$isNewArticle) {
         if ($item['slug'] === $currentSlug) { $current = $item; break; }
     }
 }
-$newCategory = artdon_resource_blog_slug((string)($_GET['category'] ?? 'lighting-knowledge'));
-if (!isset($categories[$newCategory])) $newCategory = 'lighting-knowledge';
+$newCategory = artdon_resource_blog_slug((string)($_GET['category'] ?? ''));
+if (!isset($categories[$newCategory])) $newCategory = (string)(array_key_first($categories) ?: 'lighting-knowledge');
 if (!$current) $current = $isNewArticle || !$articles ? ['id'=>0,'slug'=>'','title'=>'','category'=>$newCategory,'image'=>'','alt'=>'','summary'=>'','blocks'=>artdon_resource_blog_default_detail_content([]),'author'=>'Artdon Lighting Team','date'=>date('M j, Y'),'read_time'=>'','seo_title'=>'','seo_description'=>'','seo_keywords'=>'','sort_order'=>10,'is_published'=>true] : $articles[0];
 $groupedArticles = [];
 foreach ($categories as $key => $label) $groupedArticles[$key] = [];
@@ -74,7 +74,7 @@ admin_page_start('Resources Blog 管理', 'resources_blog', $user);
 admin_notice();
 ?>
 <section class="rb-admin">
-  <header class="rb-admin-head"><div><p>Resources</p><h1>Blog & Insights 管理</h1><span>后台保存后，/resources-blog.php 和 /resources-blog-detail.php 自动读取。</span></div><div><a class="admin-button-secondary" href="../resources-blog.php" target="_blank" rel="noopener">预览列表页</a><?php if((int)($current['id'] ?? 0)>0): ?><a class="admin-button-secondary" href="resources_blog_template.php?action=export_excel&slug=<?= web_e((string)$current['slug']) ?>">导出当前 Excel</a><a class="admin-button-secondary" href="resources_blog_template.php?action=export&slug=<?= web_e((string)$current['slug']) ?>">导出当前 JSON</a><button class="admin-button-danger" type="submit" form="rb-form" name="action" value="delete" onclick="return confirm('确认删除这篇文章？')">删除当前文章</button><?php endif; ?><button class="admin-button" type="button" data-rb-open>编辑当前文章</button></div></header>
+  <header class="rb-admin-head"><div><p>Resources</p><h1>Blog & Insights 管理</h1><span>后台保存后，/resources-blog.php 和 /resources-blog-detail.php 自动读取。</span></div><div><a class="admin-button-secondary" href="resources_blog_categories.php">管理博客分类</a><a class="admin-button-secondary" href="../resources-blog.php" target="_blank" rel="noopener">预览列表页</a><?php if((int)($current['id'] ?? 0)>0): ?><a class="admin-button-secondary" href="resources_blog_template.php?action=export_excel&slug=<?= web_e((string)$current['slug']) ?>">导出当前 Excel</a><a class="admin-button-secondary" href="resources_blog_template.php?action=export&slug=<?= web_e((string)$current['slug']) ?>">导出当前 JSON</a><button class="admin-button-danger" type="submit" form="rb-form" name="action" value="delete" onclick="return confirm('确认删除这篇文章？')">删除当前文章</button><?php endif; ?><button class="admin-button" type="button" data-rb-open>编辑当前文章</button></div></header>
   <div class="rb-admin-layout">
     <aside class="rb-admin-list">
       <?php foreach ($articles as $article): ?>
