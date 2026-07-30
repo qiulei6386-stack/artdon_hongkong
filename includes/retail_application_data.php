@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/solutions_retail_defaults.php';
+
 function ra_db_json_encode(array $data): string
 {
     return json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '{}';
@@ -215,9 +217,80 @@ function ra_retail_application_seed(PDO $pdo): void
 {
     ra_retail_application_table_ensure($pdo);
     $count = (int)$pdo->query("SELECT COUNT(*) FROM web_solution_retail_applications")->fetchColumn();
-    if ($count > 0) return;
-    foreach (ra_retail_application_pages() as $page) {
-        ra_retail_application_insert_record($pdo, ra_retail_application_record_from_page($page));
+    if ($count === 0) {
+        foreach (ra_retail_application_pages() as $page) {
+            ra_retail_application_insert_record($pdo, ra_retail_application_record_from_page($page));
+        }
+    }
+    foreach (array_keys(ra_solution_application_definitions()) as $solutionSlug) {
+        if ($solutionSlug !== 'retail') ra_solution_application_backfill($pdo, $solutionSlug);
+    }
+}
+
+function ra_solution_application_backfill(PDO $pdo, string $solutionSlug): void
+{
+    $solutionSlug = ra_solution_application_slug($solutionSlug);
+    if ($solutionSlug === 'retail') return;
+    $count = $pdo->prepare('SELECT COUNT(*) FROM web_solution_retail_applications WHERE solution_slug=?');
+    $count->execute([$solutionSlug]);
+    if ((int)$count->fetchColumn() > 0 || !function_exists('sdr_solution_get_page')) return;
+
+    $source = sdr_solution_get_page($solutionSlug);
+    $apps = is_array($source['applications']['items'] ?? null) ? $source['applications']['items'] : [];
+    $meta = ra_solution_application_definitions()[$solutionSlug] ?? [];
+    $solutionLabel = (string)($meta['label'] ?? 'Lighting Solution');
+    $fallbackImage = (string)($source['hero']['image'] ?? ($meta['image'] ?? 'assets/img/projects/featured-retail.webp'));
+    $sort = 10;
+    foreach ($apps as $index => $app) {
+        if (!is_array($app) || empty($app['active'])) continue;
+        $label = trim((string)($app['title'] ?? ''));
+        if ($label === '') continue;
+        $base = preg_replace('/[^a-z0-9-]+/', '-', strtolower($label)) ?: 'application';
+        $slug = $solutionSlug . '-' . trim($base, '-');
+        $suffix = 2;
+        $exists = $pdo->prepare('SELECT COUNT(*) FROM web_solution_retail_applications WHERE slug=?');
+        while (true) {
+            $exists->execute([$slug]);
+            if ((int)$exists->fetchColumn() === 0) break;
+            $slug = $solutionSlug . '-' . trim($base, '-') . '-' . $suffix++;
+        }
+        $image = trim((string)($app['image'] ?? '')) ?: $fallbackImage;
+        $alt = trim((string)($app['alt'] ?? '')) ?: ($label . ' lighting application');
+        $data = array_replace_recursive(ra_application_common_defaults(), [
+            'solution_slug'=>$solutionSlug,
+            'slug'=>$slug,
+            'url'=>ra_retail_application_url($slug, $solutionSlug),
+            'label'=>$label,
+            'title'=>$label . "\nLighting",
+            'breadcrumb_name'=>$label . ' Lighting',
+            'breadcrumb'=>'Home > Solutions > ' . $solutionLabel . ' > ' . $label . ' Lighting',
+            'intro'=>'Professional lighting solutions for ' . strtolower($label) . ' projects.',
+            'hero_image'=>$image,
+            'hero_alt'=>$alt,
+            'thumbnail_image'=>$image,
+            'thumbnail_alt'=>$alt,
+            'primary_label'=>'DISCUSS YOUR PROJECT →',
+            'primary_url'=>'#heroQuoteModal',
+            'secondary_label'=>'View Projects →',
+            'secondary_url'=>'project.php?type=' . rawurlencode($solutionSlug),
+            'projects_title'=>'Inspiration Projects',
+            'projects_button_label'=>'View All Projects →',
+            'projects_button_url'=>'project.php?type=' . rawurlencode($solutionSlug),
+            'projects'=>[],
+            'cta_title'=>'Planning Your ' . $label . ' Project?',
+            'cta_intro'=>'Talk to our lighting experts and get a tailored lighting solution for your project.',
+            'cta_image'=>$image,
+            'cta_alt'=>$alt,
+            'meta_title'=>$label . ' Lighting | Artdon Lighting',
+            'meta_description'=>'Professional ' . strtolower($label) . ' lighting solutions by Artdon Lighting.',
+            'meta_keywords'=>$label . ' lighting, ' . strtolower($solutionLabel),
+            'canonical_url'=>'',
+            'sort_order'=>$sort,
+            'is_active'=>1,
+            'show_in_explore'=>1,
+        ]);
+        ra_retail_application_insert_record($pdo, ra_retail_application_record_from_page($data));
+        $sort += 10;
     }
 }
 

@@ -5,6 +5,7 @@ require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/products.php';
 require_once __DIR__ . '/pretty_urls_v71868.php';
 require_once __DIR__ . '/solutions_retail_defaults.php';
+require_once __DIR__ . '/retail_application_data.php';
 
 $solutionSlug = isset($solutionSlug) ? sdr_solution_slug((string)$solutionSlug) : 'retail';
 $solutionContent = sdr_solution_get_page($solutionSlug);
@@ -225,6 +226,16 @@ $canonical = $siteUrl . sdr_solution_url((string)($solutionPage['slug'] ?? 'reta
         $applicationItems = is_array($applicationBlock['items'] ?? null) ? $applicationBlock['items'] : (is_array($projectBlock['items'] ?? null) ? $projectBlock['items'] : []);
         $applicationFallbackImage = (string)($hero['image'] ?? ($solutionPage['card_image'] ?? 'assets/img/projects/featured-retail.webp'));
         $applicationFallbackUrl = (string)($applicationBlock['button1_url'] ?? ($projectBlock['button_url'] ?? 'project.php'));
+        $managedApplications = ra_retail_application_links('', $solutionSlug);
+        if ($managedApplications) {
+            $applicationItems = array_map(static fn(array $item): array => [
+                'active'=>1,
+                'title'=>(string)($item['label'] ?? ''),
+                'image'=>(string)($item['image'] ?? ''),
+                'alt'=>(string)($item['label'] ?? ''),
+                'url'=>(string)($item['url'] ?? ''),
+            ], $managedApplications);
+        }
       ?>
       <div class="sd-section-head"><h2><?= sp_e($applicationBlock['title'] ?? ($projectBlock['title'] ?? 'Applications / Projects')) ?></h2></div>
       <div class="sd-application-grid">
