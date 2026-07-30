@@ -231,6 +231,7 @@ function web_migrate(PDO $pdo): void
     web_apply_v47_homepage_layout($pdo);
     web_apply_v53_solutions_section($pdo);
     web_apply_v49_navigation($pdo);
+    web_apply_v718_favicon($pdo);
     web_seed_system_settings($pdo);
     web_seed_inquiry_routing_settings($pdo);
     web_apply_v42_endpoint_defaults($pdo);
@@ -352,6 +353,22 @@ function web_apply_v49_navigation(PDO $pdo): void
     $site['header_quote_label'] = $defaults['header_quote_label'] ?? 'Get a Quote';
     $site['header_quote_url'] = $defaults['header_quote_url'] ?? 'index.php#contact';
     $site['nav_schema_version'] = 49;
+    web_save_block($pdo, 'site', $site, null);
+}
+
+/**
+ * V7.1.8.44 adds a single editable browser-tab icon for the public website.
+ * Preserve every existing site setting and only backfill the new value.
+ */
+function web_apply_v718_favicon(PDO $pdo): void
+{
+    $stmt = $pdo->prepare("SELECT content_json FROM web_content_blocks WHERE content_key='site' LIMIT 1");
+    $stmt->execute();
+    $json = $stmt->fetchColumn();
+    if (!is_string($json) || $json === '') return;
+    $site = json_decode($json, true);
+    if (!is_array($site) || trim((string)($site['favicon'] ?? '')) !== '') return;
+    $site['favicon'] = (string)(web_default_content()['site']['favicon'] ?? 'assets/img/favicon-artdon.png');
     web_save_block($pdo, 'site', $site, null);
 }
 

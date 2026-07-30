@@ -10,6 +10,7 @@ function web_default_content(): array
             'site_url' => 'http://43.132.210.162',
             'header_logo' => 'assets/img/logo-artdon.png',
             'footer_logo' => 'assets/img/logo-artdon-footer.png',
+            'favicon' => 'assets/img/favicon-artdon.png',
             'tagline' => 'Architectural Lighting for Commercial Spaces',
             'contact_name' => 'Sukie',
             'email' => 'sales@artdon.cn',
