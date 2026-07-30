@@ -1,6 +1,6 @@
 # Codex Context Handoff
 
-Last updated: 2026-07-29
+Last updated: 2026-07-30
 
 ## Workflow Rule
 
@@ -46,6 +46,9 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Added create and delete controls to `admin/retail_applications.php`. The left application list now has a form for creating a new Retail Application (name plus optional slug) and every card has a confirmed delete action; one application must remain so the application set can never become empty.
+- New applications receive a full editable default template, appear in the application list immediately, clear public cache on creation/deletion and open through the new dynamic public route `solutions-retail-application.php?slug=...`. The six original application URLs remain unchanged.
+- Deployed `admin/retail_applications.php`, `admin/retail_applications_action.php`, `includes/retail_application_data.php` and `solutions-retail-application.php` after recoverable production backups tagged `retail_application_manage_20260730_115134` and moving old page-cache files to `storage/page_cache_backup_retail_application_manage_20260730_115134`.
 - Made every editable element of the public Projects top banner available in the admin: image, image ALT, large title and small descriptive copy. The controls are in `Projects 详情页 → 项目页顶部横幅`; saving them clears the public cache and does not affect project-card images.
 - Deployed `project.php`, `admin/project_action.php` and `admin/project_details.php` after recoverable production backups tagged `project_banner_copy_20260729_145645` and moving the prior page-cache files to `storage/page_cache_backup_project_banner_copy_20260729_145645`.
 - Made the first large image on `project.php` independently editable in the admin: `Projects 详情页 → 项目页顶部横幅` now supports direct upload, media-library selection, image ALT text and automatic public-cache clearing.
@@ -95,6 +98,8 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `0c77153` - Add retail application create and delete controls
+- `46bb946` - Document editable projects banner copy
 - `7a294b5` - Make projects banner copy editable
 - `c1b0cc3` - Document editable projects banner
 - `bb5a939` - Make projects page banner editable
@@ -113,6 +118,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `admin/retail_applications.php`, `admin/retail_applications_action.php`, `includes/retail_application_data.php` and `solutions-retail-application.php` are synced to the Hong Kong server with dynamic Retail Application create/delete support; all four passed production PHP lint and checksums match local. The generic public route was checked live with the existing Fashion Store application.
 - `project.php`, `admin/project_action.php` and `admin/project_details.php` are synced to the Hong Kong server with editable public Projects banner image, ALT, large title and small descriptive copy; all three passed production PHP lint and their checksums match local.
 - `series.php` is synced to the Hong Kong server with the shared 16:9 center-crop rule for all series Projects images; production PHP lint passed and checksum matches local.
 - `series.php`, `product.php`, `includes/product_hierarchy.php`, `includes/product_accessories.php`, `admin/product_variant_edit.php`, `admin/products.php`, `admin/assets/admin_v7.css` and `assets/css/artdon_product_inline_v718.css` are synced to the Hong Kong server; all changed PHP files passed production lint and all eight deployed file checksums match local.
@@ -125,6 +131,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
+- Retail Applications can now be increased or decreased from the left-side list. Creating an item opens its fully editable template; deleting an item removes it from the public application navigation while retaining uploaded media in the media library.
 - The public Projects page top banner can now be changed independently in the admin without affecting the project-list images. Its image, ALT, large title and small descriptive copy are all editable in one form.
 - No open code changes are pending.
 - Next session should continue using the default workflow:
