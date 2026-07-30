@@ -7,10 +7,11 @@ require_once __DIR__ . '/pretty_urls_v71868.php';
 require_once __DIR__ . '/retail_application_data.php';
 
 $retailApplicationSlug = isset($retailApplicationSlug) ? (string)$retailApplicationSlug : '';
-$page = ra_retail_application_page($retailApplicationSlug);
+$retailApplicationSolution = ra_solution_application_slug((string)($retailApplicationSolution ?? 'retail'));
+$page = ra_retail_application_page($retailApplicationSlug, $retailApplicationSolution);
 if (!$page) {
     http_response_code(404);
-    $page = ra_retail_application_page('fashion-store');
+    $page = ra_retail_application_page('fashion-store', 'retail');
 }
 
 $content = web_get_all_content();
@@ -185,7 +186,7 @@ $priorities = ra_sorted_items($page['priorities'] ?? []);
 $zones = ra_sorted_items($page['zones'] ?? []);
 $projects = array_slice(ra_sorted_items($page['projects'] ?? []), 0, 4);
 $supportItems = ra_sorted_items($page['support']['items'] ?? []);
-$applicationLinks = ra_retail_application_links($currentSlug);
+$applicationLinks = ra_retail_application_links($currentSlug, $retailApplicationSolution);
 ?>
 <!doctype html>
 <html lang="en">

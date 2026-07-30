@@ -60,7 +60,7 @@ function admin_nav_groups(): array
                 ['key'=>'homepage','label'=>'首页编排','href'=>'homepage.php','icon'=>'home','permission'=>'homepage.view'],
                 ['key'=>'solutions_page','label'=>'Solutions 页面','href'=>'solutions_page.php','icon'=>'spark','permission'=>'homepage.view'],
                 ['key'=>'solutions_retail_page','label'=>'Retail 方案页','href'=>'solutions_retail_page.php','icon'=>'spark','permission'=>'homepage.view'],
-                ['key'=>'retail_applications','label'=>'Retail Applications','href'=>'retail_applications.php','icon'=>'spark','permission'=>'homepage.view'],
+                ['key'=>'retail_applications','label'=>'Solution Applications','href'=>'retail_applications.php','icon'=>'spark','permission'=>'homepage.view'],
                 ['key'=>'project_details','label'=>'Projects 详情页','href'=>'project_details.php','icon'=>'spark','permission'=>'homepage.view'],
                 ['key'=>'about_pages','label'=>'About Us 页面管理','href'=>'about_pages.php','icon'=>'spark','permission'=>'homepage.view'],
                 ['key'=>'contact_page','label'=>'Contact 页面管理','href'=>'contact_page.php','icon'=>'inquiry','permission'=>'homepage.view'],

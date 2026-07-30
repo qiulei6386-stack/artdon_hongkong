@@ -38,8 +38,13 @@ function ra_save_upload(string $field, string $usage, PDO $pdo, int $userId, str
 }
 
 $slug = ra_save_slug((string)($_POST['slug'] ?? 'fashion-store'));
-$defaults = ra_retail_application_pages();
-if (!isset($defaults[$slug])) $slug = 'fashion-store';
+$solutionSlug = ra_solution_application_slug((string)($_POST['solution'] ?? 'retail'));
+$defaults = ra_retail_application_db_pages($solutionSlug);
+if (!isset($defaults[$slug])) {
+    $_SESSION['admin_error'] = '应用不存在或已被删除。';
+    header('Location: retail_applications.php?solution=' . rawurlencode($solutionSlug));
+    exit;
+}
 
 $module = (string)($_POST['module'] ?? 'hero');
 $allowedModules = ['basic','hero','priorities','zones','products','projects','support','cta','seo','publish'];
@@ -50,7 +55,8 @@ if (!in_array($module, $allowedModules, true)) {
 }
 
 try {
-    $data = ra_retail_application_page($slug) ?: $defaults[$slug];
+    $data = ra_retail_application_page($slug, $solutionSlug) ?: $defaults[$slug];
+    $data['solution_slug'] = $solutionSlug;
 
     if ($module === 'basic') {
         $thumb = ra_save_clean($_POST['thumbnail_image'] ?? '');
@@ -219,4 +225,4 @@ try {
     $_SESSION['admin_error'] = '保存失败：' . $e->getMessage();
 }
 
-header('Location: retail_applications.php?slug=' . rawurlencode($slug) . '&module=' . rawurlencode($module));
+header('Location: retail_applications.php?solution=' . rawurlencode($solutionSlug) . '&slug=' . rawurlencode($slug) . '&module=' . rawurlencode($module));

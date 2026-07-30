@@ -13,12 +13,32 @@ function ra_db_json_decode(mixed $value): array
     return is_array($decoded) ? $decoded : [];
 }
 
-function ra_retail_application_url(string $slug): string
+function ra_solution_application_definitions(): array
+{
+    return [
+        'retail'=>['label'=>'Retail Lighting','image'=>'assets/img/projects/featured-retail.webp'],
+        'hospitality'=>['label'=>'Hospitality Lighting','image'=>'assets/img/projects/featured-hospitality.webp'],
+        'museum-gallery'=>['label'=>'Museum & Gallery','image'=>'assets/img/projects/featured-museum.webp'],
+        'office'=>['label'=>'Office Lighting','image'=>'assets/img/projects/featured-office.webp'],
+        'residential'=>['label'=>'Residential Lighting','image'=>'assets/img/project-hotel.svg'],
+        'outdoor-landscape'=>['label'=>'Outdoor & Landscape','image'=>'assets/img/hero/hero-outdoor-projector.webp'],
+    ];
+}
+
+function ra_solution_application_slug(string $value): string
+{
+    $slug = preg_replace('/[^a-z0-9-]+/', '-', strtolower(trim($value))) ?: '';
+    return isset(ra_solution_application_definitions()[$slug]) ? $slug : 'retail';
+}
+
+function ra_retail_application_url(string $slug, string $solutionSlug = 'retail'): string
 {
     $slug = preg_replace('/[^a-z0-9-]+/', '-', strtolower(trim($slug))) ?: '';
+    $solutionSlug = ra_solution_application_slug($solutionSlug);
     $legacySlugs = ['fashion-store', 'luxury-boutique', 'jewelry-store', 'shopping-mall', 'supermarket', 'showroom'];
-    if (in_array($slug, $legacySlugs, true)) return 'solutions-retail-' . $slug . '.php';
-    return 'solutions-retail-application.php?slug=' . rawurlencode($slug);
+    if ($solutionSlug === 'retail' && in_array($slug, $legacySlugs, true)) return 'solutions-retail-' . $slug . '.php';
+    if ($solutionSlug === 'retail') return 'solutions-retail-application.php?slug=' . rawurlencode($slug);
+    return 'solutions-application.php?solution=' . rawurlencode($solutionSlug) . '&slug=' . rawurlencode($slug);
 }
 
 function ra_application_common_defaults(): array
@@ -89,6 +109,7 @@ function ra_retail_application_table_ensure(PDO $pdo): void
 {
     $pdo->exec("CREATE TABLE IF NOT EXISTS web_solution_retail_applications (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        solution_slug VARCHAR(80) NOT NULL DEFAULT 'retail',
         slug VARCHAR(120) NOT NULL,
         title VARCHAR(255) NOT NULL DEFAULT '',
         menu_title VARCHAR(255) NOT NULL DEFAULT '',
@@ -127,6 +148,14 @@ function ra_retail_application_table_ensure(PDO $pdo): void
         KEY idx_retail_app_sort (sort_order),
         KEY idx_retail_app_active (is_active, show_in_explore)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $columns = $pdo->query("SHOW COLUMNS FROM web_solution_retail_applications")->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    if (!in_array('solution_slug', $columns, true)) {
+        $pdo->exec("ALTER TABLE web_solution_retail_applications ADD COLUMN solution_slug VARCHAR(80) NOT NULL DEFAULT 'retail' AFTER id");
+    }
+    $indexes = $pdo->query("SHOW INDEX FROM web_solution_retail_applications")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $hasSolutionIndex = false;
+    foreach ($indexes as $index) if (($index['Key_name'] ?? '') === 'idx_retail_app_solution') $hasSolutionIndex = true;
+    if (!$hasSolutionIndex) $pdo->exec("ALTER TABLE web_solution_retail_applications ADD KEY idx_retail_app_solution (solution_slug, sort_order)");
 }
 
 function ra_retail_application_record_from_page(array $page): array
@@ -135,6 +164,7 @@ function ra_retail_application_record_from_page(array $page): array
     $pageTitle = str_replace("\n", ' ', (string)($page['title'] ?? ($label . ' Lighting')));
     $content = ra_retail_application_content_payload($page);
     return [
+        'solution_slug'=>ra_solution_application_slug((string)($page['solution_slug'] ?? 'retail')),
         'slug'=>(string)($page['slug'] ?? ''),
         'title'=>$label,
         'menu_title'=>$label,
@@ -172,9 +202,9 @@ function ra_retail_application_record_from_page(array $page): array
 function ra_retail_application_insert_record(PDO $pdo, array $record): void
 {
     $sql = "INSERT INTO web_solution_retail_applications
-        (slug,title,menu_title,page_title,breadcrumb_title,short_description,hero_title,hero_description,hero_image,hero_image_alt,hero_primary_button_text,hero_primary_button_url,hero_secondary_button_text,hero_secondary_button_url,card_image,card_image_alt,card_description,cta_title,cta_description,cta_image,cta_image_alt,cta_button_text,cta_button_url,seo_title,seo_description,seo_keywords,canonical_url,sort_order,is_active,show_in_explore,content_json)
+        (solution_slug,slug,title,menu_title,page_title,breadcrumb_title,short_description,hero_title,hero_description,hero_image,hero_image_alt,hero_primary_button_text,hero_primary_button_url,hero_secondary_button_text,hero_secondary_button_url,card_image,card_image_alt,card_description,cta_title,cta_description,cta_image,cta_image_alt,cta_button_text,cta_button_url,seo_title,seo_description,seo_keywords,canonical_url,sort_order,is_active,show_in_explore,content_json)
         VALUES
-        (:slug,:title,:menu_title,:page_title,:breadcrumb_title,:short_description,:hero_title,:hero_description,:hero_image,:hero_image_alt,:hero_primary_button_text,:hero_primary_button_url,:hero_secondary_button_text,:hero_secondary_button_url,:card_image,:card_image_alt,:card_description,:cta_title,:cta_description,:cta_image,:cta_image_alt,:cta_button_text,:cta_button_url,:seo_title,:seo_description,:seo_keywords,:canonical_url,:sort_order,:is_active,:show_in_explore,:content_json)
+        (:solution_slug,:slug,:title,:menu_title,:page_title,:breadcrumb_title,:short_description,:hero_title,:hero_description,:hero_image,:hero_image_alt,:hero_primary_button_text,:hero_primary_button_url,:hero_secondary_button_text,:hero_secondary_button_url,:card_image,:card_image_alt,:card_description,:cta_title,:cta_description,:cta_image,:cta_image_alt,:cta_button_text,:cta_button_url,:seo_title,:seo_description,:seo_keywords,:canonical_url,:sort_order,:is_active,:show_in_explore,:content_json)
         ON DUPLICATE KEY UPDATE
         title=VALUES(title),menu_title=VALUES(menu_title),page_title=VALUES(page_title),breadcrumb_title=VALUES(breadcrumb_title),short_description=VALUES(short_description),hero_title=VALUES(hero_title),hero_description=VALUES(hero_description),hero_image=VALUES(hero_image),hero_image_alt=VALUES(hero_image_alt),hero_primary_button_text=VALUES(hero_primary_button_text),hero_primary_button_url=VALUES(hero_primary_button_url),hero_secondary_button_text=VALUES(hero_secondary_button_text),hero_secondary_button_url=VALUES(hero_secondary_button_url),card_image=VALUES(card_image),card_image_alt=VALUES(card_image_alt),card_description=VALUES(card_description),cta_title=VALUES(cta_title),cta_description=VALUES(cta_description),cta_image=VALUES(cta_image),cta_image_alt=VALUES(cta_image_alt),cta_button_text=VALUES(cta_button_text),cta_button_url=VALUES(cta_button_url),seo_title=VALUES(seo_title),seo_description=VALUES(seo_description),seo_keywords=VALUES(seo_keywords),canonical_url=VALUES(canonical_url),sort_order=VALUES(sort_order),is_active=VALUES(is_active),show_in_explore=VALUES(show_in_explore),content_json=VALUES(content_json)";
     $stmt = $pdo->prepare($sql);
@@ -194,11 +224,13 @@ function ra_retail_application_seed(PDO $pdo): void
 function ra_retail_application_row_to_page(array $row): array
 {
     $slug = (string)($row['slug'] ?? '');
+    $solutionSlug = ra_solution_application_slug((string)($row['solution_slug'] ?? 'retail'));
     $content = ra_db_json_decode($row['content_json'] ?? '');
     $label = (string)($row['title'] ?? ($row['menu_title'] ?? ''));
     return [
         'slug'=>$slug,
-        'url'=>ra_retail_application_url($slug),
+        'solution_slug'=>$solutionSlug,
+        'url'=>ra_retail_application_url($slug, $solutionSlug),
         'label'=>$label,
         'menu_title'=>(string)($row['menu_title'] ?? $label),
         'title'=>(string)($row['hero_title'] ?? ($row['page_title'] ?? $label)),
@@ -244,14 +276,21 @@ function ra_retail_application_row_to_page(array $row): array
     ];
 }
 
-function ra_retail_application_db_pages(): array
+function ra_retail_application_db_pages(string $solutionSlug = ''): array
 {
     try {
         $err = null;
         $pdo = web_db($err);
         if (!$pdo instanceof PDO) return [];
         ra_retail_application_seed($pdo);
-        $rows = $pdo->query("SELECT * FROM web_solution_retail_applications ORDER BY sort_order ASC, id ASC")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $solutionSlug = trim($solutionSlug) === '' ? '' : ra_solution_application_slug($solutionSlug);
+        if ($solutionSlug === '') {
+            $rows = $pdo->query("SELECT * FROM web_solution_retail_applications ORDER BY solution_slug ASC, sort_order ASC, id ASC")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM web_solution_retail_applications WHERE solution_slug=? ORDER BY sort_order ASC, id ASC");
+            $stmt->execute([$solutionSlug]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        }
         $pages = [];
         foreach ($rows as $row) {
             $page = ra_retail_application_row_to_page($row);
@@ -399,11 +438,12 @@ function ra_retail_application_saved_content(string $slug): array
     return $saved;
 }
 
-function ra_retail_application_page(string $slug): ?array
+function ra_retail_application_page(string $slug, string $solutionSlug = 'retail'): ?array
 {
     $slug = preg_replace('/[^a-z0-9-]+/', '-', strtolower(trim($slug))) ?: '';
     if ($slug === '') return null;
-    $dbPages = ra_retail_application_db_pages();
+    $solutionSlug = ra_solution_application_slug($solutionSlug);
+    $dbPages = ra_retail_application_db_pages($solutionSlug);
     if (is_array($dbPages[$slug] ?? null)) return $dbPages[$slug];
     $pages = ra_retail_application_pages();
     if (!isset($pages[$slug])) return null;
@@ -422,19 +462,20 @@ function ra_retail_application_page(string $slug): ?array
     return $page;
 }
 
-function ra_retail_application_links(string $currentSlug = ''): array
+function ra_retail_application_links(string $currentSlug = '', string $solutionSlug = 'retail'): array
 {
     $items = [];
-    $sourcePages = ra_retail_application_db_pages();
+    $solutionSlug = ra_solution_application_slug($solutionSlug);
+    $sourcePages = ra_retail_application_db_pages($solutionSlug);
     if (!$sourcePages) $sourcePages = ra_retail_application_pages();
     foreach (array_keys($sourcePages) as $slug) {
-        $page = ra_retail_application_page($slug);
+        $page = ra_retail_application_page($slug, $solutionSlug);
         if (!$page || empty($page['is_active']) || empty($page['show_in_explore'])) continue;
         $items[] = [
             'slug'=>$slug,
             'label'=>(string)($page['label'] ?? ''),
             'image'=>(string)($page['thumbnail_image'] ?? ($page['hero_image'] ?? 'assets/img/projects/featured-retail.webp')),
-            'url'=>(string)($page['url'] ?? ra_retail_application_url($slug)),
+            'url'=>(string)($page['url'] ?? ra_retail_application_url($slug, $solutionSlug)),
             'active'=>$slug === $currentSlug,
             'sort_order'=>(int)($page['sort_order'] ?? 999),
         ];

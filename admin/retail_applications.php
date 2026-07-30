@@ -120,6 +120,7 @@ function ra_admin_form_start(string $slug, string $module): void
     ?>
     <form id="ra-form-<?= web_e($module) ?>" class="ra-module-form homepage-v66-form" data-homepage-form action="save_retail_application.php" method="post" enctype="multipart/form-data">
       <input type="hidden" name="csrf" value="<?= web_e(web_csrf_token()) ?>">
+      <input type="hidden" name="solution" value="<?= web_e((string)($GLOBALS['raAdminSolution'] ?? 'retail')) ?>">
       <input type="hidden" name="slug" value="<?= web_e($slug) ?>">
       <input type="hidden" name="module" value="<?= web_e($module) ?>">
     <?php
@@ -132,16 +133,18 @@ function ra_admin_form_end(): void
     <?php
 }
 
-$known = ra_retail_application_db_pages();
-if (!$known) $known = ra_retail_application_pages();
-$slug = ra_admin_slug((string)($_GET['slug'] ?? 'fashion-store'));
-if (!isset($known[$slug])) $slug = (string)(array_key_first($known) ?? 'fashion-store');
-$page = ra_retail_application_page($slug) ?: ($known[$slug] ?? []);
+$solutionOptions = ra_solution_application_definitions();
+$solutionSlug = ra_solution_application_slug((string)($_GET['solution'] ?? 'retail'));
+$GLOBALS['raAdminSolution'] = $solutionSlug;
+$known = ra_retail_application_db_pages($solutionSlug);
+$slug = ra_admin_slug((string)($_GET['slug'] ?? ''));
+if (!isset($known[$slug])) $slug = (string)(array_key_first($known) ?? '');
+$page = $slug !== '' ? (ra_retail_application_page($slug, $solutionSlug) ?: ($known[$slug] ?? [])) : [];
 $productChoices = ra_admin_product_choices($pdo);
 
 $apps = [];
 foreach (array_keys($known) as $appSlug) {
-    $app = ra_retail_application_page($appSlug) ?: $known[$appSlug];
+    $app = ra_retail_application_page($appSlug, $solutionSlug) ?: $known[$appSlug];
     $apps[] = $app;
 }
 usort($apps, static fn(array $a, array $b): int => ((int)($a['sort_order'] ?? 999) <=> (int)($b['sort_order'] ?? 999)) ?: strcmp((string)$a['label'], (string)$b['label']));
@@ -166,23 +169,26 @@ admin_notice();
   <header class="ra-admin-head">
     <div>
       <p>Solutions 管理</p>
-      <h1>Retail Applications</h1>
-      <span>统一管理零售应用详情页模板内容；可自行新增或删除应用，所有页面共用同一版型。</span>
+      <h1>Solution Applications</h1>
+      <span>按六个 Solutions 大分类管理应用详情页；每个分类可自行新增、编辑或删除子页面。</span>
     </div>
     <div class="ra-head-actions">
-      <a class="admin-button-secondary" href="../<?= web_e((string)($page['url'] ?? ra_retail_application_url($slug))) ?>" target="_blank" rel="noopener">预览当前页面</a>
-      <button class="admin-button" type="button" data-module-open="hero">编辑 Hero</button>
+      <?php if ($page): ?><a class="admin-button-secondary" href="../<?= web_e((string)($page['url'] ?? ra_retail_application_url($slug, $solutionSlug))) ?>" target="_blank" rel="noopener">预览当前页面</a><button class="admin-button" type="button" data-module-open="hero">编辑 Hero</button><?php endif; ?>
     </div>
   </header>
 
+  <nav class="ra-solution-tabs" aria-label="Solutions 大分类">
+    <?php foreach ($solutionOptions as $key => $meta): ?><a href="retail_applications.php?solution=<?= web_e($key) ?>" class="<?= $solutionSlug === $key ? 'is-active' : '' ?>"><?= web_e((string)$meta['label']) ?></a><?php endforeach; ?>
+  </nav>
+
   <div class="ra-layout">
-    <aside class="ra-apps" aria-label="Retail application list">
+    <aside class="ra-apps" aria-label="Solution application list">
       <?php foreach ($apps as $app):
           $appSlug = (string)($app['slug'] ?? '');
           $thumb = (string)($app['thumbnail_image'] ?? ($app['hero_image'] ?? ''));
       ?>
       <article class="ra-app-card <?= $appSlug === $slug ? 'is-active' : '' ?>">
-        <a href="retail_applications.php?slug=<?= web_e($appSlug) ?>">
+        <a href="retail_applications.php?solution=<?= web_e($solutionSlug) ?>&slug=<?= web_e($appSlug) ?>">
           <figure><?= $thumb !== '' ? '<img src="' . web_e(ra_admin_public_url($thumb)) . '" alt="">' : '<span>No image</span>' ?></figure>
           <div>
             <strong><?= web_e((string)($app['label'] ?? '')) ?></strong>
@@ -191,10 +197,11 @@ admin_notice();
           </div>
         </a>
         <div class="ra-app-card-actions">
-          <a class="ra-edit-link" href="retail_applications.php?slug=<?= web_e($appSlug) ?>&module=basic">编辑</a>
+          <a class="ra-edit-link" href="retail_applications.php?solution=<?= web_e($solutionSlug) ?>&slug=<?= web_e($appSlug) ?>&module=basic">编辑</a>
           <form action="retail_applications_action.php" method="post" onsubmit="return confirm('确定删除「<?= web_e((string)($app['label'] ?? '')) ?>」吗？此操作不会删除已上传的图片。');">
             <input type="hidden" name="csrf" value="<?= web_e(web_csrf_token()) ?>">
             <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="solution" value="<?= web_e($solutionSlug) ?>">
             <input type="hidden" name="slug" value="<?= web_e($appSlug) ?>">
             <button type="submit" class="ra-delete-link" <?= count($apps) <= 1 ? 'disabled title="请至少保留一个应用"' : '' ?>>删除</button>
           </form>
@@ -204,7 +211,8 @@ admin_notice();
       <form class="ra-create-form" action="retail_applications_action.php" method="post">
         <input type="hidden" name="csrf" value="<?= web_e(web_csrf_token()) ?>">
         <input type="hidden" name="action" value="create">
-        <strong>新增 Retail Application</strong>
+        <input type="hidden" name="solution" value="<?= web_e($solutionSlug) ?>">
+        <strong>新增 <?= web_e((string)$solutionOptions[$solutionSlug]['label']) ?> Application</strong>
         <label><span>应用名称</span><input type="text" name="label" placeholder="例如: Cosmetics Store" required></label>
         <label><span>页面标识（可留空）</span><input type="text" name="slug" placeholder="cosmetics-store"></label>
         <small>留空会按应用名称自动生成；新增后可继续编辑所有模块。</small>
@@ -213,12 +221,15 @@ admin_notice();
     </aside>
 
     <main class="ra-workbench">
+      <?php if (!$page): ?>
+      <div class="ra-empty"><h2>暂未建立应用页面</h2><p>请在左侧填写应用名称并点击“新增应用”，即可为 <?= web_e((string)$solutionOptions[$solutionSlug]['label']) ?> 创建第一个可编辑子页面。</p></div>
+      <?php else: ?>
       <div class="ra-current">
         <div>
           <h2><?= web_e((string)($page['label'] ?? '')) ?></h2>
           <span><?= web_e($slug) ?> · <?= !empty($page['is_active']) ? '已启用' : '已停用' ?> · 排序 <?= (int)($page['sort_order'] ?? 0) ?></span>
         </div>
-        <a href="../<?= web_e((string)($page['url'] ?? ('solutions-retail-' . $slug . '.php'))) ?>" target="_blank" rel="noopener">打开前台</a>
+        <a href="../<?= web_e((string)($page['url'] ?? ra_retail_application_url($slug, $solutionSlug))) ?>" target="_blank" rel="noopener">打开前台</a>
       </div>
 
       <div class="ra-module-grid">
@@ -236,10 +247,12 @@ admin_notice();
         </article>
         <?php endforeach; ?>
       </div>
+      <?php endif; ?>
     </main>
   </div>
 </section>
 
+<?php if ($page): ?>
 <div class="ra-drawer-layer" data-drawer-layer hidden>
   <button class="ra-drawer-backdrop" type="button" data-drawer-close aria-label="关闭"></button>
   <?php foreach ($modules as $key => $module): ?>
@@ -356,17 +369,19 @@ admin_notice();
         <label class="field ra-check"><span>启用 / 停用</span><input type="checkbox" name="is_active" value="1" <?= !empty($page['is_active']) ? 'checked' : '' ?>> 启用前台展示</label>
         <?php ra_admin_field('排序', 'sort_order', (int)($page['sort_order'] ?? 10), 'number'); ?>
       </div>
-      <a class="admin-button-secondary" href="../solutions-retail-<?= web_e($slug) ?>.php" target="_blank" rel="noopener">预览当前页面</a>
+      <a class="admin-button-secondary" href="../<?= web_e(ra_retail_application_url($slug, $solutionSlug)) ?>" target="_blank" rel="noopener">预览当前页面</a>
       <?php ra_admin_form_end(); ?>
     <?php endif; ?>
   </section>
   <?php endforeach; ?>
 </div>
+<?php endif; ?>
 
 <style>
 .ra-admin{--red:#d71920;--line:#e5e5e5;--text:#111;--muted:#555;display:grid;gap:18px}
 .ra-admin-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;padding:22px;border:1px solid var(--line);background:#fff;border-radius:10px}
 .ra-admin-head p{margin:0 0 6px;color:var(--red);font-weight:900;text-transform:uppercase;font-size:12px}.ra-admin-head h1{margin:0;color:var(--text);font-size:28px}.ra-admin-head span{display:block;margin-top:6px;color:var(--muted);font-size:13px}.ra-head-actions{display:flex;gap:10px;flex-wrap:wrap}
+.ra-solution-tabs{display:flex;gap:8px;flex-wrap:wrap;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff}.ra-solution-tabs a{display:inline-flex;align-items:center;min-height:38px;padding:0 13px;border:1px solid var(--line);border-radius:7px;color:#555;text-decoration:none;font-size:13px;font-weight:800}.ra-solution-tabs a.is-active{border-color:var(--red);background:var(--red);color:#fff}.ra-empty{padding:38px;border:1px dashed #c9ccd1;border-radius:8px;background:#fff;color:#555}.ra-empty h2{margin:0 0 10px;color:#111}.ra-empty p{max-width:560px;margin:0;line-height:1.6}
 .ra-layout{display:grid;grid-template-columns:310px minmax(0,1fr);gap:18px;align-items:start}.ra-apps,.ra-workbench{display:grid;gap:12px}.ra-app-card{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px}.ra-app-card.is-active{border-color:var(--red);box-shadow:0 0 0 1px rgba(215,25,32,.08)}.ra-app-card a:first-child{display:grid;grid-template-columns:76px 1fr;gap:12px;color:inherit;text-decoration:none}.ra-app-card figure{margin:0;width:76px;height:58px;background:#f7f7f7;border:1px solid var(--line);overflow:hidden}.ra-app-card img{width:100%;height:100%;object-fit:cover}.ra-app-card strong{display:block;color:#111;font-size:14px}.ra-app-card small{display:block;color:#777;margin-top:3px}.ra-app-card span{display:block;color:#555;font-size:12px;margin-top:7px}.ra-app-card-actions{display:flex;align-items:center;justify-content:space-between;margin-top:8px}.ra-app-card-actions form{margin:0}.ra-edit-link,.ra-delete-link{display:inline-flex;border:0;padding:0;background:transparent;font:inherit;font-weight:800;text-decoration:none;font-size:12px;cursor:pointer}.ra-edit-link{color:var(--red)}.ra-delete-link{color:#8b1e1e}.ra-delete-link:disabled{color:#a6a6a6;cursor:not-allowed}.ra-create-form{display:grid;gap:10px;padding:14px;border:1px dashed #c9ccd1;border-radius:8px;background:#fff}.ra-create-form strong{color:#111}.ra-create-form label{display:grid;gap:5px;color:#555;font-size:12px;font-weight:800}.ra-create-form input{width:100%;height:38px;border:1px solid var(--line);border-radius:6px;padding:0 10px;font:inherit;background:#fff}.ra-create-form small{color:#777;font-size:11px;line-height:1.45}
 .ra-current{display:flex;justify-content:space-between;gap:16px;align-items:center;border:1px solid var(--line);background:#fff;border-radius:8px;padding:18px}.ra-current h2{margin:0;color:#111}.ra-current span{display:block;color:#555;margin-top:5px;font-size:13px}.ra-current a{color:var(--red);font-weight:800;text-decoration:none}
 .ra-module-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.ra-module-card{border:1px solid var(--line);background:#fff;border-radius:8px;padding:18px;display:grid;gap:14px;cursor:pointer}.ra-module-card>div{display:flex;justify-content:space-between;gap:12px}.ra-module-card h3{margin:0;color:#111;font-size:16px}.ra-module-card p{margin:0;color:#555;font-size:13px;min-height:34px}.ra-module-card footer{display:flex;gap:10px}.ra-status{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:#f7f7f7;color:#777;font-size:12px;font-weight:800}.ra-status.is-done{background:rgba(215,25,32,.08);color:var(--red)}
