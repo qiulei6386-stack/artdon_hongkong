@@ -1081,6 +1081,16 @@ if ($usingSeriesFilterFallback && $selectedFilters) {
         foreach ($resolvedGroup['options'] as $option) $activeFilterLabels[] = (string)$option['name'];
     }
 }
+
+$productsFirstImage = '';
+if (!empty($items[0])) {
+    if ($productMode) {
+        $firstCard = web_product_variant_catalog_card($items[0]);
+        $productsFirstImage = trim((string)($firstCard['image'] ?? ''));
+    } else {
+        $productsFirstImage = trim((string)($items[0]['cover_image'] ?? ''));
+    }
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -1091,6 +1101,7 @@ if ($usingSeriesFilterFallback && $selectedFilters) {
   <meta name="description" content="<?= web_e($pageDescription) ?>">
   <meta name="robots" content="index,follow,max-image-preview:large">
   <?php if($canonical!==''): ?><link rel="canonical" href="<?= web_e($canonical) ?>"><?php endif; ?>
+  <?php if($productsFirstImage!==''): ?><link rel="preload" as="image" href="<?= web_e(web_public_path($productsFirstImage)) ?>" fetchpriority="high"><?php endif; ?>
   <meta property="og:type" content="website"><meta property="og:title" content="<?= web_e($pageTitle) ?>"><meta property="og:description" content="<?= web_e($pageDescription) ?>">
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
@@ -1284,7 +1295,7 @@ if (is_file($__artdonCardV7093)) {
       <?php else: ?>
       <div class="catalog-grid catalog-grid-v51 <?= $productMode?'catalog-grid-products':'catalog-grid-grouped' ?>"<?= (!$productMode && $categorySlug!=='all' && $activeCategoryFamilyIntro!=='') ? ' style="margin-top:0!important;padding-top:0!important"' : '' ?>>
         <?php if($productMode): ?>
-          <?php foreach($items as $variant): $card=web_product_variant_catalog_card($variant); $card['url']=artdon_pretty_product_url_v71868((string)($variant['category_slug'] ?? $categorySlug), (string)($variant['series_slug'] ?? 'Product'), $variant); $variantPower=trim((string)($variant['power_text']??'')); $variantBeamRaw=$variant['beam_angle']??[]; $variantBeam=artdon_catalog_value_to_text_v71888($variantBeamRaw); $variantBeam=str_replace(' ', ' / ', preg_replace('/\s+/', ' ', trim($variantBeam)));  ?>
+          <?php foreach($items as $variantIndex=>$variant): $card=web_product_variant_catalog_card($variant); $card['url']=artdon_pretty_product_url_v71868((string)($variant['category_slug'] ?? $categorySlug), (string)($variant['series_slug'] ?? 'Product'), $variant); $variantPower=trim((string)($variant['power_text']??'')); $variantBeamRaw=$variant['beam_angle']??[]; $variantBeam=artdon_catalog_value_to_text_v71888($variantBeamRaw); $variantBeam=str_replace(' ', ' / ', preg_replace('/\s+/', ' ', trim($variantBeam)));  ?>
           <?php $variantFilterAttr=artdon_catalog_filter_json_attr_v71889(artdon_catalog_variant_filter_values_v71889($variant, $card, $categorySlug, $categoryNamesBySlug)); ?>
           <?php $variantSearchRaw=artdon_catalog_card_search_text_v71894($variant, $card); ?>
           <?php $variantSearchAttr=web_e($variantSearchRaw); ?>
@@ -1296,7 +1307,7 @@ if (is_file($__artdonCardV7093)) {
 <?php if (isset($product) && is_array($product) && function_exists('artdon_card_v7093_badge_html')) echo artdon_card_v7093_badge_html('series', $product, $pdo ?? null); ?>
 <!-- ARTDON_V7093_DIRECT_SERIES_BADGE_END -->
 
-                <?php if($card['image']!==''): ?><img src="<?= web_e(web_public_path($card['image'])) ?>" alt="<?= web_e($card['name']) ?>" loading="lazy"><?php endif; ?>
+                <?php if($card['image']!==''): ?><img src="<?= web_e(web_public_path($card['image'])) ?>" alt="<?= web_e($card['name']) ?>" loading="<?= $variantIndex===0?'eager':'lazy' ?>"<?= $variantIndex===0?' fetchpriority="high"':'' ?> decoding="async"><?php endif; ?>
                 </figure>
               <div class="catalog-card-body">
                 <?php if($card['series_name']!==''): ?><p class="catalog-card-series-label"><?= web_e($card['series_name']) ?> SERIES</p><?php endif; ?>
@@ -1314,7 +1325,7 @@ if (is_file($__artdonCardV7093)) {
           </article>
           <?php endforeach; ?>
         <?php else: ?>
-          <?php $lastDisplayedCategory=null; foreach($items as $series):
+          <?php $lastDisplayedCategory=null; foreach($items as $seriesIndex=>$series):
             $seriesCategorySlug=(string)($series['_display_category_slug']??artdon_catalog_series_primary_category_v71899($series, $categoryNamesBySlug));
             if($categorySlug==='all' && $seriesCategorySlug!==$lastDisplayedCategory):
               $family=$categoryMetaBySlug[$seriesCategorySlug]??['name'=>ucwords(str_replace('-',' ',$seriesCategorySlug?:'Other Products'))];
@@ -1333,7 +1344,7 @@ if (is_file($__artdonCardV7093)) {
           <?php $seriesProductSearchAttr=web_e($seriesProductSearchRaw); ?>
           <article class="catalog-card catalog-card-v51 catalog-rich-card" data-artdon-filter-card="1" data-artdon-filter-values='<?= $seriesFilterAttr ?>' data-artdon-series-key="<?= $seriesTitleAttr ?>" data-artdon-model-key="<?= $seriesProductSearchAttr ?>" data-artdon-series-search-text="<?= $seriesTitleAttr ?>" data-artdon-model-search-text="<?= $seriesProductSearchAttr ?>" data-artdon-search-title="<?= $seriesTitleAttr ?>" data-artdon-product-search-text="<?= $seriesProductSearchAttr ?>" data-artdon-search-text="<?= $seriesSearchAttr ?>" style="<?= web_e(catalog_card_scale_style($series['card_image_scale'] ?? ($card['image_scale'] ?? 100))) ?>">
             <a class="catalog-card-link" href="<?= web_e($detailUrl) ?>" aria-label="View <?= web_e($seriesDisplayName) ?>">
-              <figure class="catalog-card-image"><?php if(trim((string)$series['cover_image'])!==''): ?><img src="<?= web_e(web_public_path((string)$series['cover_image'])) ?>" alt="<?= web_e($seriesDisplayName) ?>" loading="lazy"><?php endif; ?></figure>
+              <figure class="catalog-card-image"><?php if(trim((string)$series['cover_image'])!==''): ?><img src="<?= web_e(web_public_path((string)$series['cover_image'])) ?>" alt="<?= web_e($seriesDisplayName) ?>" loading="<?= $seriesIndex===0?'eager':'lazy' ?>"<?= $seriesIndex===0?' fetchpriority="high"':'' ?> decoding="async"><?php endif; ?></figure>
               <div class="catalog-card-body">
                 <h3><?= web_e($seriesDisplayName) ?></h3>
                 <?php if($card['subtitle']!==''): ?><p class="catalog-card-subtitle"><?= web_e($card['subtitle']) ?></p><?php endif; ?>
