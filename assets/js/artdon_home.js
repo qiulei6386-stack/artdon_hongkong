@@ -71,6 +71,16 @@ window.addEventListener('load',()=>{
   if(!video) return;
   const source=video.querySelector('source[data-src]');
   if(!source) return;
+  const connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  const shouldSkipVideo=
+    (window.matchMedia&&window.matchMedia('(max-width: 760px)').matches) ||
+    (connection&&connection.saveData) ||
+    (connection&&/^(slow-2g|2g|3g)$/i.test(connection.effectiveType||''));
+  if(shouldSkipVideo){
+    video.removeAttribute('autoplay');
+    source.removeAttribute('data-src');
+    return;
+  }
   const loadVideo=()=>{
     if(source.src) return;
     source.src=source.dataset.src;

@@ -8,4 +8,4 @@ declare(strict_types=1);require_once __DIR__.'/includes/bootstrap.php';require_o
 <section><h2>Intellectual property</h2><p>Website text, graphics, product images, drawings and documents may not be republished as another company’s material without permission. Technical files may be used for legitimate project specification and coordination involving the relevant Artdon product.</p></section>
 <section><h2>External links</h2><p>External websites and video platforms are operated by their respective providers. Artdon Lighting is not responsible for the availability or privacy practices of an external service.</p></section>
 <section><h2>Questions</h2><p>Contact our team before relying on information that appears incomplete, inconsistent or unsuitable for a specific project condition.</p></section>
-</article></main><?php include __DIR__.'/partials/footer.php';?><script src="assets/js/artdon_home.js?v=6.11.1" defer></script></body></html>
+</article></main><?php include __DIR__.'/partials/footer.php';?><script src="assets/js/artdon_home.js?v=6.12.13" defer></script></body></html>

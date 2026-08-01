@@ -682,7 +682,7 @@ $ctaBlock = is_array($solutionsPage['cta'] ?? null) ? $solutionsPage['cta'] : []
 </div>
 
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.11" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
 <script src="assets/js/solutions.js?v=1.0.0" defer></script>
 </body>
 </html>

@@ -284,7 +284,7 @@ $projectSchema = artdon_schema_graph([
 </main>
 <?php artdon_render_seo_internal_links('projects', $canonical, 'Explore projects by lighting application', 'Connect project references with solution pages and product categories used in commercial lighting design.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.11.1" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
 <script>
 (function(){
   var tabs=Array.prototype.slice.call(document.querySelectorAll('.project-tab'));

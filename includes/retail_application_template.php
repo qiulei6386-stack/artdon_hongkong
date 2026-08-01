@@ -454,7 +454,7 @@ $raSchema = artdon_schema_graph([
 </div>
 
 <?php include dirname(__DIR__) . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.11" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
 <script src="assets/js/solution-detail.js?v=1.0.0" defer></script>
 </body>
 </html>
