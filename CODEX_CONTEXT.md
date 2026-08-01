@@ -46,6 +46,10 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Unified sitewide contact information across saved backend content, public defaults, footer defaults and Contact page structured data. Canonical values are: `Artdon Lighting Limited`, contact `Sukie`, email `sales@artdon.cn`, telephone `+86-760-22211886`, mobile display `+86-13925332972 / +86-13751710245`, primary WhatsApp `8613925332972`, address `No. 15 Zhihe 3rd Street, Yumin Dongsheng, Xiaolan Town, Zhongshan City, Guangdong, China (Post Code: 528414)`.
+- Corrected old inconsistent values: `+86-760-22211896`, `Zhibie` and `Yunin` no longer appear in the relevant source defaults, saved `site/footer/contact` content or representative live public pages. Contact page JSON-LD now uses the canonical telephone, two clean sales contact points and the corrected postal address.
+- Created recoverable production backup `/root/artdon_contact_unify_backup_20260801_125610.json` before editing saved contact blocks. Public caches were moved to `storage/page_cache_backup_contact_unify_20260801_125711` and `storage/page_cache_backup_contact_schema_20260801_125817`.
+- Verified live homepage, Contact, Products, About and Solutions pages: old bad contact values count 0; canonical email, telephone, WhatsApp and corrected address appear as expected.
 - Cleaned public NO IMAGE, duplicate-product and empty-content issues without hard-deleting product records. The cleanup was applied directly to the Hong Kong production database after a full recoverable product/variant backup.
 - Unpublished two empty duplicate LUMI series pages (`lumi-surface-mounted-light`, `lumi-surface-mounted-light-2`) because both were published with no variants and no text body. Unpublished the duplicate `LOW VOLTAGE TRACK (Recessed)` variant ending in `-2`. Also aligned variants under unpublished parent series by marking those variants unpublished.
 - Filled two published MAGENTRA variants that had empty model images from their parent series cover image, and backfilled 152 published variant intro/short-description fields from their already generated SEO descriptions so published product-detail pages are not text-empty.
@@ -153,6 +157,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `contact.php`, `includes/default_content.php`, `includes/footer.php` and `includes/contact_page_data.php` are synced to the Hong Kong server with unified contact defaults and corrected Contact-page JSON-LD. Production PHP lint passed for all four files. Saved backend blocks `site`, `footer` and `contact_page_settings` were updated directly in production after backup.
 - Product/content cleanup was applied directly in the Hong Kong production database. No source-code deployment was required beyond syncing this context file. Public checks confirm 0 NO IMAGE strings on the homepage/products page and 0 published duplicate/empty/no-image product records.
 - SEO title and description data has been backfilled directly in the Hong Kong production database. The affected public SEO-capable tables now verify with 0 empty titles, 0 empty descriptions and 0 duplicate title groups among published/active records. No source-code deployment was required for this item beyond syncing this context file.
 - Nginx vhost and certificate are live with canonical apex-domain routing. `www.artdonlighting.com` no longer serves the default site; it redirects to `https://artdonlighting.com` and the certificate validates with SANs for both apex and www.
@@ -176,8 +181,8 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- SEO work follows the user-approved sequence: complete one item, validate front and back end, report, then wait for confirmation before starting the next. Sitemap/robots, URL/301/www-SSL, SEO Title/Description and NO IMAGE / duplicate product / empty-content cleanup are complete; do not begin unified contact information until the user confirms.
-- Sitemap/robots, URL/301/www-SSL, SEO Title/Description and content-cleanup GitHub pushes remain pending together with the earlier commits because GitHub SSH is still unavailable. Production is deployed from local files and production database updates.
+- SEO work follows the user-approved sequence: complete one item, validate front and back end, report, then wait for confirmation before starting the next. Sitemap/robots, URL/301/www-SSL, SEO Title/Description, NO IMAGE / duplicate product / empty-content cleanup and unified contact information are complete; do not begin structured data until the user confirms.
+- Sitemap/robots, URL/301/www-SSL, SEO Title/Description, content-cleanup and contact-unification GitHub pushes remain pending together with the earlier commits because GitHub SSH is still unavailable. Production is deployed from local files and production database updates.
 - Blog categories are now managed separately from blog articles at `后台 → 资源中心 → Blog & Insights → 管理博客分类`. Categories can be added, renamed, ordered, hidden and deleted. Category deletion requires choosing a destination category and moves its articles there, so no blog posts are lost.
 - The supplied red-and-black A mark is now the default browser tab icon. Future changes are self-service through the Website Settings page; upload a square PNG (recommended 512 × 512) and save.
 - GitHub is the only outstanding sync step for the favicon and blog-category changes; retry `git push origin main` when the SSH service is available, then deploy the context-file commit and update this note.

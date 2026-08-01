@@ -29,7 +29,8 @@ $cta = is_array($contactContent['cta'] ?? null) ? $contactContent['cta'] : artdo
 $siteUrl = artdon_v710_site_url($site);
 $company = trim((string)($site['company'] ?? 'Artdon Lighting Limited')) ?: 'Artdon Lighting Limited';
 $email = trim((string)($site['email'] ?? 'sales@artdon.cn')) ?: 'sales@artdon.cn';
-$whatsapp = '+86 139 2533 2972';
+$telephone = trim((string)($site['telephone'] ?? '+86-760-22211886')) ?: '+86-760-22211886';
+$mobile = trim((string)($site['mobile'] ?? '+86-13925332972 / +86-13751710245')) ?: '+86-13925332972 / +86-13751710245';
 $heroImage = trim((string)($hero['image'] ?? 'assets/img/hero/hero-track-systems.webp')) ?: 'assets/img/hero/hero-track-systems.webp';
 $product = artdon_v710_limit($_GET['product'] ?? '', 160);
 $model = artdon_v710_limit($_GET['model'] ?? '', 100);
@@ -60,7 +61,10 @@ $feedbackText = match($feedback) {
 $schema = [
     '@context'=>'https://schema.org','@graph'=>[
         ['@type'=>'ContactPage','@id'=>$canonical.'#page','url'=>$canonical,'name'=>$pageTitle,'description'=>$pageDescription,'inLanguage'=>'en'],
-        ['@type'=>'Organization','@id'=>$siteUrl.'/#organization','name'=>$company,'url'=>$siteUrl.'/','email'=>$email,'telephone'=>$whatsapp,'address'=>['@type'=>'PostalAddress','streetAddress'=>'No.15 Zhibie 3rd Street, Yunin Dongsheng, Xiaolan Town','addressLocality'=>'Zhongshan City','addressRegion'=>'Guangdong','postalCode'=>'528414','addressCountry'=>'CN']],
+        ['@type'=>'Organization','@id'=>$siteUrl.'/#organization','name'=>$company,'url'=>$siteUrl.'/','email'=>$email,'telephone'=>$telephone,'contactPoint'=>[
+            ['@type'=>'ContactPoint','telephone'=>'+86-13925332972','contactType'=>'sales','availableLanguage'=>['English','Chinese']],
+            ['@type'=>'ContactPoint','telephone'=>'+86-13751710245','contactType'=>'sales','availableLanguage'=>['English','Chinese']],
+        ],'address'=>['@type'=>'PostalAddress','streetAddress'=>'No. 15 Zhihe 3rd Street, Yumin Dongsheng, Xiaolan Town','addressLocality'=>'Zhongshan City','addressRegion'=>'Guangdong','postalCode'=>'528414','addressCountry'=>'CN']],
         artdon_v710_breadcrumb_schema($siteUrl,[['name'=>'Home','url'=>''],['name'=>'Contact','url'=>'contact.php']]),
     ],
 ];

@@ -38,8 +38,8 @@ function artdon_contact_default_content(): array
             'title' => 'Contact Information',
             'items' => [
                 ['icon'=>'mail','title'=>'Email','text'=>'sales@artdon.cn','url'=>'mailto:sales@artdon.cn','sort_order'=>10,'is_active'=>1],
-                ['icon'=>'phone','title'=>'WhatsApp','text'=>'+86 139 2533 2972','url'=>'https://wa.me/8613925332972','sort_order'=>20,'is_active'=>1],
-                ['icon'=>'pin','title'=>'Address','text'=>"No.15 Zhibie 3rd Street,\nYunin Dongsheng, Xiaolan Town,\nZhongshan City, Guangdong,\nChina (Post Code: 528414)",'url'=>'','sort_order'=>30,'is_active'=>1],
+                ['icon'=>'phone','title'=>'WhatsApp','text'=>'+86 139 2533 2972 / +86 137 5171 0245','url'=>'https://wa.me/8613925332972','sort_order'=>20,'is_active'=>1],
+                ['icon'=>'pin','title'=>'Address','text'=>"No. 15 Zhihe 3rd Street,\nYumin Dongsheng, Xiaolan Town,\nZhongshan City, Guangdong,\nChina (Post Code: 528414)",'url'=>'','sort_order'=>30,'is_active'=>1],
                 ['icon'=>'clock','title'=>'Business Hours','text'=>"Monday - Friday\n9:00 AM - 6:00 PM (GMT+8)",'url'=>'','sort_order'=>40,'is_active'=>1],
             ],
             'is_active' => 1,
