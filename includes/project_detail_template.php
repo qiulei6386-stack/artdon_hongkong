@@ -207,6 +207,7 @@ $projectDetailSchema = artdon_schema_graph([
   <meta property="og:title" content="<?= project_detail_e($detailTitle) ?>">
   <meta property="og:description" content="<?= project_detail_e($detailDescription) ?>">
   <meta property="og:image" content="<?= project_detail_e($projectImage) ?>">
+  <link rel="preload" as="image" href="<?= project_detail_e(project_detail_public_path($projectImage)) ?>" fetchpriority="high">
   <?= artdon_schema_script($projectDetailSchema) ?>
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.12">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
@@ -217,7 +218,7 @@ $projectDetailSchema = artdon_schema_graph([
 <main class="pd-page">
   <nav class="pd-breadcrumb" aria-label="Breadcrumb"><a href="index.php">Home</a><span>&gt;</span><a href="project.php">Projects</a><span>&gt;</span><strong><?= project_detail_e($projectTitle) ?></strong></nav>
   <section class="pd-hero" aria-labelledby="projectDetailTitle">
-    <img src="<?= project_detail_e($projectImage) ?>" alt="<?= project_detail_e($projectTitle) ?>" width="1920" height="720">
+    <img src="<?= project_detail_e($projectImage) ?>" alt="<?= project_detail_e($projectTitle) ?>" width="1920" height="720" loading="eager" fetchpriority="high" decoding="async">
     <?php if ($heroOverlay): ?><div class="pd-hero-shade" aria-hidden="true"></div><?php endif; ?>
     <div class="pd-container pd-hero-inner">
       <h1 id="projectDetailTitle"><?= project_detail_e($projectTitle) ?></h1>

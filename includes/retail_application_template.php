@@ -255,6 +255,7 @@ $raSchema = artdon_schema_graph([
   <meta name="description" content="<?= ra_e($page['meta_description'] ?? '') ?>">
   <?php if (trim((string)($page['meta_keywords'] ?? '')) !== ''): ?><meta name="keywords" content="<?= ra_e($page['meta_keywords']) ?>"><?php endif; ?>
   <link rel="canonical" href="<?= ra_e($canonical) ?>">
+  <?php if (trim((string)($page['hero_image'] ?? '')) !== ''): ?><link rel="preload" as="image" href="<?= ra_e(ra_public_path((string)$page['hero_image'])) ?>" fetchpriority="high"><?php endif; ?>
   <?= artdon_schema_script($raSchema) ?>
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.11">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
@@ -269,7 +270,7 @@ $raSchema = artdon_schema_graph([
 
 <main>
   <section class="sd-hero" id="overview" aria-labelledby="raHeroTitle">
-    <img src="<?= ra_e($page['hero_image'] ?? '') ?>" alt="<?= ra_e($page['hero_alt'] ?? (($page['label'] ?? '') . ' lighting')) ?>">
+    <img src="<?= ra_e($page['hero_image'] ?? '') ?>" alt="<?= ra_e($page['hero_alt'] ?? (($page['label'] ?? '') . ' lighting')) ?>" loading="eager" fetchpriority="high" decoding="async">
     <div class="sd-container sd-hero-inner">
       <p class="sd-breadcrumb"><?= ra_e($page['breadcrumb'] ?? '') ?></p>
       <h1 id="raHeroTitle"><?= nl2br(ra_e($page['title'] ?? '')) ?></h1>

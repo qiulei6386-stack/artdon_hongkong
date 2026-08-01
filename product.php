@@ -846,6 +846,7 @@ $productSchema = artdon_schema_graph([
   <title><?= web_e($pageTitle) ?></title>
   <meta name="description" content="<?= web_e($pageDescription) ?>"><meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="<?= web_e($canonical) ?>">
+  <?php if(!empty($images[0]['image'])): ?><link rel="preload" as="image" href="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" fetchpriority="high"><?php endif; ?>
   <meta property="og:type" content="product"><meta property="og:title" content="<?= web_e($pageTitle) ?>"><meta property="og:description" content="<?= web_e($pageDescription) ?>">
   <?php if($images): ?><meta property="og:image" content="<?= web_e(($siteUrl!==''?$siteUrl.'/':'').ltrim((string)$images[0]['image'],'/')) ?>"><?php endif; ?>
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.8.4">
@@ -934,7 +935,7 @@ if (is_file($__artdonCardV7093)) {
     <div class="variant-layout-b-grid">
       <aside class="variant-layout-b-visual">
         <figure class="variant-layout-b-product">
-          <?php if($images): ?><img src="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" alt="<?= web_e($images[0]['alt'] ?? $variant['name']) ?>"><?php endif; ?>
+          <?php if($images): ?><img src="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" alt="<?= web_e($images[0]['alt'] ?? $variant['name']) ?>" loading="eager" fetchpriority="high" decoding="async"><?php endif; ?>
         </figure>
         <?php if(isset($images[1])): ?>
         <figure class="variant-layout-b-secondary"><img src="<?= web_e(web_public_path((string)$images[1]['image'])) ?>" alt="<?= web_e($images[1]['alt'] ?? $variant['name']) ?>" loading="lazy"></figure>
@@ -979,12 +980,12 @@ if (is_file($__artdonCardV7093)) {
     </header>
     <div class="variant-gallery variant-gallery-layout-<?= web_e($detailLayout) ?>">
       <?php if($detailLayout==='switcher'): ?>
-        <figure class="variant-main-figure"><?php if($images): ?><img id="variantMainImage" src="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" alt="<?= web_e($images[0]['alt'] ?? $variant['name']) ?>"><?php endif; ?></figure>
+        <figure class="variant-main-figure"><?php if($images): ?><img id="variantMainImage" src="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" alt="<?= web_e($images[0]['alt'] ?? $variant['name']) ?>" loading="eager" fetchpriority="high" decoding="async"><?php endif; ?></figure>
         <?php $switcherImages=$images; if($dimensionImage!=='')$switcherImages[]=['image'=>$dimensionImage,'alt'=>$dimensionAlt,'is_dimension'=>1]; ?>
         <?php if(count($switcherImages)>1): ?><div class="variant-thumbs variant-thumbs-labelled"><?php foreach($switcherImages as $index=>$image): ?><button type="button" class="<?= $index===0?'is-active':'' ?>" data-variant-image="<?= web_e(web_public_path((string)$image['image'])) ?>" data-variant-alt="<?= web_e($image['alt'] ?? $variant['name']) ?>" data-variant-kind="<?= !empty($image['is_dimension']) ? 'dimension' : 'product' ?>"><img src="<?= web_e(web_public_path((string)$image['image'])) ?>" alt="" loading="lazy"><span><?= !empty($image['is_dimension'])?'Dimensions':($index===0?'Product':'View '.($index+1)) ?></span></button><?php endforeach; ?></div><?php endif; ?>
       <?php else: ?>
         <div class="variant-product-media">
-          <figure class="variant-main-figure"><?php if($images): ?><img id="variantMainImage" src="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" alt="<?= web_e($images[0]['alt'] ?? $variant['name']) ?>"><?php endif; ?></figure>
+          <figure class="variant-main-figure"><?php if($images): ?><img id="variantMainImage" src="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" alt="<?= web_e($images[0]['alt'] ?? $variant['name']) ?>" loading="eager" fetchpriority="high" decoding="async"><?php endif; ?></figure>
           <?php if(count($images)>1): ?><div class="variant-thumbs"><?php foreach($images as $index=>$image): ?><button type="button" class="<?= $index===0?'is-active':'' ?>" data-variant-image="<?= web_e(web_public_path((string)$image['image'])) ?>" data-variant-alt="<?= web_e($image['alt'] ?? $variant['name']) ?>" data-variant-kind="<?= !empty($image['is_dimension']) ? 'dimension' : 'product' ?>"><img src="<?= web_e(web_public_path((string)$image['image'])) ?>" alt="" loading="lazy"></button><?php endforeach; ?></div><?php endif; ?>
         </div>
         <?php if($dimensionImage!=='' && $detailLayout!=='technical_below'): ?><figure class="variant-dimension-figure" data-dimension-scale="<?= (int)$dimensionScale ?>" style="<?= web_e($dimensionScaleStyle) ?>"><img src="<?= web_e(web_public_path($dimensionImage)) ?>" alt="<?= web_e($dimensionAlt) ?>" loading="lazy"></figure><?php endif; ?>

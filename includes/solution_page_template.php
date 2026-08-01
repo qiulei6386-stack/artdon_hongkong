@@ -189,6 +189,7 @@ $solutionSchema = artdon_schema_graph([
   <title><?= sp_e($solutionPage['seo_title'] ?? '') ?></title>
   <meta name="description" content="<?= sp_e($solutionPage['seo_description'] ?? '') ?>">
   <link rel="canonical" href="<?= sp_e($canonical) ?>">
+  <?php if (trim((string)($hero['image'] ?? '')) !== ''): ?><link rel="preload" as="image" href="<?= sp_e(sp_public_path((string)$hero['image'])) ?>" fetchpriority="high"><?php endif; ?>
   <?= artdon_schema_script($solutionSchema) ?>
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.11">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
@@ -202,7 +203,7 @@ $solutionSchema = artdon_schema_graph([
 <?php include dirname(__DIR__) . '/partials/header.php'; ?>
 <main>
   <section class="sd-hero" id="overview" aria-labelledby="sdHeroTitle">
-    <img src="<?= sp_e($hero['image'] ?? '') ?>" alt="<?= sp_e($hero['image_alt'] ?? $solutionPage['page_title']) ?>">
+    <img src="<?= sp_e($hero['image'] ?? '') ?>" alt="<?= sp_e($hero['image_alt'] ?? $solutionPage['page_title']) ?>" loading="eager" fetchpriority="high" decoding="async">
     <div class="sd-container sd-hero-inner">
       <p class="sd-breadcrumb"><?= sp_e($hero['breadcrumb'] ?? ('Solutions > ' . $solutionPage['page_title'])) ?></p>
       <h1 id="sdHeroTitle"><?= nl2br(sp_e($hero['title'] ?? $solutionPage['page_title'])) ?></h1>

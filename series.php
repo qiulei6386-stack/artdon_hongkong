@@ -459,6 +459,7 @@ $seriesSchema = artdon_schema_graph([
 <title><?= sv717_e($pageTitle) ?></title>
 <meta name="description" content="<?= sv717_e($pageDesc) ?>">
 <link rel="canonical" href="<?= sv717_e($canonicalV71866) ?>">
+<?php if (!empty($heroImages[0]['image'])): ?><link rel="preload" as="image" href="<?= sv717_e($heroImages[0]['image']) ?>" fetchpriority="high"><?php endif; ?>
 <?= artdon_schema_script($seriesSchema) ?>
 <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.11">
 <link rel="stylesheet" href="assets/css/artdon_product_hierarchy.css?v=6.4.0">
@@ -789,7 +790,7 @@ $seriesSchema = artdon_schema_graph([
   <section class="s717-shell s717-hero" id="overview">
     <div class="s717-hero-media">
       <div class="s717-gallery s717-gallery-<?= sv717_e($heroEffect) ?>" data-interval="<?= max(2,$heroInterval) ?>">
-        <?php foreach($heroImages as $i=>$img): ?><img class="<?= $i===0?'is-on':'' ?>" style="--i:<?= (int)$i ?>" src="<?= sv717_e($img['image']) ?>" alt="<?= sv717_e(sv717_img_name($img['alt'] ?? '', $series['name'] ?? '')) ?>" title="<?= sv717_e(sv717_img_name($img['alt'] ?? '', $series['name'] ?? '')) ?>" loading="<?= $i===0?'eager':'lazy' ?>"><?php endforeach; ?>
+        <?php foreach($heroImages as $i=>$img): ?><img class="<?= $i===0?'is-on':'' ?>" style="--i:<?= (int)$i ?>" src="<?= sv717_e($img['image']) ?>" alt="<?= sv717_e(sv717_img_name($img['alt'] ?? '', $series['name'] ?? '')) ?>" title="<?= sv717_e(sv717_img_name($img['alt'] ?? '', $series['name'] ?? '')) ?>" loading="<?= $i===0?'eager':'lazy' ?>"<?= $i===0?' fetchpriority="high" decoding="async"':'' ?>><?php endforeach; ?>
       </div>
     </div>
     <div class="s717-hero-copy">
