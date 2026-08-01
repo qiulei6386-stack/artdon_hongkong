@@ -96,8 +96,8 @@ if ($requestedProject !== '') {
     exit;
 }
 
-$pageTitle = 'Projects | Artdon Lighting';
-$pageDescription = 'Inspiring lighting solutions for retail, hospitality, commercial and more.';
+$pageTitle = 'Lighting Projects | Artdon';
+$pageDescription = 'Explore Artdon lighting projects for retail stores, hotels, offices, museums, transport hubs and commercial interiors worldwide.';
 $canonical = $siteUrl . '/project.php';
 $projectItemList = [];
 foreach (array_values($projects) as $index => $projectItem) {

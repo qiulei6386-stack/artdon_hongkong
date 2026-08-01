@@ -133,6 +133,24 @@ function project_detail_solution_url(string $category): string
         default => 'solutions.php',
     };
 }
+function project_detail_meta_text(string $text, int $max = 160): string
+{
+    $text = trim(preg_replace('/\s+/', ' ', strip_tags($text)) ?? '');
+    if ($text === '' || mb_strlen($text) <= $max) return $text;
+    $cut = mb_substr($text, 0, $max);
+    $lastSentence = max((int)mb_strrpos($cut, '. '), (int)mb_strrpos($cut, '! '), (int)mb_strrpos($cut, '? '));
+    if ($lastSentence >= 90) return rtrim(mb_substr($cut, 0, $lastSentence + 1));
+    $lastSpace = (int)mb_strrpos($cut, ' ');
+    if ($lastSpace >= 90) $cut = mb_substr($cut, 0, $lastSpace);
+    return rtrim($cut, " \t\n\r\0\x0B,;:-") . '…';
+}
+function project_detail_meta_year(array $project, array $projectInfo, string $description): string
+{
+    foreach ([(string)($projectInfo['completion'] ?? ''), (string)($project['subtitle'] ?? ''), $description] as $text) {
+        if (preg_match('/\b(20[0-9]{2}|19[0-9]{2})\b/', $text, $match)) return $match[1];
+    }
+    return '';
+}
 
 $projectTitle = trim((string)($project['title'] ?? 'Lighting Project'));
 $projectDetail = is_array($project['detail'] ?? null) ? $project['detail'] : [];
@@ -168,8 +186,14 @@ $information = [
     ['icon'=>'customer', 'label'=>'Customer', 'value'=>(string)($projectInfo['customer'] ?? '')],
 ];
 $information = array_values(array_filter($information, static fn(array $item): bool => trim((string)$item['value']) !== ''));
-$detailTitle = $projectTitle . ' | Projects | Artdon Lighting';
-$detailDescription = $projectDescription;
+$projectMetaYear = project_detail_meta_year($project, $projectInfo, $projectDescription);
+$detailTitleBase = $projectTitle;
+if ($projectMetaYear !== '' && !str_contains($detailTitleBase, $projectMetaYear)) {
+    $yearTitle = $detailTitleBase . ' ' . $projectMetaYear . ' | Artdon Project';
+    if (mb_strlen($yearTitle) <= 70) $detailTitleBase .= ' ' . $projectMetaYear;
+}
+$detailTitle = $detailTitleBase . ' | Artdon Project';
+$detailDescription = project_detail_meta_text($projectDescription, 160);
 $detailCanonical = ($siteUrl !== '' ? $siteUrl : 'https://artdonlighting.com') . '/' . $projectUrl;
 $projectDetailSiteUrl = rtrim((string)($siteUrl ?: 'https://artdonlighting.com'), '/');
 $projectDetailSchema = artdon_schema_graph([
