@@ -1,4 +1,11 @@
 <?php
+// Keep the homepage on one public address instead of serving both / and /index.php.
+$artdonRequestPath = (string)(parse_url((string)($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/');
+if (in_array(($_SERVER['REQUEST_METHOD'] ?? 'GET'), ['GET', 'HEAD'], true) && $artdonRequestPath === '/index.php') {
+    $artdonQuery = trim((string)($_SERVER['QUERY_STRING'] ?? ''));
+    header('Location: /' . ($artdonQuery !== '' ? '?' . $artdonQuery : ''), true, 301);
+    exit;
+}
 require_once __DIR__ . '/includes/public_cache.php';
 web_public_cache_start('home', 300);
 if (is_file(__DIR__ . '/includes/artdon_product_unify_v713.php')) { require_once __DIR__ . '/includes/artdon_product_unify_v713.php'; }

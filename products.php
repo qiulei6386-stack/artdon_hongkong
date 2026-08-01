@@ -433,7 +433,7 @@ if (is_array($category) && array_key_exists('family_intro_gap', $category)) {
 }
 
 $siteUrl = rtrim((string)($site['site_url'] ?? ''),'/');
-$canonical = artdon_pretty_abs_url_v71868($categorySlug !== 'all' ? artdon_pretty_category_url_v71868($categorySlug) : '/Home/Products', $siteUrl);
+$canonical = artdon_pretty_abs_url_v71868($categorySlug !== 'all' ? artdon_pretty_category_url_v71868($categorySlug) : '/products.php', $siteUrl);
 
 function product_query_url(array $changes = []): string
 {

@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 require_once __DIR__ . '/includes/public_cache.php';
-web_public_cache_start('product', 600);
+$artdonLegacyProductRequest = in_array(($_SERVER['REQUEST_METHOD'] ?? 'GET'), ['GET', 'HEAD'], true)
+    && (trim((string)($_GET['slug'] ?? '')) !== '' || (int)($_GET['id'] ?? 0) > 0)
+    && trim((string)($_GET['pretty_model'] ?? '')) === '';
+if (!$artdonLegacyProductRequest) web_public_cache_start('product', 600);
 
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/product_hierarchy.php';
@@ -93,7 +96,7 @@ if ($pdo) {
         } elseif ($slug !== '') {
             $legacySeries = web_product_series_find($pdo, $slug, true);
             if ($legacySeries) {
-                header('Location: series.php?slug=' . rawurlencode((string)$legacySeries['slug']), true, 302);
+                header('Location: series.php?slug=' . rawurlencode((string)$legacySeries['slug']), true, 301);
                 exit;
             }
         }
@@ -102,10 +105,10 @@ if ($pdo) {
     }
 }
 
-if ($variant && $series && empty($prettyModelV71865) && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET') {
+if ($variant && $series && empty($prettyModelV71865) && in_array(($_SERVER['REQUEST_METHOD'] ?? 'GET'), ['GET', 'HEAD'], true)) {
     $prettyRedirectV71875 = artdon_pretty_product_url_v71868($category, $series, $variant);
     if (strpos($prettyRedirectV71875, '/products/') === 0) {
-        header('Location: ' . $prettyRedirectV71875, true, 302);
+        header('Location: ' . $prettyRedirectV71875, true, 301);
         exit;
     }
 }

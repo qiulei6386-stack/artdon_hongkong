@@ -453,7 +453,7 @@ if (!function_exists('artdon_v710_sitemap_urls')) {
         // lastmod value: emitting today's date on every request is inaccurate.
         $staticPages = [
             ['','weekly','1.0'],
-            ['Home/Products','weekly','0.9'],
+            ['products.php','weekly','0.9'],
             ['projects.php','monthly','0.8'],
             ['project.php','monthly','0.7'],
             ['downloads.php','weekly','0.7'],

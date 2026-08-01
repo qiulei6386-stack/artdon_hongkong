@@ -1,3 +1,3 @@
 <?php
-header('Location: /products.php', true, 302);
+header('Location: /products.php', true, 301);
 exit;
