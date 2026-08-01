@@ -5,6 +5,7 @@ require_once __DIR__ . '/includes/public_cache.php';
 web_public_cache_start('resources-faq', 900);
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/artdon_pages_v710.php';
+require_once __DIR__ . '/includes/schema.php';
 require_once __DIR__ . '/includes/resources_faq_data.php';
 require_once __DIR__ . '/includes/resources_page_data.php';
 
@@ -40,10 +41,17 @@ if (!$faqDbAvailable && !$faqs) {
     }
 }
 $categories = ['all'=>'All'] + artdon_resource_faq_categories();
-$schema = ['@context'=>'https://schema.org','@graph'=>[
-    ['@type'=>'FAQPage','@id'=>$canonical.'#page','url'=>$canonical,'name'=>$pageTitle,'description'=>$pageDescription,'inLanguage'=>'en','mainEntity'=>array_map(static fn(array $faq): array => ['@type'=>'Question','name'=>$faq['question'],'acceptedAnswer'=>['@type'=>'Answer','text'=>$faq['answer']]], array_slice($faqs, 0, 20))],
-    artdon_v710_breadcrumb_schema($siteUrl,[['name'=>'Home','url'=>''],['name'=>'Resources','url'=>'resources.php'],['name'=>'FAQ','url'=>'resources-faq.php']]),
-]];
+$schema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'FAQPage'),
+    artdon_schema_faq($canonical, $pageTitle, $pageDescription, array_slice($faqs, 0, 20)),
+    artdon_schema_breadcrumb([
+        ['name'=>'Home','url'=>'/'],
+        ['name'=>'Resources','url'=>'/resources.php'],
+        ['name'=>'FAQ','url'=>'/resources-faq.php'],
+    ], $siteUrl),
+]);
 ?>
 <!doctype html>
 <html lang="en">

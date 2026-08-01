@@ -5,6 +5,7 @@ require_once __DIR__ . '/includes/public_cache.php';
 web_public_cache_start('resources-blog', 900);
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/artdon_pages_v710.php';
+require_once __DIR__ . '/includes/schema.php';
 require_once __DIR__ . '/includes/resources_blog_data.php';
 require_once __DIR__ . '/includes/resources_page_data.php';
 
@@ -79,10 +80,16 @@ foreach ($articles as $article) {
     if (!isset($grouped[$cat])) $grouped[$cat] = [];
     $grouped[$cat][] = $article;
 }
-$schema = ['@context'=>'https://schema.org','@graph'=>[
-    ['@type'=>'Blog','@id'=>$canonical.'#page','url'=>$canonical,'name'=>$pageTitle,'description'=>$pageDescription,'inLanguage'=>'en'],
-    artdon_v710_breadcrumb_schema($siteUrl,[['name'=>'Home','url'=>''],['name'=>'Resources','url'=>'resources.php'],['name'=>'Blog & Insights','url'=>'resources-blog.php']]),
-]];
+$schema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'Blog'),
+    artdon_schema_breadcrumb([
+        ['name'=>'Home','url'=>'/'],
+        ['name'=>'Resources','url'=>'/resources.php'],
+        ['name'=>'Blog & Insights','url'=>'/resources-blog.php'],
+    ], $siteUrl),
+]);
 function rb_icon(string $key): string
 {
     $svg = 'width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"';

@@ -205,6 +205,14 @@ $projectDetailSchema = artdon_schema_graph([
         ['name' => 'Projects', 'url' => '/project.php'],
         ['name' => $projectTitle, 'url' => $detailCanonical],
     ], $projectDetailSiteUrl),
+    artdon_schema_project([
+        'title' => $projectTitle,
+        'description' => $detailDescription,
+        'image' => $projectImage,
+        'category' => $projectCategory,
+        'location' => (string)($projectInfo['location'] ?? ($project['location'] ?? '')),
+        'year' => $projectMetaYear,
+    ], $detailCanonical, $projectDetailSiteUrl),
     [
         '@type' => 'Article',
         '@id' => $detailCanonical . '#article',

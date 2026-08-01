@@ -5,6 +5,7 @@ require_once __DIR__ . '/includes/public_cache.php';
 web_public_cache_start('resources-videos', 900);
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/artdon_pages_v710.php';
+require_once __DIR__ . '/includes/schema.php';
 require_once __DIR__ . '/includes/resources_video_data.php';
 require_once __DIR__ . '/includes/resources_page_data.php';
 
@@ -37,10 +38,20 @@ $subCats = artdon_resource_video_sub_categories();
 $productSubCats = $subCats;
 $counts = array_fill_keys(array_keys($mainCats), 0);
 foreach ($videos as $video) if (isset($counts[$video['main_category']])) $counts[$video['main_category']]++;
-$schema = ['@context'=>'https://schema.org','@graph'=>[
-    ['@type'=>'CollectionPage','@id'=>$canonical.'#page','url'=>$canonical,'name'=>$pageTitle,'description'=>$pageDescription,'inLanguage'=>'en'],
-    artdon_v710_breadcrumb_schema($siteUrl,[['name'=>'Home','url'=>''],['name'=>'Resources','url'=>'resources.php'],['name'=>'Videos','url'=>'resources-videos.php']]),
-]];
+$videoSchemaNodes = [];
+foreach (array_slice($videos, 0, 30) as $videoIndex => $video) {
+    $videoSchemaNodes[] = artdon_schema_video($video, $canonical, $siteUrl, $videoIndex + 1);
+}
+$schema = artdon_schema_graph(array_merge([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'CollectionPage'),
+    artdon_schema_breadcrumb([
+        ['name'=>'Home','url'=>'/'],
+        ['name'=>'Resources','url'=>'/resources.php'],
+        ['name'=>'Videos','url'=>'/resources-videos.php'],
+    ], $siteUrl),
+], $videoSchemaNodes));
 function rv_icon(string $key): string
 {
     $svg='width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"';

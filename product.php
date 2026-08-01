@@ -819,23 +819,19 @@ $productSchema = artdon_schema_graph([
         ['name' => (string)$series['name'], 'url' => $seriesSchemaUrl],
         ['name' => (string)$variant['name'], 'url' => $canonical],
     ], $siteUrl),
-    [
-        '@type'=>'Product',
-        '@id'=>$canonical . '#product',
+    artdon_schema_product([
         'name'=>(string)$variant['name'],
         'description'=>$pageDescription,
         'sku'=>(string)$variant['model_code'],
-        'brand'=>['@type'=>'Brand','name'=>'Artdon Lighting'],
-        'manufacturer'=>['@id'=>$siteUrl.'/#organization'],
         'category'=>(string)($category['name'] ?? $category['slug'] ?? ''),
+        'url'=>$canonical,
+        'images'=>$schemaImages,
         'isVariantOf'=>[
             '@type'=>'ProductGroup',
             'name'=>(string)$series['name'],
             'url'=>$seriesSchemaUrl,
         ],
-        'image'=>artdon_schema_image_list($schemaImages, $siteUrl),
-        'url'=>$canonical,
-    ],
+    ], $siteUrl),
 ]);
 ?>
 <!doctype html>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/public_cache.php';
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/artdon_pages_v710.php';
+require_once __DIR__ . '/includes/schema.php';
 require_once __DIR__ . '/includes/resources_blog_data.php';
 require_once __DIR__ . '/includes/resources_page_data.php';
 $requestSlug = artdon_resource_blog_slug((string)($_GET['slug'] ?? ''));
@@ -74,10 +75,25 @@ $bottomCtaText = trim((string)($resourcePage['cta_description'] ?? '')) ?: 'Talk
 $bottomCtaImage = trim((string)($resourcePage['cta_image'] ?? '')) ?: $defaultImage;
 $bottomCtaButton = trim((string)($resourcePage['cta_button_text'] ?? '')) ?: 'GET A QUOTE →';
 $bottomCtaUrl = trim((string)($resourcePage['cta_button_url'] ?? '')) ?: 'contact.php?subject=lighting-support';
-$schema = ['@context'=>'https://schema.org','@graph'=>[
-    ['@type'=>'Article','@id'=>$canonical.'#article','url'=>$canonical,'headline'=>$article['title'],'description'=>$pageDescription,'image'=>artdon_v710_absolute_url($siteUrl, (string)$article['image']),'author'=>['@type'=>'Organization','name'=>$article['author']],'datePublished'=>$article['date'],'inLanguage'=>'en'],
-    artdon_v710_breadcrumb_schema($siteUrl,[['name'=>'Home','url'=>''],['name'=>'Resources','url'=>'resources.php'],['name'=>'Blog & Insights','url'=>'resources-blog.php'],['name'=>$article['title'],'url'=>'']]),
-]];
+$schema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'Article'),
+    artdon_schema_article([
+        'title' => (string)$article['title'],
+        'description' => $pageDescription,
+        'image' => (string)$article['image'],
+        'author' => (string)$article['author'],
+        'date' => (string)$article['date'],
+        'category' => (string)($article['category_label'] ?? $article['category'] ?? ''),
+    ], $canonical, $siteUrl),
+    artdon_schema_breadcrumb([
+        ['name'=>'Home','url'=>'/'],
+        ['name'=>'Resources','url'=>'/resources.php'],
+        ['name'=>'Blog & Insights','url'=>'/resources-blog.php'],
+        ['name'=>(string)$article['title'],'url'=>$canonical],
+    ], $siteUrl),
+]);
 function bd_e(mixed $value): string { return artdon_v710_e((string)$value); }
 function bd_angle_svg(string $angle): string
 {
