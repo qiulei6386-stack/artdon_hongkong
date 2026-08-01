@@ -9,6 +9,7 @@ require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/product_filters.php';
 require_once __DIR__ . '/includes/pretty_urls_v71868.php';
 require_once __DIR__ . '/includes/schema.php';
+require_once __DIR__ . '/includes/seo_internal_links.php';
 $__artdonUnifiedCategoriesV718123 = __DIR__ . '/includes/artdon_product_unify_v713.php';
 if (is_file($__artdonUnifiedCategoriesV718123)) { require_once $__artdonUnifiedCategoriesV718123; }
 
@@ -1355,6 +1356,7 @@ if (is_file($__artdonCardV7093)) {
     </section>
   </div>
 </main>
+<?php artdon_render_seo_internal_links('products', $canonical, 'Explore product and application hubs', 'Use these links to compare product families, application solutions and project references.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
 <script src="assets/js/artdon_home.js?v=6.10.0" defer></script>
 

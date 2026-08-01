@@ -7,6 +7,7 @@ require_once __DIR__ . '/pretty_urls_v71868.php';
 require_once __DIR__ . '/solutions_retail_defaults.php';
 require_once __DIR__ . '/retail_application_data.php';
 require_once __DIR__ . '/schema.php';
+require_once __DIR__ . '/seo_internal_links.php';
 
 $solutionSlug = isset($solutionSlug) ? sdr_solution_slug((string)$solutionSlug) : 'retail';
 $solutionContent = sdr_solution_get_page($solutionSlug);
@@ -314,6 +315,7 @@ $solutionSchema = artdon_schema_graph([
     <div class="sd-container sd-cta-inner"><div><h2 id="sdCtaTitle"><?= sp_e($solutionContent['cta']['title'] ?? '') ?></h2><p><?= sp_e($solutionContent['cta']['intro'] ?? $solutionContent['cta']['description'] ?? '') ?></p></div><div class="sd-cta-actions"><button class="sd-btn sd-btn-primary hero-quote-trigger" type="button" data-quote-product="<?= sp_e($solutionPage['page_title'] . ' Project') ?>" data-quote-link="<?= sp_e($solutionPage['url']) ?>" aria-haspopup="dialog" aria-controls="heroQuoteModal"><?= sp_e($solutionContent['cta']['primary_label'] ?? 'Discuss Your Project →') ?></button><a class="sd-btn sd-btn-ghost" href="<?= sp_e($solutionContent['cta']['secondary_url'] ?? 'downloads.php') ?>"><?= sp_e($solutionContent['cta']['secondary_label'] ?? 'Download Catalogue ↓') ?></a></div></div>
   </section>
 </main>
+<?php artdon_render_seo_internal_links('solutions', $canonical, 'Related products, projects and lighting applications', 'Follow these links to compare product categories and project references connected with this lighting solution.'); ?>
 <div class="quote-modal" id="heroQuoteModal" aria-hidden="true">
   <div class="quote-modal-backdrop" data-quote-close></div>
   <section class="quote-dialog" role="dialog" aria-modal="true" aria-labelledby="quoteModalTitle">

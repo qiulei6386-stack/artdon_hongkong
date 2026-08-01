@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/project_detail_data.php';
 require_once __DIR__ . '/includes/schema.php';
+require_once __DIR__ . '/includes/seo_internal_links.php';
 
 if (!headers_sent()) {
     header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -280,6 +281,7 @@ $projectSchema = artdon_schema_graph([
     <button class="project-load" type="button" data-project-load>Load More Projects</button>
   </section>
 </main>
+<?php artdon_render_seo_internal_links('projects', $canonical, 'Explore projects by lighting application', 'Connect project references with solution pages and product categories used in commercial lighting design.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
 <script src="assets/js/artdon_home.js?v=6.11.1" defer></script>
 <script>

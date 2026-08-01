@@ -4,6 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/products.php';
 require_once __DIR__ . '/pretty_urls_v71868.php';
 require_once __DIR__ . '/schema.php';
+require_once __DIR__ . '/seo_internal_links.php';
 
 function project_detail_e(mixed $value): string { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); }
 function project_detail_slug(string $value): string
@@ -282,6 +283,7 @@ $projectDetailSchema = artdon_schema_graph([
     </div>
   </section>
 </main>
+<?php artdon_render_seo_internal_links('projects', $detailCanonical, 'Related lighting solutions and products', 'Connect this project case with application solutions, product categories and more project references.'); ?>
 
 <div class="quote-modal" id="heroQuoteModal" aria-hidden="true">
   <div class="quote-modal-backdrop" data-quote-close></div>

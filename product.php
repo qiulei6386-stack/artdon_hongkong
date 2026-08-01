@@ -11,6 +11,7 @@ require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/product_hierarchy.php';
 require_once __DIR__ . '/includes/pretty_urls_v71868.php';
 require_once __DIR__ . '/includes/schema.php';
+require_once __DIR__ . '/includes/seo_internal_links.php';
 
 
 
@@ -1095,6 +1096,7 @@ if (is_file($__artdonCardV7093)) {
   </section>
   <?php endif; ?>
 </main>
+<?php artdon_render_seo_internal_links('product-detail', $canonical, 'Compare related lighting categories', 'Move from this product model to product families, application solutions and planning resources.'); ?>
 
 <div class="artdon-share-modal-v25" data-artdon-share-modal hidden aria-hidden="true">
   <div class="artdon-share-modal-v25-backdrop" data-artdon-share-modal-close></div>

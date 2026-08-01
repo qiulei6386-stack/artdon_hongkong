@@ -12,6 +12,7 @@ require_once __DIR__ . '/includes/product_hierarchy.php';
 require_once __DIR__ . '/includes/pretty_urls_v71868.php';
 require_once __DIR__ . '/includes/solution_icons.php';
 require_once __DIR__ . '/includes/schema.php';
+require_once __DIR__ . '/includes/seo_internal_links.php';
 
 
 
@@ -865,6 +866,7 @@ $seriesSchema = artdon_schema_graph([
 
   <?php if ($relatedSeries): ?><section class="s717-shell s717-section"><div class="s717-section-head"><div><p class="s717-kicker">Related families</p><h2>Explore more systems</h2></div></div><div class="s717-related"><?php foreach($relatedSeries as $r): ?><a href="<?= sv717_e(artdon_pretty_series_url_v71868($r['category_slug'] ?? ($series['category_slug'] ?? 'Products'), $r)) ?>"><figure><img src="<?= sv717_e($r['cover_image'] ?: 'assets/img/product-placeholder.svg') ?>" alt="<?= sv717_e($r['name']) ?>" title="<?= sv717_e($r['name']) ?>" loading="lazy"></figure><div><h3><?= sv717_e($r['name']) ?></h3></div></a><?php endforeach; ?></div></section><?php endif; ?>
 </main>
+<?php artdon_render_seo_internal_links('series', $canonicalV71866, 'Related product families and solutions', 'Continue exploring product categories, application solutions and project references for this lighting family.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
 <script>
 (function(){document.querySelectorAll('.s717-gallery-slider').forEach(function(g){var imgs=[].slice.call(g.querySelectorAll('img')); if(imgs.length<2)return; var i=0; var sec=parseInt(g.getAttribute('data-interval')||'4',10)*1000; setInterval(function(){imgs[i].classList.remove('is-on'); i=(i+1)%imgs.length; imgs[i].classList.add('is-on');}, Math.max(2000,sec));});})();

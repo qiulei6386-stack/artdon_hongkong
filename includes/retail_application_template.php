@@ -6,6 +6,7 @@ require_once __DIR__ . '/products.php';
 require_once __DIR__ . '/pretty_urls_v71868.php';
 require_once __DIR__ . '/retail_application_data.php';
 require_once __DIR__ . '/schema.php';
+require_once __DIR__ . '/seo_internal_links.php';
 
 $retailApplicationSlug = isset($retailApplicationSlug) ? (string)$retailApplicationSlug : '';
 $retailApplicationSolution = ra_solution_application_slug((string)($retailApplicationSolution ?? 'retail'));
@@ -429,6 +430,7 @@ $raSchema = artdon_schema_graph([
     </div>
   </section>
 </main>
+<?php artdon_render_seo_internal_links('application', $canonical, 'Explore connected lighting topics', 'Connect this application page with product categories, solution hubs and related project references.'); ?>
 
 <div class="quote-modal" id="heroQuoteModal" aria-hidden="true">
   <div class="quote-modal-backdrop" data-quote-close></div>
