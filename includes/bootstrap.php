@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/security_headers.php';
+artdon_security_headers_send();
+
 function web_public_get_without_session(): bool
 {
     $method = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET'));

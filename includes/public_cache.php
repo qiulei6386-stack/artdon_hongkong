@@ -7,6 +7,8 @@
  */
 declare(strict_types=1);
 
+require_once __DIR__ . '/security_headers.php';
+
 if (!function_exists('web_public_cache_allowed')) {
     function web_public_cache_allowed(): bool
     {
@@ -47,6 +49,7 @@ if (!function_exists('web_public_cache_send_headers')) {
     function web_public_cache_send_headers(int $ttl, string $state): void
     {
         if (headers_sent()) return;
+        artdon_security_headers_send();
         header('Content-Type: text/html; charset=UTF-8');
         header('Cache-Control: public, max-age=' . max(30, min(600, $ttl)) . ', stale-while-revalidate=600');
         header('X-Artdon-Page-Cache: ' . $state);
