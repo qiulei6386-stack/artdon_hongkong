@@ -3273,3 +3273,14 @@ body.quote-modal-open{overflow:hidden;}
   .hero-v32 .carousel-arrow span{width:12px!important;height:12px!important;}
   .hero-v32 .carousel-dots{gap:11px!important;min-height:36px!important;}
 }
+
+/* V6.12.14 Speed baseline: keep the hero immediate, let below-the-fold sections render on demand. */
+@supports (content-visibility:auto){
+  .homepage-sections > section:not(.hero-carousel){
+    content-visibility:auto;
+    contain-intrinsic-size:1px 980px;
+  }
+  .homepage-sections > section.home-clean-products{contain-intrinsic-size:1px 1500px;}
+  .homepage-sections > section.featured-projects-section{contain-intrinsic-size:1px 1120px;}
+  .homepage-sections > section.home-solutions-section{contain-intrinsic-size:1px 980px;}
+}

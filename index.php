@@ -182,10 +182,12 @@ $schema = artdon_schema_graph([
   <meta name="theme-color" content="#ffffff">
   <link rel="canonical" href="<?= e($siteUrl) ?>/">
   <link rel="preload" href="<?= e($slides[0]['image'] ?? 'assets/img/hero/hero-track-systems.webp') ?>" as="image" fetchpriority="high">
-  <link rel="preload" href="assets/css/artdon_home.css?v=6.12.11" as="style">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.11">
-  <link rel="stylesheet" href="assets/css/home_section_themes.css?v=5.7.0">
-  <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
+  <link rel="preload" href="assets/css/artdon_home.css?v=6.12.14" as="style">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.14">
+  <link rel="preload" href="assets/css/home_section_themes.css?v=5.7.1" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="assets/css/home_section_themes.css?v=5.7.1"></noscript>
+  <link rel="preload" href="assets/css/artdon_component_safety.css?v=6.8.5" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.5"></noscript>
 
   <meta property="og:site_name" content="<?= e($company) ?>">
   <meta property="og:title" content="<?= e($seo['title'] ?? $company) ?>">
@@ -483,9 +485,9 @@ html,body{overflow-x:hidden!important;}
         <video class="hero-video" muted loop playsinline preload="none" poster="<?= e($slide['image']) ?>" aria-label="<?= e($slide['alt']) ?>">
           <source data-src="<?= e($slide['video']) ?>" type="video/mp4">
         </video>
-        <img class="hero-poster" src="<?= e($slide['image']) ?>" alt="<?= e($slide['alt']) ?>" width="1600" height="900" loading="eager" fetchpriority="high">
+        <img class="hero-poster" src="<?= e($slide['image']) ?>" alt="<?= e($slide['alt']) ?>" width="1600" height="900" loading="eager" fetchpriority="high" decoding="async">
         <?php else: ?>
-        <img src="<?= e($slide['image']) ?>" alt="<?= e($slide['alt']) ?>" width="1600" height="900" loading="lazy">
+        <img src="<?= e($slide['image']) ?>" alt="<?= e($slide['alt']) ?>" width="1600" height="900" loading="lazy" decoding="async" fetchpriority="low">
         <?php endif; ?>
         <div class="slide-shade"></div>
         <div class="slide-content">
@@ -629,7 +631,7 @@ html,body{overflow-x:hidden!important;}
       ?>
         <a class="artdon-v7153-card" data-home-boards="<?= e($boards) ?>" href="<?= e($url) ?>" aria-label="<?= e($title) ?>"<?= $visible ? '' : ' hidden' ?>>
           <?php if($image !== ''): ?>
-            <img src="<?= e($image) ?>" alt="<?= e($title) ?>" width="900" height="900" loading="lazy">
+            <img src="<?= e($image) ?>" alt="<?= e($title) ?>" width="900" height="900" loading="lazy" decoding="async" fetchpriority="low">
           <?php else: ?>
             <span class="artdon-v7153-placeholder">NO IMAGE</span>
           <?php endif; ?>
@@ -646,7 +648,7 @@ html,body{overflow-x:hidden!important;}
 
 <?php if(web_home_section_enabled($homeLayout, 'featured_system')): ?>
   <section class="home-clean-system home-v32-system <?= web_home_section_theme_class($homeLayout, 'featured_system') ?>" aria-labelledby="systemTitle" style="order:<?= web_home_section_order($homeLayout, 'featured_system') ?>">
-    <figure><img src="<?= e($featuredSystem['image'] ?? '') ?>" alt="<?= e($featuredSystem['alt'] ?? '') ?>" width="1200" height="900" loading="lazy"></figure>
+    <figure><img src="<?= e($featuredSystem['image'] ?? '') ?>" alt="<?= e($featuredSystem['alt'] ?? '') ?>" width="1200" height="900" loading="lazy" decoding="async" fetchpriority="low"></figure>
     <div>
       <p class="home-eyebrow"><?= e($featuredSystem['eyebrow'] ?? 'Featured system') ?></p>
       <h2 id="systemTitle"><?= e($featuredSystem['title'] ?? '') ?></h2>
@@ -674,7 +676,7 @@ html,body{overflow-x:hidden!important;}
       <article class="featured-project-card">
         <a href="<?= e($project['url'] ?? ('project.php?type='.strtolower((string)($project['type'] ?? '')))) ?>">
           <figure>
-            <img src="<?= e($project['image'] ?? '') ?>" alt="<?= e($project['title'] ?? '') ?>" width="1200" height="700" loading="lazy">
+            <img src="<?= e($project['image'] ?? '') ?>" alt="<?= e($project['title'] ?? '') ?>" width="1200" height="700" loading="lazy" decoding="async" fetchpriority="low">
             <div class="featured-project-tags" aria-label="Project category and year">
               <span><?= e($project['type']) ?></span>
               <span><?= e($project['year']) ?></span>
@@ -707,7 +709,7 @@ html,body{overflow-x:hidden!important;}
     <div class="home-solutions-grid">
       <?php foreach($solutions as $solution): $icon=(string)($solution['icon'] ?? 'retail'); ?>
       <a class="home-solution-card" href="<?= e($solution['url'] ?? '#') ?>">
-        <img src="<?= e($solution['image'] ?? '') ?>" alt="<?= e($solution['alt'] ?? $solution['title'] ?? '') ?>" loading="lazy" width="900" height="560">
+        <img src="<?= e($solution['image'] ?? '') ?>" alt="<?= e($solution['alt'] ?? $solution['title'] ?? '') ?>" loading="lazy" decoding="async" fetchpriority="low" width="900" height="560">
         <span class="home-solution-shade"></span>
         <span class="home-solution-copy">
           <small class="home-solution-tag"><i aria-hidden="true">
@@ -757,7 +759,7 @@ html,body{overflow-x:hidden!important;}
       <?php foreach($insights as $insight): ?>
       <a class="insight-card" href="<?= e($insight['url']) ?>" aria-label="Read <?= e($insight['title']) ?>">
         <figure class="insight-media insight-media--<?= e($insight['fit']) ?>">
-          <img src="<?= e($insight['image']) ?>" alt="<?= e($insight['alt']) ?>" loading="lazy" decoding="async">
+          <img src="<?= e($insight['image']) ?>" alt="<?= e($insight['alt']) ?>" loading="lazy" decoding="async" fetchpriority="low">
           <span><?= e($insight['tag']) ?></span>
         </figure>
         <div class="insight-body">
