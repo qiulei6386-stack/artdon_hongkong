@@ -21,6 +21,8 @@ $__brand = $__footer['brand'];
 $__brandLogoDark = trim((string)($__brand['logo'] ?? 'assets/img/logo-artdon-footer.png'));
 $__brandLogoLight = trim((string)($__brand['light_logo'] ?? 'assets/img/logo-artdon.png'));
 $__brandLogo = !empty($__theme['is_light']) ? ($__brandLogoLight !== '' ? $__brandLogoLight : 'assets/img/logo-artdon.png') : ($__brandLogoDark !== '' ? $__brandLogoDark : 'assets/img/logo-artdon-footer.png');
+$__brandLogoSafe = web_footer_safe_url($__brandLogo, !empty($__theme['is_light']) ? 'assets/img/logo-artdon.png' : 'assets/img/logo-artdon-footer.png');
+$__brandLogoSrc = function_exists('web_asset_versioned_url') ? web_asset_versioned_url($__brandLogoSafe) : $__brandLogoSafe;
 $__contact = $__footer['contact'];
 $__newsletter = $__footer['newsletter'];
 $__bottom = $__footer['bottom'];
@@ -46,7 +48,7 @@ $__primaryClasses[] = $__contactActive ? 'has-contact' : 'without-contact';
       <section class="footer-v611__brand">
         <?php if ($__brandLogo !== ''): ?>
           <a class="footer-v611__logo" href="<?= web_e(web_footer_safe_url((string)($__brand['home_url'] ?? 'index.php'), 'index.php')) ?>" aria-label="<?= web_e($__company) ?> home">
-            <img src="<?= web_e(web_footer_safe_url($__brandLogo, !empty($__theme['is_light']) ? 'assets/img/logo-artdon.png' : 'assets/img/logo-artdon-footer.png')) ?>" alt="<?= web_e($__brand['logo_alt'] ?? $__company) ?>" width="248" height="70">
+            <img src="<?= web_e($__brandLogoSrc) ?>" alt="<?= web_e($__brand['logo_alt'] ?? $__company) ?>" width="248" height="70">
           </a>
         <?php else: ?>
           <a class="footer-v611__wordmark" href="<?= web_e(web_footer_safe_url((string)($__brand['home_url'] ?? 'index.php'), 'index.php')) ?>"><?= web_e($__company) ?></a>
@@ -155,4 +157,3 @@ if (is_file($__artdonFloatingActions)) include $__artdonFloatingActions;
 // Only public front-end pages include this file; admin pages do not use partials/footer.php.
 ?>
 <script src="assets/js/artdon_visitor_analytics.js?v=718138" defer></script>
-

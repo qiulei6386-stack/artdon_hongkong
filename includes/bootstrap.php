@@ -57,13 +57,28 @@ function web_favicon_mime_type(string $path): string
     };
 }
 
+function web_asset_versioned_url(string $path): string
+{
+    $path = trim($path);
+    if ($path === '' || preg_match('~^(?:https?:)?//~i', $path) || str_contains($path, "\0") || str_contains($path, '..')) {
+        return $path;
+    }
+    $urlPath = (string)(parse_url($path, PHP_URL_PATH) ?: $path);
+    $localPath = __DIR__ . '/../' . ltrim($urlPath, '/');
+    if (!is_file($localPath)) {
+        return $path;
+    }
+    $separator = str_contains($path, '?') ? '&' : '?';
+    return $path . $separator . 'v=' . filemtime($localPath);
+}
+
 function web_inject_favicon(string $html): string
 {
     if (stripos($html, '</head>') === false || stripos($html, 'rel="icon"') !== false || stripos($html, "rel='icon'") !== false) {
         return $html;
     }
     $path = web_favicon_path();
-    $href = web_e($path);
+    $href = web_e(web_asset_versioned_url($path));
     $type = web_e(web_favicon_mime_type($path));
     $tag = '<link rel="icon" href="' . $href . '" type="' . $type . '">';
     return preg_replace('~</head\s*>~i', $tag . '</head>', $html, 1) ?? $html;

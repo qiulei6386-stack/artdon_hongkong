@@ -95,12 +95,13 @@ foreach ($__menus as &$__menuForResources) {
 }
 unset($__menuForResources);
 $__logo = (string)($__site['header_logo'] ?? 'assets/img/logo-artdon.png');
+$__logoSrc = function_exists('web_asset_versioned_url') ? web_asset_versioned_url($__logo) : $__logo;
 $__company = (string)($__site['company'] ?? 'Artdon Lighting Limited');
 $__quoteLabel = trim((string)($__site['header_quote_label'] ?? 'Get a Quote'));
 $__quoteUrl = artdon_normalize_front_url_v71868(trim((string)($__site['header_quote_url'] ?? 'index.php#contact')));
 ?>
 <header class="site-header" id="top">
-  <a class="brand" href="index.php" aria-label="<?= web_e($__company) ?> home"><img class="brand-logo" src="<?= web_e($__logo) ?>" alt="<?= web_e($__company) ?>" width="210" height="60"></a>
+  <a class="brand" href="index.php" aria-label="<?= web_e($__company) ?> home"><img class="brand-logo" src="<?= web_e($__logoSrc) ?>" alt="<?= web_e($__company) ?>" width="210" height="60"></a>
   <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"><i></i><i></i></button>
   <nav class="site-nav" id="siteNav" aria-label="Main navigation">
     <?php foreach($__menus as $__menu):
