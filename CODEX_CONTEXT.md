@@ -46,6 +46,11 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Backfilled and de-duplicated SEO Title and Meta Description data across the public content tables that already support SEO fields. The main repair was the product center: 46 published series and 167 published variants now have non-empty SEO titles and descriptions.
+- Preserved existing manually written SEO values and only filled blanks, except for generated duplicate product titles that were corrected to unique titles. The two old duplicate low-voltage recessed accessory records were given temporary distinct SEO titles; the duplicate/empty-content cleanup item should decide whether to merge, rewrite or remove them later.
+- Verified public SEO data after the update: `web_products`, `web_product_variants`, `web_solution_pages`, `web_solution_retail_applications`, `web_resource_pages`, `web_resource_blog_articles`, `web_about_pages` and `web_resource_videos` all report 0 empty SEO titles, 0 empty SEO descriptions and 0 duplicate title groups for published/active records.
+- Created a recoverable SEO metadata backup before updating database fields: `/root/artdon_seo_meta_backup_20260801_123856.json`. A cache sweep for this item found no existing HTML cache files to move.
+- Live sample checks confirm the new meta output on the ARMI series page, ARMI 45 product page, products page and Hospitality Solutions page.
 - Unified canonical URL handling for the public site. The formal public host is `https://artdonlighting.com`; `http://artdonlighting.com`, `http://www.artdonlighting.com` and `https://www.artdonlighting.com` now 301 to the HTTPS apex domain while preserving paths and query strings.
 - Added `www.artdonlighting.com` to the live TLS certificate. The deployed Let's Encrypt certificate covers `artdonlighting.com` and `www.artdonlighting.com`, verifies successfully and is valid from 2026-08-01 to 2026-10-30.
 - Converted legacy public duplicates to permanent redirects: `/index.php` 301s to `/`, `/Home/Products/` 301s to `/products.php`, `series.php?slug=...` 301s to the pretty series URL and `product.php?slug=...` 301s to the pretty product URL.
@@ -114,6 +119,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Known Commits
 
+- `0414ef6` - Unify canonical URLs and www SSL
 - `b816dd1` - Fix sitemap and robots SEO discovery
 - `d942bfe` - Manage blog categories in admin
 - `b4a4ec3` - Add editable browser tab icon
@@ -141,6 +147,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- SEO title and description data has been backfilled directly in the Hong Kong production database. The affected public SEO-capable tables now verify with 0 empty titles, 0 empty descriptions and 0 duplicate title groups among published/active records. No source-code deployment was required for this item beyond syncing this context file.
 - Nginx vhost and certificate are live with canonical apex-domain routing. `www.artdonlighting.com` no longer serves the default site; it redirects to `https://artdonlighting.com` and the certificate validates with SANs for both apex and www.
 - `index.php`, `products.php`, `series.php`, `product.php`, `Home/Products/index.php` and `includes/artdon_pages_v710.php` are synced to the Hong Kong server with canonical URL redirects and the updated products sitemap/canonical entry. Production PHP lint passed, legacy URL checks return 301, followed final URLs return HTTP 200, and the dynamic sitemap has 0 `/Home/Products` entries.
 - `robots.txt`, `sitemap.xml`, `sitemap.php` and `includes/artdon_pages_v710.php` are synced to the Hong Kong server. The public robots file and sitemap-index URL both return HTTP 200 and reference `https://artdonlighting.com/sitemap.xml` / `https://artdonlighting.com/sitemap.php` as intended. All 380 generated public URLs were checked after deployment and return final 2xx responses.
@@ -162,8 +169,8 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- SEO work follows the user-approved sequence: complete one item, validate front and back end, report, then wait for confirmation before starting the next. Sitemap/robots and URL/301/www-SSL are complete; do not begin SEO title/description work until the user confirms.
-- Sitemap/robots and URL/301/www-SSL GitHub pushes remain pending together with the earlier commits because GitHub SSH is still unavailable. Production is deployed from the local committed files.
+- SEO work follows the user-approved sequence: complete one item, validate front and back end, report, then wait for confirmation before starting the next. Sitemap/robots, URL/301/www-SSL and SEO Title/Description are complete; do not begin NO IMAGE / duplicate product / empty-content cleanup until the user confirms.
+- Sitemap/robots, URL/301/www-SSL and SEO Title/Description GitHub pushes remain pending together with the earlier commits because GitHub SSH is still unavailable. Production is deployed from local files and production database updates.
 - Blog categories are now managed separately from blog articles at `后台 → 资源中心 → Blog & Insights → 管理博客分类`. Categories can be added, renamed, ordered, hidden and deleted. Category deletion requires choosing a destination category and moves its articles there, so no blog posts are lost.
 - The supplied red-and-black A mark is now the default browser tab icon. Future changes are self-service through the Website Settings page; upload a square PNG (recommended 512 × 512) and save.
 - GitHub is the only outstanding sync step for the favicon and blog-category changes; retry `git push origin main` when the SSH service is available, then deploy the context-file commit and update this note.
