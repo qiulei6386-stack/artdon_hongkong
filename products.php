@@ -72,6 +72,44 @@ function artdon_catalog_merge_unified_categories_v718123(?PDO $pdo, array $categ
 }
 }
 
+if (!function_exists('artdon_catalog_hydrate_category_seo_v718186')) {
+function artdon_catalog_hydrate_category_seo_v718186(?PDO $pdo, array $categories): array
+{
+    if (!$pdo) return $categories;
+    try {
+        $rows = $pdo->query('SELECT slug,page_title,description,seo_title,seo_description FROM web_product_categories')->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (Throwable $e) {
+        return $categories;
+    }
+    $seoBySlug = [];
+    foreach ($rows as $row) {
+        $slug = trim((string)($row['slug'] ?? ''));
+        if ($slug !== '') $seoBySlug[$slug] = $row;
+    }
+    foreach ([
+        'surface-and-pendant' => 'surface-pendant-lights',
+        'surface-and-pendant-lights' => 'surface-pendant-lights',
+        'led-strips-and-profiles' => 'led-strips-profiles',
+        'track-systems-and-accessories' => 'track-systems-accessories',
+    ] as $legacySlug => $frontSlug) {
+        if (!empty($seoBySlug[$legacySlug]) && empty($seoBySlug[$frontSlug])) {
+            $seoBySlug[$frontSlug] = $seoBySlug[$legacySlug];
+        }
+    }
+    if (!$seoBySlug) return $categories;
+    foreach ($categories as &$categoryRow) {
+        $slug = trim((string)($categoryRow['slug'] ?? ''));
+        if ($slug === '' || empty($seoBySlug[$slug])) continue;
+        foreach (['page_title', 'description', 'seo_title', 'seo_description'] as $field) {
+            $value = trim((string)($seoBySlug[$slug][$field] ?? ''));
+            if ($value !== '') $categoryRow[$field] = $value;
+        }
+    }
+    unset($categoryRow);
+    return $categories;
+}
+}
+
 if (!function_exists('artdon_catalog_family_defaults_v718125')) {
 function artdon_catalog_family_defaults_v718125(): array
 {
@@ -301,6 +339,7 @@ if ($categories && $allSeries) {
 // grouped titles and series edit dropdown on one canonical source/order.
 if (function_exists('artdon_v718129_normalize_series_list')) $allSeries = artdon_v718129_normalize_series_list($allSeries);
 if (function_exists('artdon_v718129_front_categories')) $categories = artdon_v718129_front_categories($pdo instanceof PDO ? $pdo : null, true);
+$categories = artdon_catalog_hydrate_category_seo_v718186($pdo instanceof PDO ? $pdo : null, $categories);
 $categoryAliasMapV718128 = function_exists('artdon_v718129_alias_map') ? artdon_v718129_alias_map() : $categoryAliasMapV718128;
 
 $categoryNamesBySlug = [];
