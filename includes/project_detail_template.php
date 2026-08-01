@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/products.php';
 require_once __DIR__ . '/pretty_urls_v71868.php';
+require_once __DIR__ . '/schema.php';
 
 function project_detail_e(mixed $value): string { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); }
 function project_detail_slug(string $value): string
@@ -169,6 +170,28 @@ $information = array_values(array_filter($information, static fn(array $item): b
 $detailTitle = $projectTitle . ' | Projects | Artdon Lighting';
 $detailDescription = $projectDescription;
 $detailCanonical = ($siteUrl !== '' ? $siteUrl : 'https://artdonlighting.com') . '/' . $projectUrl;
+$projectDetailSiteUrl = rtrim((string)($siteUrl ?: 'https://artdonlighting.com'), '/');
+$projectDetailSchema = artdon_schema_graph([
+    artdon_schema_organization(is_array($site ?? null) ? $site : [], $projectDetailSiteUrl),
+    artdon_schema_website(is_array($site ?? null) ? $site : [], $projectDetailSiteUrl),
+    artdon_schema_webpage($detailCanonical, $detailTitle, $detailDescription, $projectDetailSiteUrl, 'Article'),
+    artdon_schema_breadcrumb([
+        ['name' => 'Home', 'url' => '/'],
+        ['name' => 'Projects', 'url' => '/project.php'],
+        ['name' => $projectTitle, 'url' => $detailCanonical],
+    ], $projectDetailSiteUrl),
+    [
+        '@type' => 'Article',
+        '@id' => $detailCanonical . '#article',
+        'headline' => $projectTitle,
+        'description' => $detailDescription,
+        'image' => artdon_schema_abs_url($projectImage, $projectDetailSiteUrl),
+        'url' => $detailCanonical,
+        'articleSection' => $projectCategory,
+        'publisher' => ['@id' => $projectDetailSiteUrl . '/#organization'],
+        'mainEntityOfPage' => ['@id' => $detailCanonical . '#webpage'],
+    ],
+]);
 ?>
 <!doctype html>
 <html lang="en">
@@ -183,6 +206,7 @@ $detailCanonical = ($siteUrl !== '' ? $siteUrl : 'https://artdonlighting.com') .
   <meta property="og:title" content="<?= project_detail_e($detailTitle) ?>">
   <meta property="og:description" content="<?= project_detail_e($detailDescription) ?>">
   <meta property="og:image" content="<?= project_detail_e($projectImage) ?>">
+  <?= artdon_schema_script($projectDetailSchema) ?>
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.12">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/project-detail.css?v=1.0.0">

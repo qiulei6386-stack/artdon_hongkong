@@ -8,6 +8,7 @@ web_public_cache_start('products_v718167', 600);
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/product_filters.php';
 require_once __DIR__ . '/includes/pretty_urls_v71868.php';
+require_once __DIR__ . '/includes/schema.php';
 $__artdonUnifiedCategoriesV718123 = __DIR__ . '/includes/artdon_product_unify_v713.php';
 if (is_file($__artdonUnifiedCategoriesV718123)) { require_once $__artdonUnifiedCategoriesV718123; }
 
@@ -1054,6 +1055,22 @@ foreach ($items as $index=>$item) {
     }
     $itemList[] = ['@type'=>'ListItem','position'=>(($page-1)*$perPage)+$index+1,'url'=>artdon_pretty_abs_url_v71868($url, $siteUrl),'name'=>$name];
 }
+$productsSchema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'CollectionPage'),
+    artdon_schema_breadcrumb([
+        ['name' => 'Home', 'url' => '/'],
+        ['name' => 'Products', 'url' => '/products.php'],
+    ], $siteUrl),
+    [
+        '@type' => 'ItemList',
+        '@id' => $canonical . '#itemlist',
+        'name' => $productMode ? 'Filtered Products' : (string)($category['page_title'] ?? 'Products'),
+        'numberOfItems' => $total,
+        'itemListElement' => $itemList,
+    ],
+]);
 
 $activeFilterLabels = [];
 if ($usingSeriesFilterFallback && $selectedFilters) {
@@ -1079,7 +1096,7 @@ if ($usingSeriesFilterFallback && $selectedFilters) {
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_catalog_families.css?v=7.0.6">
   <link rel="stylesheet" href="assets/css/artdon_catalog_layout_v708.css?v=7.0.8">
-  <script type="application/ld+json"><?= json_encode(['@context'=>'https://schema.org','@type'=>'ItemList','name'=>$productMode?'Filtered Products':(string)($category['page_title']??'Products'),'numberOfItems'=>$total,'itemListElement'=>$itemList],JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) ?></script>
+  <?= artdon_schema_script($productsSchema) ?>
 <!-- ARTDON_V7093_SIMPLE_BOOT_START -->
 <?php
 $__artdonCardV7093 = __DIR__ . '/includes/artdon_card_simple_v7093.php';

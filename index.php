@@ -12,6 +12,7 @@ if (is_file(__DIR__ . '/includes/artdon_product_unify_v713.php')) { require_once
 // Artdon Lighting Limited - Homepage V6.12.11
 // Database-backed homepage with packaged fallback content.
 require_once __DIR__ . '/includes/bootstrap.php';
+require_once __DIR__ . '/includes/schema.php';
 
 $content = web_get_all_content();
 $site = $content['site'] ?? [];
@@ -152,62 +153,23 @@ function artdon_home_v7153_product_type(array $product): string {
 }
 // ARTDON_V7153_HELPERS_END
 
-$schema = [
-  '@context'=>'https://schema.org',
-  '@graph'=>[
-    [
-      '@type'=>'Organization',
-      '@id'=>$siteUrl.'/#organization',
-      'name'=>$company,
-      'url'=>$siteUrl.'/',
-      'logo'=>[
-        '@type'=>'ImageObject',
-        'url'=>$siteUrl.'/'.ltrim((string)($site['header_logo'] ?? 'assets/img/logo-artdon.png'), '/')
-      ],
-      'address'=>[
-        '@type'=>'PostalAddress',
-        'addressLocality'=>(string)($site['location'] ?? 'Zhongshan, Guangdong, China'),
-        'addressRegion'=>'Guangdong',
-        'addressCountry'=>'CN'
-      ],
-      'contactPoint'=>[
-        '@type'=>'ContactPoint',
-        'contactType'=>'sales',
-        'telephone'=>(string)($site['telephone'] ?? ''),
-        'email'=>(string)($site['email'] ?? ''),
-        'availableLanguage'=>['English','Chinese']
-      ]
-    ],
-    [
-      '@type'=>'WebSite',
-      '@id'=>$siteUrl.'/#website',
-      'url'=>$siteUrl.'/',
-      'name'=>$company,
-      'publisher'=>['@id'=>$siteUrl.'/#organization'],
-      'inLanguage'=>'en'
-    ],
-    [
-      '@type'=>'WebPage',
-      '@id'=>$siteUrl.'/#webpage',
-      'url'=>$siteUrl.'/',
-      'name'=>(string)($seo['title'] ?? ($company.' | Architectural Commercial Lighting')),
-      'description'=>(string)($seo['description'] ?? ''),
-      'isPartOf'=>['@id'=>$siteUrl.'/#website'],
-      'about'=>['@id'=>$siteUrl.'/#organization'],
-      'inLanguage'=>'en'
-    ],
-    [
-      '@type'=>'VideoObject',
-      'name'=>'Artdon 48V magnetic track lighting system',
-      'description'=>'A short product video showing a modular architectural track lighting system with linear, spotlight and grille modules.',
-      'thumbnailUrl'=>$siteUrl.'/'.ltrim((string)($slides[0]['image'] ?? 'assets/img/hero/hero-track-systems.webp'), '/'),
-      'uploadDate'=>'2026-06-21',
-      'duration'=>'PT5S',
-      'contentUrl'=>$siteUrl.'/'.ltrim((string)($slides[0]['video'] ?? 'assets/video/hero-track-systems.mp4'), '/'),
-      'embedUrl'=>$siteUrl.'/#heroCarousel'
-    ]
-  ]
-];
+$homeCanonical = $siteUrl . '/';
+$schema = artdon_schema_graph([
+  artdon_schema_organization($site, $siteUrl),
+  artdon_schema_website($site, $siteUrl),
+  artdon_schema_webpage($homeCanonical, (string)($seo['title'] ?? ($company.' | Architectural Commercial Lighting')), (string)($seo['description'] ?? ''), $siteUrl, 'WebPage'),
+  [
+    '@type'=>'VideoObject',
+    '@id'=>$siteUrl.'/#hero-video',
+    'name'=>'Artdon 48V magnetic track lighting system',
+    'description'=>'A short product video showing a modular architectural track lighting system with linear, spotlight and grille modules.',
+    'thumbnailUrl'=>artdon_schema_abs_url((string)($slides[0]['image'] ?? 'assets/img/hero/hero-track-systems.webp'), $siteUrl),
+    'uploadDate'=>'2026-06-21',
+    'duration'=>'PT5S',
+    'contentUrl'=>artdon_schema_abs_url((string)($slides[0]['video'] ?? 'assets/video/hero-track-systems.mp4'), $siteUrl),
+    'embedUrl'=>$siteUrl.'/#heroCarousel'
+  ],
+]);
 ?>
 <!doctype html>
 <html lang="en">
@@ -237,7 +199,7 @@ $schema = [
   <meta name="twitter:description" content="<?= e($seo['description'] ?? '') ?>">
   <meta name="twitter:image" content="<?= e($siteUrl.'/'.ltrim((string)($seo['og_image'] ?? ($slides[0]['image'] ?? 'assets/img/hero/hero-track-systems.webp')), '/')) ?>">
 
-  <script type="application/ld+json"><?= json_encode($schema, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE) ?></script>
+  <?= artdon_schema_script($schema) ?>
 <!-- ARTDON_V7092_SOURCE_PATCH_START -->
 <?php
 $__artdonV7092Runtime=__DIR__.'/includes/artdon_card_runtime_v7092.php';

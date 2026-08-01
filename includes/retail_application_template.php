@@ -5,6 +5,7 @@ require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/products.php';
 require_once __DIR__ . '/pretty_urls_v71868.php';
 require_once __DIR__ . '/retail_application_data.php';
+require_once __DIR__ . '/schema.php';
 
 $retailApplicationSlug = isset($retailApplicationSlug) ? (string)$retailApplicationSlug : '';
 $retailApplicationSolution = ra_solution_application_slug((string)($retailApplicationSolution ?? 'retail'));
@@ -187,6 +188,62 @@ $zones = ra_sorted_items($page['zones'] ?? []);
 $projects = array_slice(ra_sorted_items($page['projects'] ?? []), 0, 4);
 $supportItems = ra_sorted_items($page['support']['items'] ?? []);
 $applicationLinks = ra_retail_application_links($currentSlug, $retailApplicationSolution);
+$raTitle = (string)($page['meta_title'] ?? $page['title'] ?? 'Lighting Application');
+$raDescription = (string)($page['meta_description'] ?? $page['intro'] ?? '');
+$raProductList = [];
+foreach ($products as $index => $product) {
+    if (!is_array($product)) continue;
+    $raProductList[] = artdon_schema_clean([
+        '@type' => 'ListItem',
+        'position' => $index + 1,
+        'name' => (string)($product['name'] ?? ''),
+        'url' => artdon_schema_abs_url((string)($product['url'] ?? 'products.php'), $siteUrl),
+    ]);
+}
+$raProjectList = [];
+foreach ($projects as $index => $projectItem) {
+    if (!is_array($projectItem)) continue;
+    $raProjectList[] = artdon_schema_clean([
+        '@type' => 'ListItem',
+        'position' => $index + 1,
+        'name' => (string)($projectItem['title'] ?? ''),
+        'url' => artdon_schema_abs_url((string)($projectItem['url'] ?? 'project.php'), $siteUrl),
+    ]);
+}
+$raSchema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $raTitle, $raDescription, $siteUrl, 'WebPage'),
+    artdon_schema_breadcrumb([
+        ['name' => 'Home', 'url' => '/'],
+        ['name' => 'Solutions', 'url' => '/solutions.php'],
+        ['name' => (string)($page['label'] ?? $page['title'] ?? 'Lighting Application'), 'url' => $canonical],
+    ], $siteUrl),
+    [
+        '@type' => 'Service',
+        '@id' => $canonical . '#service',
+        'name' => (string)($page['title'] ?? $page['label'] ?? 'Lighting Application'),
+        'description' => $raDescription,
+        'serviceType' => 'Application lighting design',
+        'provider' => ['@id' => $siteUrl . '/#organization'],
+        'areaServed' => 'Worldwide',
+        'url' => $canonical,
+    ],
+    [
+        '@type' => 'ItemList',
+        '@id' => $canonical . '#recommended-products',
+        'name' => 'Recommended Products',
+        'numberOfItems' => count($raProductList),
+        'itemListElement' => $raProductList,
+    ],
+    [
+        '@type' => 'ItemList',
+        '@id' => $canonical . '#related-projects',
+        'name' => 'Related Projects',
+        'numberOfItems' => count($raProjectList),
+        'itemListElement' => $raProjectList,
+    ],
+]);
 ?>
 <!doctype html>
 <html lang="en">
@@ -197,6 +254,7 @@ $applicationLinks = ra_retail_application_links($currentSlug, $retailApplication
   <meta name="description" content="<?= ra_e($page['meta_description'] ?? '') ?>">
   <?php if (trim((string)($page['meta_keywords'] ?? '')) !== ''): ?><meta name="keywords" content="<?= ra_e($page['meta_keywords']) ?>"><?php endif; ?>
   <link rel="canonical" href="<?= ra_e($canonical) ?>">
+  <?= artdon_schema_script($raSchema) ?>
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.11">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.6">

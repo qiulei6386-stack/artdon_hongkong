@@ -11,6 +11,7 @@ require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/product_hierarchy.php';
 require_once __DIR__ . '/includes/pretty_urls_v71868.php';
 require_once __DIR__ . '/includes/solution_icons.php';
+require_once __DIR__ . '/includes/schema.php';
 
 
 
@@ -408,6 +409,45 @@ $secondaryUrl = sv717_button_url((string)($content['hero_secondary_url'] ?? ''),
 $features = array_slice(array_values(array_filter($content['features'] ?? [], 'is_array')), 0, 4);
 $applications = array_slice(array_values(array_filter($content['applications'] ?? [], 'is_array')), 0, 4);
 $projects = array_slice(array_values(array_filter($content['projects'] ?? [], 'is_array')), 0, 4);
+$seriesSchemaVariants = [];
+foreach ($variants as $variantRow) {
+    if (!is_array($variantRow)) continue;
+    $variantName = trim((string)($variantRow['name'] ?? $variantRow['model_code'] ?? ''));
+    if ($variantName === '') continue;
+    $variantUrl = function_exists('artdon_pretty_product_url_v71868')
+        ? artdon_pretty_abs_url_v71868(artdon_pretty_product_url_v71868((string)($category['slug'] ?? $series['category_slug'] ?? ''), (string)($series['slug'] ?? $series['name'] ?? 'series'), $variantRow), $siteUrl)
+        : '';
+    $seriesSchemaVariants[] = artdon_schema_clean([
+        '@type' => 'Product',
+        'name' => $variantName,
+        'sku' => (string)($variantRow['model_code'] ?? ''),
+        'url' => $variantUrl,
+        'image' => artdon_schema_image_list([(string)($variantRow['image'] ?? $variantRow['cover_image'] ?? ($heroImages[0]['image'] ?? ''))], $siteUrl),
+    ]);
+}
+$seriesSchema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonicalV71866, $pageTitle, $pageDesc, $siteUrl, 'ItemPage'),
+    artdon_schema_breadcrumb([
+        ['name' => 'Home', 'url' => '/'],
+        ['name' => 'Products', 'url' => '/products.php'],
+        ['name' => (string)($category['name'] ?? $category['slug'] ?? 'Product Category'), 'url' => artdon_pretty_category_url_v71868((string)($category['slug'] ?? ($series['category_slug'] ?? '')))],
+        ['name' => (string)$series['name'], 'url' => $canonicalV71866],
+    ], $siteUrl),
+    [
+        '@type' => 'ProductGroup',
+        '@id' => $canonicalV71866 . '#product-group',
+        'name' => (string)$series['name'],
+        'description' => $pageDesc,
+        'url' => $canonicalV71866,
+        'brand' => ['@type' => 'Brand', 'name' => 'Artdon Lighting'],
+        'manufacturer' => ['@id' => $siteUrl . '/#organization'],
+        'category' => (string)($category['name'] ?? $category['slug'] ?? ''),
+        'image' => artdon_schema_image_list($heroImages, $siteUrl),
+        'hasVariant' => array_slice($seriesSchemaVariants, 0, 24),
+    ],
+]);
 ?>
 <!doctype html>
 <html lang="en">
@@ -418,6 +458,7 @@ $projects = array_slice(array_values(array_filter($content['projects'] ?? [], 'i
 <title><?= sv717_e($pageTitle) ?></title>
 <meta name="description" content="<?= sv717_e($pageDesc) ?>">
 <link rel="canonical" href="<?= sv717_e($canonicalV71866) ?>">
+<?= artdon_schema_script($seriesSchema) ?>
 <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.11">
 <link rel="stylesheet" href="assets/css/artdon_product_hierarchy.css?v=6.4.0">
 <style>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/project_detail_data.php';
+require_once __DIR__ . '/includes/schema.php';
 
 if (!headers_sent()) {
     header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -97,6 +98,35 @@ if ($requestedProject !== '') {
 $pageTitle = 'Projects | Artdon Lighting';
 $pageDescription = 'Inspiring lighting solutions for retail, hospitality, commercial and more.';
 $canonical = $siteUrl . '/project.php';
+$projectItemList = [];
+foreach (array_values($projects) as $index => $projectItem) {
+    if (!is_array($projectItem)) continue;
+    $name = trim((string)($projectItem['title'] ?? ''));
+    $url = trim((string)($projectItem['url'] ?? ''));
+    if ($name === '' || $url === '') continue;
+    $projectItemList[] = [
+        '@type' => 'ListItem',
+        'position' => $index + 1,
+        'name' => $name,
+        'url' => artdon_schema_abs_url($url, $siteUrl),
+    ];
+}
+$projectSchema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'CollectionPage'),
+    artdon_schema_breadcrumb([
+        ['name' => 'Home', 'url' => '/'],
+        ['name' => 'Projects', 'url' => '/project.php'],
+    ], $siteUrl),
+    [
+        '@type' => 'ItemList',
+        '@id' => $canonical . '#itemlist',
+        'name' => 'Artdon Lighting Projects',
+        'numberOfItems' => count($projectItemList),
+        'itemListElement' => $projectItemList,
+    ],
+]);
 ?>
 <!doctype html>
 <html lang="en">
@@ -112,6 +142,7 @@ $canonical = $siteUrl . '/project.php';
   <meta property="og:title" content="<?= web_e($pageTitle) ?>">
   <meta property="og:description" content="<?= web_e($pageDescription) ?>">
   <meta property="og:image" content="<?= web_e($heroImage) ?>">
+  <?= artdon_schema_script($projectSchema) ?>
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.12">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <style>

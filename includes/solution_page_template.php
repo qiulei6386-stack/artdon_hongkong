@@ -6,6 +6,7 @@ require_once __DIR__ . '/products.php';
 require_once __DIR__ . '/pretty_urls_v71868.php';
 require_once __DIR__ . '/solutions_retail_defaults.php';
 require_once __DIR__ . '/retail_application_data.php';
+require_once __DIR__ . '/schema.php';
 
 $solutionSlug = isset($solutionSlug) ? sdr_solution_slug((string)$solutionSlug) : 'retail';
 $solutionContent = sdr_solution_get_page($solutionSlug);
@@ -139,6 +140,45 @@ $hero = $solutionContent['hero'] ?? [];
 $guide = $solutionContent['guide'] ?? [];
 $products = sp_fetch_series_cards($solutionContent['products']['items'] ?? []);
 $canonical = $siteUrl . sdr_solution_url((string)($solutionPage['slug'] ?? 'retail'));
+$solutionTitle = (string)($solutionPage['seo_title'] ?? $solutionPage['page_title'] ?? 'Lighting Solutions');
+$solutionDescription = (string)($solutionPage['seo_description'] ?? $solutionPage['short_description'] ?? '');
+$solutionProductList = [];
+foreach ($products as $index => $product) {
+    if (!is_array($product)) continue;
+    $solutionProductList[] = artdon_schema_clean([
+        '@type' => 'ListItem',
+        'position' => $index + 1,
+        'name' => (string)($product['name'] ?? ''),
+        'url' => artdon_schema_abs_url((string)($product['url'] ?? 'products.php'), $siteUrl),
+    ]);
+}
+$solutionSchema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $solutionTitle, $solutionDescription, $siteUrl, 'WebPage'),
+    artdon_schema_breadcrumb([
+        ['name' => 'Home', 'url' => '/'],
+        ['name' => 'Solutions', 'url' => '/solutions.php'],
+        ['name' => (string)($solutionPage['page_title'] ?? 'Lighting Solution'), 'url' => $canonical],
+    ], $siteUrl),
+    [
+        '@type' => 'Service',
+        '@id' => $canonical . '#service',
+        'name' => (string)($solutionPage['page_title'] ?? 'Lighting Solution'),
+        'description' => $solutionDescription,
+        'serviceType' => 'Architectural lighting solution',
+        'provider' => ['@id' => $siteUrl . '/#organization'],
+        'areaServed' => 'Worldwide',
+        'url' => $canonical,
+    ],
+    [
+        '@type' => 'ItemList',
+        '@id' => $canonical . '#recommended-products',
+        'name' => (string)($solutionContent['products']['title'] ?? 'Recommended Product Families'),
+        'numberOfItems' => count($solutionProductList),
+        'itemListElement' => $solutionProductList,
+    ],
+]);
 ?>
 <!doctype html>
 <html lang="en">
@@ -148,6 +188,7 @@ $canonical = $siteUrl . sdr_solution_url((string)($solutionPage['slug'] ?? 'reta
   <title><?= sp_e($solutionPage['seo_title'] ?? '') ?></title>
   <meta name="description" content="<?= sp_e($solutionPage['seo_description'] ?? '') ?>">
   <link rel="canonical" href="<?= sp_e($canonical) ?>">
+  <?= artdon_schema_script($solutionSchema) ?>
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.11">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.6">

@@ -10,6 +10,7 @@ if (!$artdonLegacyProductRequest) web_public_cache_start('product', 600);
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/product_hierarchy.php';
 require_once __DIR__ . '/includes/pretty_urls_v71868.php';
+require_once __DIR__ . '/includes/schema.php';
 
 
 
@@ -805,13 +806,36 @@ foreach ($sourceSiblingsV71816 as $v71816Index => $row) {
 }
 $siblings = array_values(array_slice($filteredSiblingsV71816, 0, 4));
 
-$productSchema = [
-    '@context'=>'https://schema.org','@type'=>'Product','name'=>(string)$variant['name'],'description'=>$pageDescription,
-    'sku'=>(string)$variant['model_code'],'brand'=>['@type'=>'Brand','name'=>'Artdon Lighting'],
-    'isVariantOf'=>['@type'=>'ProductGroup','name'=>(string)$series['name'],'url'=>artdon_pretty_abs_url_v71868(artdon_pretty_series_url_v71868($category, $series), $siteUrl)],
-    'image'=>array_map(static fn($image) => ($siteUrl !== '' ? $siteUrl . '/' : '') . ltrim((string)$image['image'],'/'), $schemaImages),
-    'url'=>$canonical,
-];
+$seriesSchemaUrl = artdon_pretty_abs_url_v71868(artdon_pretty_series_url_v71868($category, $series), $siteUrl);
+$productSchema = artdon_schema_graph([
+    artdon_schema_organization($site, $siteUrl),
+    artdon_schema_website($site, $siteUrl),
+    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'ItemPage'),
+    artdon_schema_breadcrumb([
+        ['name' => 'Home', 'url' => '/'],
+        ['name' => 'Products', 'url' => '/products.php'],
+        ['name' => (string)($category['name'] ?? $category['slug'] ?? 'Product Category'), 'url' => artdon_pretty_category_url_v71868((string)($category['slug'] ?? ($series['category_slug'] ?? '')))],
+        ['name' => (string)$series['name'], 'url' => $seriesSchemaUrl],
+        ['name' => (string)$variant['name'], 'url' => $canonical],
+    ], $siteUrl),
+    [
+        '@type'=>'Product',
+        '@id'=>$canonical . '#product',
+        'name'=>(string)$variant['name'],
+        'description'=>$pageDescription,
+        'sku'=>(string)$variant['model_code'],
+        'brand'=>['@type'=>'Brand','name'=>'Artdon Lighting'],
+        'manufacturer'=>['@id'=>$siteUrl.'/#organization'],
+        'category'=>(string)($category['name'] ?? $category['slug'] ?? ''),
+        'isVariantOf'=>[
+            '@type'=>'ProductGroup',
+            'name'=>(string)$series['name'],
+            'url'=>$seriesSchemaUrl,
+        ],
+        'image'=>artdon_schema_image_list($schemaImages, $siteUrl),
+        'url'=>$canonical,
+    ],
+]);
 ?>
 <!doctype html>
 <html lang="en">
@@ -827,7 +851,7 @@ $productSchema = [
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_product_hierarchy.css?v=6.12.31">
   <link rel="stylesheet" href="assets/css/artdon_product_detail_v61232.css?v=6.12.46">
-  <script type="application/ld+json"><?= json_encode($productSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) ?></script>
+  <?= artdon_schema_script($productSchema) ?>
 <!-- ARTDON_V7093_SIMPLE_BOOT_START -->
 <?php
 $__artdonCardV7093 = __DIR__ . '/includes/artdon_card_simple_v7093.php';
