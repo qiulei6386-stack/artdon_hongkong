@@ -241,7 +241,7 @@ $solutionSchema = artdon_schema_graph([
           <div class="sd-guide-item"><span class="sd-guide-icon" aria-hidden="true"><?= sp_icon((string)($param['icon'] ?? 'ratio')) ?></span><div><strong><?= sp_e($param['title'] ?? '') ?></strong><span><?= nl2br(sp_e($param['text'] ?? ''), false) ?></span></div></div>
           <?php endforeach; ?>
         </div>
-        <figure class="sd-guide-image"><img src="<?= sp_e($guide['image'] ?? ($hero['image'] ?? '')) ?>" alt="<?= sp_e($guide['image_alt'] ?? '') ?>"></figure>
+        <figure class="sd-guide-image"><img src="<?= sp_e($guide['image'] ?? ($hero['image'] ?? '')) ?>" alt="<?= sp_e(trim((string)($guide['image_alt'] ?? '')) ?: ($solutionPage['page_title'] . ' lighting guide')) ?>"></figure>
         <aside class="sd-guide-panel">
           <?php foreach (($guide['notes'] ?? []) as $note): if (!is_array($note) || empty($note['active'])) continue; ?>
           <div><strong><?= sp_e($note['title'] ?? '') ?></strong><span><?= nl2br(sp_e($note['text'] ?? ''), false) ?></span></div>
@@ -312,7 +312,7 @@ $solutionSchema = artdon_schema_graph([
     </div>
   </section>
   <section class="sd-cta" aria-labelledby="sdCtaTitle">
-    <img src="<?= sp_e($solutionContent['cta']['image'] ?? ($hero['image'] ?? '')) ?>" alt="<?= sp_e($solutionContent['cta']['image_alt'] ?? '') ?>">
+    <img src="<?= sp_e($solutionContent['cta']['image'] ?? ($hero['image'] ?? '')) ?>" alt="<?= sp_e(trim((string)($solutionContent['cta']['image_alt'] ?? '')) ?: ($solutionPage['page_title'] . ' project support')) ?>">
     <div class="sd-container sd-cta-inner"><div><h2 id="sdCtaTitle"><?= sp_e($solutionContent['cta']['title'] ?? '') ?></h2><p><?= sp_e($solutionContent['cta']['intro'] ?? $solutionContent['cta']['description'] ?? '') ?></p></div><div class="sd-cta-actions"><button class="sd-btn sd-btn-primary hero-quote-trigger" type="button" data-quote-product="<?= sp_e($solutionPage['page_title'] . ' Project') ?>" data-quote-link="<?= sp_e($solutionPage['url']) ?>" aria-haspopup="dialog" aria-controls="heroQuoteModal"><?= sp_e($solutionContent['cta']['primary_label'] ?? 'Discuss Your Project →') ?></button><a class="sd-btn sd-btn-ghost" href="<?= sp_e($solutionContent['cta']['secondary_url'] ?? 'downloads.php') ?>"><?= sp_e($solutionContent['cta']['secondary_label'] ?? 'Download Catalogue ↓') ?></a></div></div>
   </section>
 </main>

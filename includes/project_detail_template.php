@@ -305,7 +305,7 @@ $projectDetailSchema = artdon_schema_graph([
   </section>
 
   <section class="pd-cta">
-    <img src="<?= project_detail_e($ctaImage) ?>" alt="" aria-hidden="true">
+    <img src="<?= project_detail_e($ctaImage) ?>" alt="<?= project_detail_e($projectTitle . ' project lighting support') ?>">
     <div class="pd-container pd-cta-inner">
       <div><h2><?= project_detail_e($ctaTitle) ?></h2><p><?= project_detail_e($ctaText) ?></p></div>
       <?php if ($ctaButtonUrl === '' || $ctaButtonUrl === 'inquiry' || $ctaButtonUrl === '#'): ?>

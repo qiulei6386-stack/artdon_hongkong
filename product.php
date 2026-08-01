@@ -958,7 +958,8 @@ if (is_file($__artdonCardV7093)) {
         <div class="variant-layout-b-photometric">
           <?php foreach($photometricDisplayImages as $photo): ?>
           <?php $curveCaption = trim((string)($photo['label'] ?? '')); if($curveCaption==='') $curveCaption = trim((string)($photo['alt'] ?? '')); if($curveCaption==='') $curveCaption = (string)($variant['name'].' photometric curve'); ?>
-          <figure><img src="<?= web_e(web_public_path((string)$photo['image'])) ?>" alt="<?= web_e((string)($photo['alt'] ?? $curveCaption)) ?>" loading="lazy"><figcaption><?= web_e($curveCaption) ?></figcaption></figure>
+          <?php $curveAlt = trim((string)($photo['alt'] ?? '')) ?: $curveCaption; ?>
+          <figure><img src="<?= web_e(web_public_path((string)$photo['image'])) ?>" alt="<?= web_e($curveAlt) ?>" loading="lazy"><figcaption><?= web_e($curveCaption) ?></figcaption></figure>
           <?php endforeach; ?>
         </div>
         <?php endif; ?>
@@ -978,11 +979,11 @@ if (is_file($__artdonCardV7093)) {
       <?php if($detailLayout==='switcher'): ?>
         <figure class="variant-main-figure"><?php if($images): ?><img id="variantMainImage" src="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" alt="<?= web_e($images[0]['alt'] ?? $variant['name']) ?>" loading="eager" fetchpriority="high" decoding="async"><?php endif; ?></figure>
         <?php $switcherImages=$images; if($dimensionImage!=='')$switcherImages[]=['image'=>$dimensionImage,'alt'=>$dimensionAlt,'is_dimension'=>1]; ?>
-        <?php if(count($switcherImages)>1): ?><div class="variant-thumbs variant-thumbs-labelled"><?php foreach($switcherImages as $index=>$image): ?><button type="button" class="<?= $index===0?'is-active':'' ?>" data-variant-image="<?= web_e(web_public_path((string)$image['image'])) ?>" data-variant-alt="<?= web_e($image['alt'] ?? $variant['name']) ?>" data-variant-kind="<?= !empty($image['is_dimension']) ? 'dimension' : 'product' ?>"><img src="<?= web_e(web_public_path((string)$image['image'])) ?>" alt="" loading="lazy"><span><?= !empty($image['is_dimension'])?'Dimensions':($index===0?'Product':'View '.($index+1)) ?></span></button><?php endforeach; ?></div><?php endif; ?>
+        <?php if(count($switcherImages)>1): ?><div class="variant-thumbs variant-thumbs-labelled"><?php foreach($switcherImages as $index=>$image): $thumbAlt = trim((string)($image['alt'] ?? '')) ?: ((string)($variant['name'] ?? 'Product image') . (!empty($image['is_dimension']) ? ' dimension drawing' : ' product image')); ?><button type="button" class="<?= $index===0?'is-active':'' ?>" data-variant-image="<?= web_e(web_public_path((string)$image['image'])) ?>" data-variant-alt="<?= web_e($thumbAlt) ?>" data-variant-kind="<?= !empty($image['is_dimension']) ? 'dimension' : 'product' ?>"><img src="<?= web_e(web_public_path((string)$image['image'])) ?>" alt="<?= web_e($thumbAlt) ?>" loading="lazy"><span><?= !empty($image['is_dimension'])?'Dimensions':($index===0?'Product':'View '.($index+1)) ?></span></button><?php endforeach; ?></div><?php endif; ?>
       <?php else: ?>
         <div class="variant-product-media">
           <figure class="variant-main-figure"><?php if($images): ?><img id="variantMainImage" src="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" alt="<?= web_e($images[0]['alt'] ?? $variant['name']) ?>" loading="eager" fetchpriority="high" decoding="async"><?php endif; ?></figure>
-          <?php if(count($images)>1): ?><div class="variant-thumbs"><?php foreach($images as $index=>$image): ?><button type="button" class="<?= $index===0?'is-active':'' ?>" data-variant-image="<?= web_e(web_public_path((string)$image['image'])) ?>" data-variant-alt="<?= web_e($image['alt'] ?? $variant['name']) ?>" data-variant-kind="<?= !empty($image['is_dimension']) ? 'dimension' : 'product' ?>"><img src="<?= web_e(web_public_path((string)$image['image'])) ?>" alt="" loading="lazy"></button><?php endforeach; ?></div><?php endif; ?>
+          <?php if(count($images)>1): ?><div class="variant-thumbs"><?php foreach($images as $index=>$image): $thumbAlt = trim((string)($image['alt'] ?? '')) ?: ((string)($variant['name'] ?? 'Product image') . (!empty($image['is_dimension']) ? ' dimension drawing' : ' product image')); ?><button type="button" class="<?= $index===0?'is-active':'' ?>" data-variant-image="<?= web_e(web_public_path((string)$image['image'])) ?>" data-variant-alt="<?= web_e($thumbAlt) ?>" data-variant-kind="<?= !empty($image['is_dimension']) ? 'dimension' : 'product' ?>"><img src="<?= web_e(web_public_path((string)$image['image'])) ?>" alt="<?= web_e($thumbAlt) ?>" loading="lazy"></button><?php endforeach; ?></div><?php endif; ?>
         </div>
         <?php if($dimensionImage!=='' && $detailLayout!=='technical_below'): ?><figure class="variant-dimension-figure" data-dimension-scale="<?= (int)$dimensionScale ?>" style="<?= web_e($dimensionScaleStyle) ?>"><img src="<?= web_e(web_public_path($dimensionImage)) ?>" alt="<?= web_e($dimensionAlt) ?>" loading="lazy"></figure><?php endif; ?>
 
@@ -1021,7 +1022,8 @@ if (is_file($__artdonCardV7093)) {
         <?php foreach($photometricDisplayImages as $photo): ?>
         <?php $curveCaption = trim((string)($photo['label'] ?? '')); if($curveCaption==='') $curveCaption = trim((string)($photo['alt'] ?? '')); if($curveCaption==='') $curveCaption = (string)($variant['name'].' photometric curve'); ?>
         <figure>
-          <img src="<?= web_e(web_public_path((string)$photo['image'])) ?>" alt="<?= web_e((string)($photo['alt'] ?? $curveCaption)) ?>" loading="lazy">
+          <?php $curveAlt = trim((string)($photo['alt'] ?? '')) ?: $curveCaption; ?>
+          <img src="<?= web_e(web_public_path((string)$photo['image'])) ?>" alt="<?= web_e($curveAlt) ?>" loading="lazy">
           <figcaption><?= web_e($curveCaption) ?></figcaption>
         </figure>
         <?php endforeach; ?>
