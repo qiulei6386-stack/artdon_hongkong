@@ -15,6 +15,7 @@ web_migrate($pdo);
 $user = web_require_admin($pdo);
 
 $usageMap = web_media_usage_map();
+$imageStandards = function_exists('web_image_upload_standards') ? web_image_upload_standards() : [];
 
 // V7.1.8.140: backend media library grouped display + filters.
 function artdon_media_v718140_categories(): array
@@ -207,19 +208,37 @@ admin_notice();
 /* V7.1.8.140: Media library category tiles + grouped display. */
 .media-category-tiles-v140{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:14px 0 16px}.media-category-tile-v140{display:flex;flex-direction:column;gap:4px;min-height:82px;padding:12px;border:1px solid #e5e7eb;border-radius:16px;background:#fff;text-decoration:none;color:#111827;box-shadow:0 8px 20px rgba(15,23,42,.035)}.media-category-tile-v140:hover{border-color:#cbd5e1;background:#f8fafc}.media-category-tile-v140.is-active{border-color:#2563eb;background:#eff6ff;box-shadow:0 0 0 2px #bfdbfe inset}.media-category-tile-v140 b{font-size:15px;line-height:1.2}.media-category-tile-v140 small{color:#64748b;font-size:12px;line-height:1.35}.media-category-tile-v140 span{margin-top:auto;color:#2563eb;font-weight:1000;font-size:20px;line-height:1}.media-filter-bar-v140{display:grid;grid-template-columns:minmax(220px,1fr) 160px 160px auto;gap:10px;align-items:end;margin:0 0 14px}.media-filter-bar-v140 label{display:block;margin:0 0 5px;color:#475569;font-size:12px;font-weight:900}.media-filter-bar-v140 input,.media-filter-bar-v140 select{width:100%;height:38px;border:1px solid #d1d5db;border-radius:12px;padding:0 10px;background:#fff}.media-section-v140{margin:18px 0 22px;border:1px solid #e5e7eb;border-radius:18px;background:#fff;overflow:hidden}.media-section-head-v140{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;background:#f8fafc;border-bottom:1px solid #e5e7eb}.media-section-head-v140 h3{margin:0;font-size:18px}.media-section-head-v140 p{margin:4px 0 0;color:#64748b;font-size:12px}.media-section-head-v140 a{font-size:12px;font-weight:1000;color:#2563eb;text-decoration:none}.media-section-body-v140{padding:14px}.media-section-body-v140 .media-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))!important;align-items:start!important}.media-section-body-v140 .media-card{min-width:0!important;overflow:hidden!important}.media-section-body-v140 .media-card figure{height:auto!important;aspect-ratio:16/10!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#eef2f7!important;overflow:hidden!important}.media-section-body-v140 .media-card img,.media-section-body-v140 .media-card video{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;object-position:center center!important;background:#eef2f7!important}.media-section-body-v140 .media-card>div{min-width:0!important}.media-card-info-v139{display:grid;gap:6px;margin:10px 0 8px;padding:9px 10px;border:1px solid #e5e7eb;border-radius:12px;background:#f8fafc}.media-card-info-v139 .media-info-row{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px;align-items:start;font-size:12px;line-height:1.45}.media-card-info-v139 .media-info-label{color:#64748b;font-weight:900;white-space:nowrap}.media-card-info-v139 .media-info-value{color:#111827;font-weight:800;min-width:0;word-break:break-word}.media-card-info-v139 .media-info-value.is-empty{color:#b91c1c;font-weight:900}.media-card-info-v139 .media-info-filename{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:11px;color:#334155}.media-card-title-v139{display:block;margin-top:8px;font-size:14px;line-height:1.35;font-weight:1000;color:#111827;word-break:break-word}.media-card-alt-v139{display:block;margin-top:4px;color:#64748b;font-size:12px;line-height:1.45;word-break:break-word}.media-card figure img{background:linear-gradient(45deg,#e5e7eb 25%,transparent 25%),linear-gradient(-45deg,#e5e7eb 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e5e7eb 75%),linear-gradient(-45deg,transparent 75%,#e5e7eb 75%);background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0;}
 .media-edit-layer-v149{position:fixed;inset:0;z-index:3000;display:none}.media-edit-layer-v149.is-open{display:block}.media-edit-backdrop-v149{position:absolute;inset:0;border:0;background:rgba(15,23,42,.45)}.media-edit-dialog-v149{position:absolute;right:0;top:0;height:100%;width:min(520px,100vw);background:#fff;box-shadow:-18px 0 42px rgba(15,23,42,.2);display:flex;flex-direction:column}.media-edit-dialog-v149 header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px 22px;border-bottom:1px solid #e5e7eb}.media-edit-dialog-v149 h2{margin:0;font-size:20px}.media-edit-dialog-v149 form{display:grid;gap:16px;padding:22px}.media-edit-dialog-v149 label{display:grid;gap:7px;color:#111827;font-weight:900}.media-edit-dialog-v149 input{height:42px;border:1px solid #d1d5db;border-radius:10px;padding:0 12px;font:inherit}.media-edit-dialog-v149 textarea{min-height:96px;border:1px solid #d1d5db;border-radius:10px;padding:10px 12px;font:inherit;resize:vertical}.media-edit-path-v149{padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;color:#64748b;font-size:12px;line-height:1.5;word-break:break-all}.media-edit-actions-v149{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #e5e7eb;margin:8px -22px -22px;padding:16px 22px;background:#f8fafc}.media-edit-close-v149{border:0;background:#111827;color:#fff;border-radius:8px;width:34px;height:34px;font-size:20px;cursor:pointer}
+.media-standard-v151{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:14px 0 18px}.media-standard-v151 article{border:1px solid #e5e7eb;border-radius:16px;background:#f8fafc;padding:14px}.media-standard-v151 h3{margin:0 0 8px;font-size:16px}.media-standard-v151 p{margin:0;color:#475569;font-size:13px;line-height:1.55}.media-standard-v151 b{color:#111827}.media-standard-current-v151{margin:10px 0 0;padding:10px 12px;border:1px solid #fecaca;border-radius:12px;background:#fff1f2;color:#991b1b;font-size:13px;font-weight:900;line-height:1.5}.media-standard-current-v151 span{color:#111827}.media-standard-note-v151{display:grid;gap:4px;margin:10px 0 0;color:#64748b;font-size:12px;line-height:1.45}
 @media(max-width:900px){.media-filter-bar-v140{grid-template-columns:1fr}.media-category-tiles-v140{grid-template-columns:repeat(2,minmax(0,1fr))}.media-section-head-v140{display:block}}
 </style>
 <form class="admin-card" method="post" enctype="multipart/form-data">
     <input type="hidden" name="csrf" value="<?= web_e(web_csrf_token()) ?>">
     <input type="hidden" name="action" value="upload">
     <h2>分类上传媒体文件</h2>
-    <p>上传时先选择文件用途。系统会自动保存到对应目录，并按年份、月份继续分类。</p>
+    <p>上传时先选择文件用途。系统会自动保存到对应目录，并按年份、月份继续分类；图片会统一转换为 WebP 并按用途压缩。</p>
+    <div class="media-standard-v151" aria-label="图片上传标准">
+        <?php foreach (['banners','products','projects'] as $standardKey):
+            $standard = $imageStandards[$standardKey] ?? [];
+            if (!$standard) continue;
+        ?>
+            <article>
+                <h3><?= web_e((string)$standard['label']) ?></h3>
+                <p><b><?= web_e((string)$standard['format']) ?></b> · <?= (int)$standard['max_width'] ?>px · ≤ <?= (int)ceil(((int)$standard['max_bytes']) / 1024) ?>KB</p>
+                <p>命名：英文小写 + 短横线；ALT：<?= web_e((string)$standard['alt_hint']) ?></p>
+            </article>
+        <?php endforeach; ?>
+    </div>
+    <div class="media-standard-current-v151">当前选择标准：<span data-image-standard-current><?= web_e(function_exists('web_image_upload_standard_text') ? web_image_upload_standard_text('products') : '产品图片：WebP，≤150KB') ?></span></div>
+    <div class="media-standard-note-v151">
+        <span>统一规则：文件名自动生成英文短横线；Title 存“图片名称/管理名”；ALT 存“给 Google 和无障碍读取的图片说明”。</span>
+        <span>建议上传原图即可，系统会生成规范 WebP；已有旧图片暂不强制改名，避免旧链接断掉。</span>
+    </div>
     <div class="admin-form-grid">
         <div class="field">
             <label>文件用途</label>
             <select name="usage" id="media-usage" required>
                 <?php foreach ($usageMap as $key => $item): ?>
-                    <option value="<?= web_e($key) ?>" data-kind="<?= web_e($item['kind']) ?>" <?= $key === 'products' ? 'selected' : '' ?>><?= web_e($item['label']) ?></option>
+                    <option value="<?= web_e($key) ?>" data-kind="<?= web_e($item['kind']) ?>" data-standard="<?= web_e(function_exists('web_image_upload_standard_text') ? web_image_upload_standard_text($key) : '') ?>" <?= $key === 'products' ? 'selected' : '' ?>><?= web_e($item['label']) ?></option>
                 <?php endforeach; ?>
             </select>
             <span class="help">例如产品图会进入 products，项目图会进入 projects。</span>
@@ -418,6 +437,12 @@ admin_notice();
     </aside>
 </div>
 <script>
+document.addEventListener('change', function(e) {
+    if (!e.target || e.target.id !== 'media-usage') return;
+    var selected = e.target.options[e.target.selectedIndex];
+    var target = document.querySelector('[data-image-standard-current]');
+    if (target && selected) target.textContent = selected.getAttribute('data-standard') || '非图片文件：保持原格式。';
+});
 document.addEventListener('click', function(e) {
     var open = e.target.closest && e.target.closest('[data-media-edit-open]');
     var layer = document.querySelector('[data-media-edit-layer]');

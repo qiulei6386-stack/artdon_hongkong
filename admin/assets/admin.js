@@ -437,6 +437,7 @@
         <div class="image-crop-ratios" role="group" aria-label="裁切比例">
           <button type="button" data-crop-ratio="1:1">1:1 正方形</button>
           <button type="button" data-crop-ratio="4:3">4:3</button>
+          <button type="button" data-crop-ratio="16:10">16:10 项目图</button>
           <button type="button" data-crop-ratio="16:9">16:9</button>
           <button type="button" data-crop-ratio="original">原图比例</button>
         </div>
@@ -484,6 +485,7 @@
 
   function ratioFromKey(key) {
     if (key === '4:3') return 4 / 3;
+    if (key === '16:10') return 16 / 10;
     if (key === '16:9') return 16 / 9;
     if (key === 'original' && state.image) return state.image.naturalWidth / state.image.naturalHeight;
     return 1;
@@ -492,7 +494,8 @@
   function inferRatio(usage, explicit = '') {
     if (explicit) return explicit;
     if (usage === 'banners' || usage === 'videos') return '16:9';
-    if (usage === 'projects' || usage === 'articles') return '4:3';
+    if (usage === 'projects') return '16:10';
+    if (usage === 'articles') return '4:3';
     return '1:1';
   }
 
@@ -844,11 +847,12 @@
     const expected = usage?.options?.[usage.selectedIndex]?.dataset?.kind || '';
     if (expected && expected !== 'any') kind.value = expected;
     file.accept = kind.value === 'image'
-      ? 'image/jpeg,image/png,image/webp'
+      ? 'image/jpeg,image/png,image/webp,image/gif'
       : (kind.value === 'video'
         ? 'video/mp4,video/webm,video/quicktime'
         : '.pdf,.zip,.xlsx,.docx,.ies,.ldt,.dwg,.dxf,.rfa,.rvt,.step,.stp,.igs,.iges,.3ds,.obj,.skp,.txt,.csv');
     file.dataset.autoCrop = kind.value === 'image' ? '1' : '0';
+    file.dataset.cropRatio = kind.value === 'image' ? inferRatio(usage?.value || 'images') : '';
   }
   $('#media-usage')?.addEventListener('change', syncMediaUploadKind);
   $('#media-kind')?.addEventListener('change', syncMediaUploadKind);

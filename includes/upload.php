@@ -30,6 +30,90 @@ function web_media_usage_label(string $usage): string
     return (string)($map[$usage]['label'] ?? $usage);
 }
 
+function web_image_upload_standards(): array
+{
+    return [
+        'banners' => [
+            'label' => 'Hero Banner',
+            'format' => 'WebP',
+            'max_width' => 1920,
+            'max_bytes' => 250 * 1024,
+            'quality' => 82,
+            'min_quality' => 48,
+            'filename_prefix' => 'hero',
+            'alt_hint' => '页面主题 + 应用场景，例如：Artdon retail lighting hero banner',
+        ],
+        'products' => [
+            'label' => 'Product',
+            'format' => 'WebP',
+            'max_width' => 1600,
+            'max_bytes' => 150 * 1024,
+            'quality' => 82,
+            'min_quality' => 48,
+            'filename_prefix' => 'product',
+            'alt_hint' => '产品系列/型号 + 角度/用途，例如：ARMI recessed track light white finish',
+        ],
+        'projects' => [
+            'label' => 'Project',
+            'format' => 'WebP',
+            'max_width' => 1920,
+            'max_bytes' => 200 * 1024,
+            'quality' => 82,
+            'min_quality' => 48,
+            'filename_prefix' => 'project',
+            'alt_hint' => '项目名称 + 城市/场景，例如：Luxury fashion store lighting project in Hong Kong',
+        ],
+        'articles' => [
+            'label' => 'Article',
+            'format' => 'WebP',
+            'max_width' => 1600,
+            'max_bytes' => 150 * 1024,
+            'quality' => 82,
+            'min_quality' => 48,
+            'filename_prefix' => 'article',
+            'alt_hint' => '文章主题 + 图片内容',
+        ],
+        'images' => [
+            'label' => 'General Image',
+            'format' => 'WebP',
+            'max_width' => 1600,
+            'max_bytes' => 150 * 1024,
+            'quality' => 82,
+            'min_quality' => 48,
+            'filename_prefix' => 'image',
+            'alt_hint' => '图片内容的简短英文说明',
+        ],
+        'temp' => [
+            'label' => 'Temporary Image',
+            'format' => 'WebP',
+            'max_width' => 1600,
+            'max_bytes' => 150 * 1024,
+            'quality' => 82,
+            'min_quality' => 48,
+            'filename_prefix' => 'image',
+            'alt_hint' => '图片内容的简短英文说明',
+        ],
+    ];
+}
+
+function web_image_upload_standard(string $usage): array
+{
+    $standards = web_image_upload_standards();
+    return $standards[$usage] ?? $standards['images'];
+}
+
+function web_image_upload_standard_text(string $usage): string
+{
+    $standard = web_image_upload_standard($usage);
+    return sprintf(
+        '%s：%s，最长边/宽度 ≤ %dpx，文件 ≤ %dKB，统一英文短横线命名，必须填写准确 ALT。',
+        (string)$standard['label'],
+        (string)$standard['format'],
+        (int)$standard['max_width'],
+        (int)ceil(((int)$standard['max_bytes']) / 1024),
+    );
+}
+
 function web_media_default_usage(string $kind): string
 {
     return match ($kind) {
@@ -105,6 +189,90 @@ function web_upload_filename_slug(string $text): string
     return $text;
 }
 
+function web_upload_image_resource(string $source, string $mime)
+{
+    $image = match ($mime) {
+        'image/jpeg' => function_exists('imagecreatefromjpeg') ? @imagecreatefromjpeg($source) : false,
+        'image/png' => function_exists('imagecreatefrompng') ? @imagecreatefrompng($source) : false,
+        'image/webp' => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($source) : false,
+        'image/gif' => function_exists('imagecreatefromgif') ? @imagecreatefromgif($source) : false,
+        default => false,
+    };
+    if (!$image || (!is_resource($image) && !is_object($image))) {
+        throw new RuntimeException('图片读取失败，请上传 JPG、PNG、WebP 或普通 GIF 图片。');
+    }
+    if (!imageistruecolor($image)) {
+        imagepalettetotruecolor($image);
+    }
+    imagealphablending($image, true);
+    imagesavealpha($image, true);
+    return $image;
+}
+
+function web_upload_save_standard_webp(string $source, string $mime, string $target, string $usage): array
+{
+    if (!extension_loaded('gd') || !function_exists('imagewebp')) {
+        throw new RuntimeException('服务器暂不支持 WebP 图片处理。');
+    }
+    $standard = web_image_upload_standard($usage);
+    $sourceImage = web_upload_image_resource($source, $mime);
+    $sourceWidth = imagesx($sourceImage);
+    $sourceHeight = imagesy($sourceImage);
+    if ($sourceWidth <= 0 || $sourceHeight <= 0) {
+        imagedestroy($sourceImage);
+        throw new RuntimeException('图片尺寸异常，无法处理。');
+    }
+
+    $maxWidth = max(320, (int)$standard['max_width']);
+    $maxBytes = max(50 * 1024, (int)$standard['max_bytes']);
+    $qualityStart = max(1, min(100, (int)$standard['quality']));
+    $qualityMin = max(1, min($qualityStart, (int)$standard['min_quality']));
+    $targetWidth = $sourceWidth > $maxWidth ? $maxWidth : $sourceWidth;
+    $targetHeight = (int)round($sourceHeight * ($targetWidth / $sourceWidth));
+    $minWidth = min($targetWidth, 900);
+    $lastQuality = $qualityStart;
+
+    while (true) {
+        $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        $transparent = imagecolorallocatealpha($canvas, 255, 255, 255, 127);
+        imagefilledrectangle($canvas, 0, 0, $targetWidth, $targetHeight, $transparent);
+        imagecopyresampled($canvas, $sourceImage, 0, 0, 0, 0, $targetWidth, $targetHeight, $sourceWidth, $sourceHeight);
+
+        for ($quality = $qualityStart; $quality >= $qualityMin; $quality -= 5) {
+            if (!@imagewebp($canvas, $target, $quality)) {
+                imagedestroy($canvas);
+                imagedestroy($sourceImage);
+                throw new RuntimeException('WebP 图片保存失败。');
+            }
+            clearstatcache(true, $target);
+            $bytes = is_file($target) ? (int)filesize($target) : 0;
+            $lastQuality = $quality;
+            if ($bytes > 0 && $bytes <= $maxBytes) {
+                imagedestroy($canvas);
+                imagedestroy($sourceImage);
+                return ['size' => $bytes, 'width' => $targetWidth, 'height' => $targetHeight, 'quality' => $quality];
+            }
+        }
+
+        clearstatcache(true, $target);
+        $bytes = is_file($target) ? (int)filesize($target) : 0;
+        imagedestroy($canvas);
+        if ($bytes > 0 && $bytes <= $maxBytes) {
+            imagedestroy($sourceImage);
+            return ['size' => $bytes, 'width' => $targetWidth, 'height' => $targetHeight, 'quality' => $lastQuality];
+        }
+        if ($targetWidth <= 480 || $targetWidth <= $minWidth) {
+            imagedestroy($sourceImage);
+            @unlink($target);
+            throw new RuntimeException('图片压缩后仍超过当前用途标准，请先裁切或换一张更清晰简洁的图片。');
+        }
+        $targetWidth = max(480, (int)floor($targetWidth * 0.9));
+        $targetHeight = max(1, (int)round($sourceHeight * ($targetWidth / $sourceWidth)));
+    }
+}
+
 function web_upload_file(
     array $file,
     string $kind,
@@ -174,7 +342,7 @@ function web_upload_file(
         throw new RuntimeException('无法创建上传目录：' . $uploadDir);
     }
 
-    $ext = $allowed[$kind][$mime];
+    $ext = $kind === 'image' ? 'webp' : $allowed[$kind][$mime];
     $preferredFilename = trim($preferredFilename);
     if ($preferredFilename !== '') {
         $preferredFilename = str_replace('\\', '/', $preferredFilename);
@@ -203,8 +371,15 @@ function web_upload_file(
         $name = pathinfo($name, PATHINFO_FILENAME) . '-' . bin2hex(random_bytes(3)) . '.' . $ext;
         $target = $uploadDir . DIRECTORY_SEPARATOR . $name;
     }
-    if (!move_uploaded_file((string)$file['tmp_name'], $target)) {
-        throw new RuntimeException('无法保存上传文件。');
+    $imageInfo = null;
+    if ($kind === 'image') {
+        $imageInfo = web_upload_save_standard_webp((string)$file['tmp_name'], $mime, $target, $usage);
+        $mime = 'image/webp';
+        $size = (int)($imageInfo['size'] ?? filesize($target));
+    } else {
+        if (!move_uploaded_file((string)$file['tmp_name'], $target)) {
+            throw new RuntimeException('无法保存上传文件。');
+        }
     }
 
     $objectKey = $subdir . '/' . date('Y') . '/' . date('m') . '/' . $name;
@@ -217,6 +392,7 @@ function web_upload_file(
         'storage_driver' => 'local',
         'mime' => $mime,
         'size' => $size,
+        'standard' => $imageInfo,
     ]);
     return $url;
 }
