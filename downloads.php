@@ -48,7 +48,7 @@ $totalPages = max(1, (int)ceil($total / $perPage));
 if ($page > $totalPages) $page = $totalPages;
 $resources = array_slice($filtered, ($page - 1) * $perPage, $perPage);
 
-$pageTitle = 'Lighting Product Downloads | Datasheets, IES, CAD & BIM | Artdon Lighting';
+$pageTitle = 'Lighting Downloads | Datasheets, IES, CAD & BIM | Artdon';
 $pageDescription = 'Download Artdon Lighting datasheets, installation instructions, IES/LDT photometric files, CAD drawings and BIM files for commercial lighting projects.';
 $canonical = $siteUrl . '/' . $__downloadsPage;
 $ogImage = artdon_v710_absolute_url($siteUrl, (string)($content['seo']['og_image'] ?? $site['header_logo'] ?? 'assets/img/logo-artdon.png'));
