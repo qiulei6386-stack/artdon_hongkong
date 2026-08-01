@@ -46,6 +46,12 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Cleaned public NO IMAGE, duplicate-product and empty-content issues without hard-deleting product records. The cleanup was applied directly to the Hong Kong production database after a full recoverable product/variant backup.
+- Unpublished two empty duplicate LUMI series pages (`lumi-surface-mounted-light`, `lumi-surface-mounted-light-2`) because both were published with no variants and no text body. Unpublished the duplicate `LOW VOLTAGE TRACK (Recessed)` variant ending in `-2`. Also aligned variants under unpublished parent series by marking those variants unpublished.
+- Filled two published MAGENTRA variants that had empty model images from their parent series cover image, and backfilled 152 published variant intro/short-description fields from their already generated SEO descriptions so published product-detail pages are not text-empty.
+- Disabled the stale homepage product slot `id=57` that pointed to unpublished `profocus-outdoor-light-2` and caused `NO IMAGE` to remain in the homepage HTML.
+- Created recoverable backups before changes: `/root/artdon_content_cleanup_backup_20260801_124828.json` for product/variant data and `/root/artdon_home_slots_cleanup_backup_20260801_125038.json` for homepage product slots. Cleared six old public HTML cache files into `storage/page_cache_backup_content_cleanup_20260801_125050`.
+- Verified after cleanup: published series 45, published variants 153, 0 published series without image, 0 published variants without image, 0 empty published series bodies, 0 empty published variant bodies, 0 duplicate published series-name groups, 0 duplicate published variant model/name groups and 0 active homepage slots with missing/unpublished/no-image targets. Homepage and products page source both contain 0 `NO IMAGE` strings. Sitemap now has 378 URLs and does not contain the cleaned old slugs.
 - Backfilled and de-duplicated SEO Title and Meta Description data across the public content tables that already support SEO fields. The main repair was the product center: 46 published series and 167 published variants now have non-empty SEO titles and descriptions.
 - Preserved existing manually written SEO values and only filled blanks, except for generated duplicate product titles that were corrected to unique titles. The two old duplicate low-voltage recessed accessory records were given temporary distinct SEO titles; the duplicate/empty-content cleanup item should decide whether to merge, rewrite or remove them later.
 - Verified public SEO data after the update: `web_products`, `web_product_variants`, `web_solution_pages`, `web_solution_retail_applications`, `web_resource_pages`, `web_resource_blog_articles`, `web_about_pages` and `web_resource_videos` all report 0 empty SEO titles, 0 empty SEO descriptions and 0 duplicate title groups for published/active records.
@@ -147,6 +153,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- Product/content cleanup was applied directly in the Hong Kong production database. No source-code deployment was required beyond syncing this context file. Public checks confirm 0 NO IMAGE strings on the homepage/products page and 0 published duplicate/empty/no-image product records.
 - SEO title and description data has been backfilled directly in the Hong Kong production database. The affected public SEO-capable tables now verify with 0 empty titles, 0 empty descriptions and 0 duplicate title groups among published/active records. No source-code deployment was required for this item beyond syncing this context file.
 - Nginx vhost and certificate are live with canonical apex-domain routing. `www.artdonlighting.com` no longer serves the default site; it redirects to `https://artdonlighting.com` and the certificate validates with SANs for both apex and www.
 - `index.php`, `products.php`, `series.php`, `product.php`, `Home/Products/index.php` and `includes/artdon_pages_v710.php` are synced to the Hong Kong server with canonical URL redirects and the updated products sitemap/canonical entry. Production PHP lint passed, legacy URL checks return 301, followed final URLs return HTTP 200, and the dynamic sitemap has 0 `/Home/Products` entries.
@@ -169,8 +176,8 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
-- SEO work follows the user-approved sequence: complete one item, validate front and back end, report, then wait for confirmation before starting the next. Sitemap/robots, URL/301/www-SSL and SEO Title/Description are complete; do not begin NO IMAGE / duplicate product / empty-content cleanup until the user confirms.
-- Sitemap/robots, URL/301/www-SSL and SEO Title/Description GitHub pushes remain pending together with the earlier commits because GitHub SSH is still unavailable. Production is deployed from local files and production database updates.
+- SEO work follows the user-approved sequence: complete one item, validate front and back end, report, then wait for confirmation before starting the next. Sitemap/robots, URL/301/www-SSL, SEO Title/Description and NO IMAGE / duplicate product / empty-content cleanup are complete; do not begin unified contact information until the user confirms.
+- Sitemap/robots, URL/301/www-SSL, SEO Title/Description and content-cleanup GitHub pushes remain pending together with the earlier commits because GitHub SSH is still unavailable. Production is deployed from local files and production database updates.
 - Blog categories are now managed separately from blog articles at `后台 → 资源中心 → Blog & Insights → 管理博客分类`. Categories can be added, renamed, ordered, hidden and deleted. Category deletion requires choosing a destination category and moves its articles there, so no blog posts are lost.
 - The supplied red-and-black A mark is now the default browser tab icon. Future changes are self-service through the Website Settings page; upload a square PNG (recommended 512 × 512) and save.
 - GitHub is the only outstanding sync step for the favicon and blog-category changes; retry `git push origin main` when the SSH service is available, then deploy the context-file commit and update this note.
