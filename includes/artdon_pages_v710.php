@@ -445,19 +445,42 @@ if (!function_exists('artdon_v710_sitemap_urls')) {
         $siteUrl = artdon_v710_site_url($site);
         $urls = [];
         $add = static function(string $path, string $change = 'monthly', string $priority = '0.6', string $lastmod = '') use (&$urls, $siteUrl): void {
-            $loc = artdon_v710_absolute_url($siteUrl, $path);
+            $loc = trim($path) === '' ? rtrim($siteUrl, '/') . '/' : artdon_v710_absolute_url($siteUrl, $path);
             if ($loc === '') return;
             $urls[$loc] = ['loc'=>$loc,'changefreq'=>$change,'priority'=>$priority,'lastmod'=>$lastmod];
         };
-        $today = date('Y-m-d');
-        $add('', 'weekly', '1.0', $today);
-        $add('products.php', 'weekly', '0.9', $today);
-        $add('project.php', 'monthly', '0.7', $today);
-        $add('downloads.php', 'weekly', '0.8', $today);
-        $add('videos.php', 'monthly', '0.6', $today);
-        $add('contact.php', 'yearly', '0.7', $today);
-        $add('privacy.php', 'yearly', '0.2', $today);
-        $add('terms.php', 'yearly', '0.2', $today);
+        // Only list public canonical pages. Static pages deliberately have no
+        // lastmod value: emitting today's date on every request is inaccurate.
+        $staticPages = [
+            ['','weekly','1.0'],
+            ['Home/Products','weekly','0.9'],
+            ['projects.php','monthly','0.8'],
+            ['project.php','monthly','0.7'],
+            ['downloads.php','weekly','0.7'],
+            ['videos.php','monthly','0.6'],
+            ['resources.php','weekly','0.7'],
+            ['resources-downloads.php','weekly','0.7'],
+            ['resources-blog.php','weekly','0.7'],
+            ['resources-faq.php','monthly','0.5'],
+            ['resources-videos.php','monthly','0.5'],
+            ['lighting-calculator.php','monthly','0.5'],
+            ['solutions.php','monthly','0.8'],
+            ['solutions-retail.php','monthly','0.7'],
+            ['solutions-hospitality.php','monthly','0.7'],
+            ['solutions-museum-gallery.php','monthly','0.7'],
+            ['solutions-office.php','monthly','0.7'],
+            ['solutions-residential.php','monthly','0.7'],
+            ['solutions-outdoor-landscape.php','monthly','0.7'],
+            ['about.php','monthly','0.6'],
+            ['about-why-artdon.php','monthly','0.5'],
+            ['about-manufacturing.php','monthly','0.5'],
+            ['about-quality-testing.php','monthly','0.5'],
+            ['about-oem-odm.php','monthly','0.5'],
+            ['contact.php','yearly','0.7'],
+            ['privacy.php','yearly','0.2'],
+            ['terms.php','yearly','0.2'],
+        ];
+        foreach ($staticPages as [$path, $change, $priority]) $add($path, $change, $priority);
 
         if ($pdo) {
             try {
@@ -465,21 +488,66 @@ if (!function_exists('artdon_v710_sitemap_urls')) {
                     $categories = web_product_categories($pdo, true);
                     foreach ((array)$categories as $category) {
                         $slug = trim((string)($category['slug'] ?? ''));
-                        if ($slug !== '' && $slug !== 'all') $add('products.php?category='.rawurlencode($slug), 'weekly', '0.8', substr((string)($category['updated_at'] ?? $today),0,10));
+                        if ($slug !== '' && $slug !== 'all') $add('products.php?category='.rawurlencode($slug), 'weekly', '0.8', substr((string)($category['updated_at'] ?? ''),0,10));
                     }
                 }
             } catch (Throwable $e) {}
             foreach (artdon_v710_product_tree($pdo) as $group) {
                 $series = is_array($group['series'] ?? null) ? $group['series'] : [];
                 $seriesSlug = trim((string)($series['slug'] ?? ''));
-                if ($seriesSlug !== '') $add('series.php?slug='.rawurlencode($seriesSlug), 'weekly', '0.8', substr((string)($series['updated_at'] ?? $today),0,10));
+                $categorySlug = trim((string)($group['category_slug'] ?? ($series['category_slug'] ?? '')));
+                if ($seriesSlug !== '') {
+                    $seriesPath = function_exists('artdon_pretty_series_url_v71868')
+                        ? artdon_pretty_series_url_v71868($categorySlug, $series)
+                        : 'series.php?slug='.rawurlencode($seriesSlug);
+                    $add($seriesPath, 'weekly', '0.8', substr((string)($series['updated_at'] ?? ''),0,10));
+                }
                 foreach ((array)($group['variants'] ?? []) as $variant) {
                     if (!is_array($variant)) continue;
                     $slug = trim((string)($variant['slug'] ?? ''));
-                    if ($slug !== '') $add('product.php?slug='.rawurlencode($slug), 'weekly', '0.7', substr((string)($variant['updated_at'] ?? $today),0,10));
+                    // These two legacy 3-circuit records have no model code and
+                    // no public detail route yet. Do not submit known 404 URLs.
+                    if ($categorySlug === 'track-systems-accessories' && $seriesSlug === '3-circuit-track' && trim((string)($variant['model_code'] ?? '')) === '') continue;
+                    if ($slug !== '') {
+                        $productPath = function_exists('artdon_pretty_product_url_v71868')
+                            ? artdon_pretty_product_url_v71868($categorySlug, $series, $variant)
+                            : 'product.php?slug='.rawurlencode($slug);
+                        $add($productPath, 'weekly', '0.7', substr((string)($variant['updated_at'] ?? ''),0,10));
+                    }
                 }
             }
+
+            // Published editorial content and active project records each have
+            // a public detail page and must be discoverable without exposing CMS URLs.
+            try {
+                if (function_exists('artdon_resource_blog_articles')) {
+                    foreach (artdon_resource_blog_articles($pdo, true) as $article) {
+                        $slug = trim((string)($article['slug'] ?? ''));
+                        if ($slug !== '') $add('resources-blog-detail.php?slug='.rawurlencode($slug), 'monthly', '0.6');
+                    }
+                }
+            } catch (Throwable $e) {}
+            try {
+                if (function_exists('artdon_projects_from_db')) {
+                    foreach (artdon_projects_from_db($pdo, true) as $project) {
+                        $slug = trim((string)($project['slug'] ?? ''));
+                        if ($slug !== '') $add('project-detail.php?slug='.rawurlencode($slug), 'monthly', '0.6');
+                    }
+                }
+            } catch (Throwable $e) {}
         }
+
+        // Solution applications are stored in the CMS, including the six
+        // independently managed solution families. Only active public entries are listed.
+        try {
+            if (function_exists('ra_retail_application_db_pages')) {
+                foreach (ra_retail_application_db_pages() as $page) {
+                    if (empty($page['is_active'])) continue;
+                    $path = trim((string)($page['url'] ?? ''));
+                    if ($path !== '') $add($path, 'monthly', '0.6');
+                }
+            }
+        } catch (Throwable $e) {}
         return array_values($urls);
     }
 }

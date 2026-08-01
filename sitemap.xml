@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>http://43.132.210.162/</loc><priority>1.0</priority></url>
-  <url><loc>http://43.132.210.162/products.php</loc><priority>0.9</priority></url>
-  <url><loc>http://43.132.210.162/downloads.php</loc><priority>0.7</priority></url>
-  <url><loc>http://43.132.210.162/contact.php</loc><priority>0.7</priority></url>
-  <url><loc>http://43.132.210.162/project.php</loc><priority>0.6</priority></url>
-  <url><loc>http://43.132.210.162/videos.php</loc><priority>0.6</priority></url>
-  <url><loc>http://43.132.210.162/privacy.php</loc><priority>0.3</priority></url>
-  <url><loc>http://43.132.210.162/terms.php</loc><priority>0.3</priority></url>
-</urlset>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://artdonlighting.com/sitemap.php</loc>
+  </sitemap>
+</sitemapindex>

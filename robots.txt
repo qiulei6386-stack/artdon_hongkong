@@ -4,4 +4,4 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: /includes/
 
-Sitemap: http://43.132.210.162/sitemap.xml
+Sitemap: https://artdonlighting.com/sitemap.xml

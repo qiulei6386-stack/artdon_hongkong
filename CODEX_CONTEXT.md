@@ -1,6 +1,6 @@
 # Codex Context Handoff
 
-Last updated: 2026-07-30
+Last updated: 2026-08-01
 
 ## Workflow Rule
 
@@ -46,6 +46,11 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Latest Completed Work
 
+- Rebuilt the SEO sitemap structure. `https://artdonlighting.com/sitemap.xml` is now the stable public sitemap-index endpoint and points to the automatically generated `https://artdonlighting.com/sitemap.php` URL set.
+- Corrected `robots.txt` to advertise the formal HTTPS domain sitemap rather than the obsolete server IP address.
+- Expanded the dynamic sitemap from 8 static IP-based URLs to 380 current public URLs: core pages, current product categories, canonical pretty product/series URLs, published blog articles, active project details and active Solution Application detail pages.
+- Excluded all admin/internal paths, duplicate entries, legacy `series.php?slug` / `product.php?slug` product detail URLs and two known 404 legacy 3-circuit variant routes. Static pages no longer publish a false “today” last-modified date on every sitemap request.
+- Created recoverable production backups tagged `seo_sitemap_20260801_104500` before deployment. Production PHP lint passed; XML parsing verified 380 URLs, 0 old-IP URLs, 0 legacy product-detail URLs and 0 duplicate URLs. A complete public HTTP check returned 380/380 final 2xx responses.
 - Backfilled existing public Solution Application cards into the new category-aware backend instead of leaving the five new categories empty. The verified record counts are Retail 6, Hospitality 6, Museum & Gallery 6, Office 5, Residential 6 and Outdoor & Landscape 6. Solution detail pages now render these managed cards, preserving their prior titles and images while routing clicks to their editable detail pages.
 - Deployed `includes/retail_application_data.php` and `includes/solution_page_template.php` after recoverable production backups tagged `solution_application_backfill_20260730_140249` and moving old page-cache files to `storage/page_cache_backup_solution_application_backfill_20260730_140249`.
 - Expanded the former Retail-only Applications backend into `Solution Applications`. It now provides six selectable parent categories: Retail, Hospitality, Museum & Gallery, Office, Residential and Outdoor & Landscape. Each parent category has its own create/edit/delete application list; the five new categories start empty and publish nothing until an application is deliberately created.
@@ -129,6 +134,7 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Server Sync Status
 
+- `robots.txt`, `sitemap.xml`, `sitemap.php` and `includes/artdon_pages_v710.php` are synced to the Hong Kong server. The public robots file and sitemap-index URL both return HTTP 200 and reference `https://artdonlighting.com/sitemap.xml` / `https://artdonlighting.com/sitemap.php` as intended. All 380 generated public URLs were checked after deployment and return final 2xx responses.
 - `admin/resources_blog_categories.php`, `admin/resources_blog.php`, `admin/save_resources_blog.php`, `admin/resources_blog_template.php`, `admin/resources_pages.php`, `admin/_layout.php`, `includes/resources_blog_data.php` and `resources-blog.php` are synced to the Hong Kong server. Blog categories now live in `web_resource_blog_categories`; the original Lighting Knowledge, Industry News and Artdon News categories were backfilled unchanged. PHP lint passed for all updated files, checksums match local, and the live blog page returns HTTP 200 with all three original category anchors. The new admin route is `admin/resources_blog_categories.php` and returns its expected login redirect when unauthenticated.
 - `admin/settings.php`, `includes/bootstrap.php`, `includes/content.php`, `includes/default_content.php` and `assets/img/favicon-artdon.png` are synced to the Hong Kong server. The browser-tab icon is injected once into every public page head, defaults to the supplied Artdon A mark, and can be replaced at `后台 → 网站设置 → 浏览器标签图标（favicon）`. Production PHP lint passed, the site setting was backfilled, and the live Hospitality page returns the expected icon tag and image HTTP 200.
 - GitHub push for commits `b4a4ec3`, `d476de7` and `d942bfe` is temporarily pending: GitHub SSH connections from the local machine close before authentication and the production server has no GitHub deploy key. The working commits remain safely stored locally; production is deployed from the same committed files.
@@ -147,6 +153,8 @@ artdon-hongkong:/www/wwwroot/43.132.210.162/
 
 ## Current Session Closeout
 
+- SEO work follows the user-approved sequence: complete one item, validate front and back end, report, then wait for confirmation before starting the next. Sitemap and robots are complete; do not begin URL/301/www-SSL work until the user confirms.
+- Sitemap/robots GitHub push remains pending together with the earlier commits because GitHub SSH is still unavailable. Production is deployed from the local committed files.
 - Blog categories are now managed separately from blog articles at `后台 → 资源中心 → Blog & Insights → 管理博客分类`. Categories can be added, renamed, ordered, hidden and deleted. Category deletion requires choosing a destination category and moves its articles there, so no blog posts are lost.
 - The supplied red-and-black A mark is now the default browser tab icon. Future changes are self-service through the Website Settings page; upload a square PNG (recommended 512 × 512) and save.
 - GitHub is the only outstanding sync step for the favicon and blog-category changes; retry `git push origin main` when the SSH service is available, then deploy the context-file commit and update this note.
