@@ -1,6 +1,13 @@
 const navToggle=document.getElementById('navToggle');
 const siteNav=document.getElementById('siteNav');
 if(navToggle&&siteNav){
+  const scrollMobileNavToProducts=()=>{
+    const productsItem=siteNav.querySelector('[data-mobile-menu-products]');
+    if(!productsItem) { siteNav.scrollTop=0; return; }
+    const navTop=siteNav.getBoundingClientRect().top;
+    const itemTop=productsItem.getBoundingClientRect().top;
+    siteNav.scrollTop=Math.max(0, siteNav.scrollTop + itemTop - navTop - 6);
+  };
   const closeNav=()=>{
     siteNav.classList.remove('open');
     document.body.classList.remove('nav-menu-open');
@@ -10,7 +17,11 @@ if(navToggle&&siteNav){
     const open=siteNav.classList.toggle('open');
     navToggle.setAttribute('aria-expanded', open?'true':'false');
     document.body.classList.toggle('nav-menu-open', open);
-    if(open) requestAnimationFrame(()=>{ siteNav.scrollTop=0; });
+    if(open) {
+      siteNav.scrollTop=0;
+      requestAnimationFrame(scrollMobileNavToProducts);
+      window.setTimeout(scrollMobileNavToProducts, 180);
+    }
   });
   siteNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeNav));
   document.addEventListener('keydown',event=>{ if(event.key==='Escape'&&siteNav.classList.contains('open')) closeNav(); });

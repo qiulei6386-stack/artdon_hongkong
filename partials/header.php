@@ -123,7 +123,7 @@ $__quoteUrl = artdon_normalize_front_url_v71868(trim((string)($__site['header_qu
       $__items=is_array($__menu['items']??null)?$__menu['items']:[];
       $__hasMega=$__items?' has-mega':'';
     ?>
-      <div class="nav-item<?= $__hasMega.$__active ?>">
+      <div class="nav-item<?= $__hasMega.$__active ?>"<?= $__label==='products' ? ' data-mobile-menu-products' : '' ?>>
         <a class="nav-root" href="<?= web_e($__href) ?>"><?= web_e($__menu['label']??'') ?></a>
         <?php if($__items): ?><div class="mega-menu" aria-label="<?= web_e($__menu['label']??'') ?> menu"><div class="mega-list">
           <?php foreach($__items as $__item):

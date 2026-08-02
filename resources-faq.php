@@ -121,7 +121,7 @@ $schema = artdon_schema_graph([
   </section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.16" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   var items=[].slice.call(document.querySelectorAll('[data-faq-item]')), filters=[].slice.call(document.querySelectorAll('[data-faq-filter]')), search=document.getElementById('faqSearch'), load=document.getElementById('faqLoad'), wrap=document.getElementById('faqLoadWrap'), empty=document.getElementById('faqEmpty'), visibleLimit=10, active='all';

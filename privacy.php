@@ -8,4 +8,4 @@ declare(strict_types=1);require_once __DIR__.'/includes/bootstrap.php';require_o
 <section><h2>Sharing and storage</h2><p>Information may be processed in the systems and service providers used to operate our website, email and customer follow-up. We do not publish inquiry information. Information is retained only as needed for business communication, legal obligations and system security.</p></section>
 <section><h2>Your request</h2><p>You may ask us to correct or delete personal information connected with a website inquiry, subject to applicable business and legal retention requirements.</p></section>
 <section><h2>Contact</h2><p>Privacy questions can be sent to <a href="mailto:<?=artdon_v710_e($email)?>"><?=artdon_v710_e($email)?></a>.</p></section>
-</article></main><?php include __DIR__.'/partials/footer.php';?><script src="assets/js/artdon_home.js?v=6.12.14" defer></script></body></html>
+</article></main><?php include __DIR__.'/partials/footer.php';?><script src="assets/js/artdon_home.js?v=6.12.16" defer></script></body></html>

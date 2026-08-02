@@ -326,7 +326,7 @@ $solutionSchema = artdon_schema_graph([
   </section>
 </div>
 <?php include dirname(__DIR__) . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.16" defer></script>
 <script src="assets/js/solution-detail.js?v=1.0.0" defer></script>
 </body>
 </html>

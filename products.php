@@ -1417,7 +1417,7 @@ if (is_file($__artdonCardV7093)) {
 </main>
 <?php artdon_render_seo_internal_links('products', $canonical, 'Explore product and application hubs', 'Use these links to compare product families, application solutions and project references.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.15" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.16" defer></script>
 
 <!-- ARTDON_V71868_PRODUCTS_PRETTY_URL_ADDRESS_BAR_START -->
 <script>

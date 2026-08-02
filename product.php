@@ -1115,7 +1115,7 @@ if (is_file($__artdonCardV7093)) {
 </div>
 
 <?php include __DIR__.'/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.16" defer></script>
 <script src="assets/js/artdon_product_inline_v718.js?v=7.1.8.186" defer></script>
 
 <!-- ARTDON_V71822_SHARE_LINK_SCRIPT_START -->

@@ -54,5 +54,5 @@ $schema=['@context'=>'https://schema.org','@graph'=>[
 <?php endforeach; ?></div><?php else: ?><div class="ap-empty"><h2>No matching video is published yet.</h2><p>The video library will populate automatically when a homepage or product video is added. Product information and technical files remain available now.</p><a class="ap-button" href="products.php">Browse products</a></div><?php endif; ?>
 </section>
 <section class="ap-cta"><div><h2>Need to see a specific detail?</h2><p>Tell us the product model and the structure, beam or installation detail you need to verify.</p></div><div class="ap-cta-actions"><a class="ap-button" href="contact.php?subject=technical">Ask our team</a><a class="ap-button ap-button-light" href="resources-downloads.php">View downloads</a></div></section>
-</main><?php include __DIR__ . '/partials/footer.php'; ?><script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
+</main><?php include __DIR__ . '/partials/footer.php'; ?><script src="assets/js/artdon_home.js?v=6.12.16" defer></script>
 <script src="assets/js/artdon_pages_v710.js?v=7.1.0" defer></script></body></html>
