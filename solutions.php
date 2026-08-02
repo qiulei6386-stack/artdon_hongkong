@@ -427,7 +427,7 @@ $ctaBlock = is_array($solutionsPage['cta'] ?? null) ? $solutionsPage['cta'] : []
   <meta name="robots" content="index,follow,max-image-preview:large">
   <link rel="canonical" href="<?= sol_e($siteUrl) ?>/solutions.php">
   <link rel="preload" href="<?= sol_e(sol_public_path((string)($hero['image'] ?? 'assets/img/hero/hero-track-systems.webp'))) ?>" as="image" fetchpriority="high">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.16">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_catalog_families.css?v=7.0.6">
   <link rel="stylesheet" href="assets/css/artdon_catalog_layout_v708.css?v=7.0.8">

@@ -191,7 +191,7 @@ $solutionSchema = artdon_schema_graph([
   <link rel="canonical" href="<?= sp_e($canonical) ?>">
   <?php if (trim((string)($hero['image'] ?? '')) !== ''): ?><link rel="preload" as="image" href="<?= sp_e(sp_public_path((string)$hero['image'])) ?>" fetchpriority="high"><?php endif; ?>
   <?= artdon_schema_script($solutionSchema) ?>
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.16">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_catalog_families.css?v=7.0.6">

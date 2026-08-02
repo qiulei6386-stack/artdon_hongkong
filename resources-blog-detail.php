@@ -115,7 +115,7 @@ function bd_angle_svg(string $angle): string
   <meta property="og:title" content="<?= bd_e($pageTitle) ?>">
   <meta property="og:description" content="<?= bd_e($pageDescription) ?>">
   <meta property="og:image" content="<?= bd_e(artdon_v710_absolute_url($siteUrl, (string)$article['image'])) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.16">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.1">
   <style>

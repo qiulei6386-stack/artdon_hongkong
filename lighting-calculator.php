@@ -36,7 +36,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   <meta name="twitter:title" content="<?= web_e($pageTitle) ?>">
   <meta name="twitter:description" content="<?= web_e($pageDescription) ?>">
   <meta name="twitter:image" content="<?= web_e($ogImage) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.16">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
   <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.1.0">

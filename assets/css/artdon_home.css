@@ -3401,3 +3401,182 @@ body.quote-modal-open{overflow:hidden;}
     font-size:15px!important;
   }
 }
+
+/* V6.12.16 Mobile homepage focus pass:
+   keep the phone homepage short enough for first-time visitors to understand
+   products, proof and contact path without scrolling through the full desktop page. */
+.mobile-home-section-more{display:none;}
+@media(max-width:760px){
+  .homepage-sections .home-partner-reasons,
+  .homepage-sections .home-clean-system,
+  .homepage-sections .home-download-hub,
+  .homepage-sections .home-insights{
+    display:none!important;
+  }
+  .homepage-sections .hero-carousel{
+    min-height:520px!important;
+    height:calc(100svh - 66px)!important;
+  }
+  .homepage-sections .slide-content{
+    bottom:92px!important;
+  }
+  .homepage-sections .slide-content h1,
+  .homepage-sections .slide-content h2{
+    font-size:clamp(38px,12vw,48px)!important;
+    line-height:.98!important;
+  }
+  .homepage-sections .slide-content span{
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:3!important;
+    overflow:hidden!important;
+    font-size:15px!important;
+    line-height:1.45!important;
+  }
+  .homepage-sections .hero-actions{
+    margin-top:14px!important;
+    gap:18px!important;
+    flex-wrap:wrap!important;
+  }
+  .homepage-sections .home-v32-section,
+  .homepage-sections .home-why-artdon,
+  .homepage-sections .home-clean-products,
+  .homepage-sections .featured-projects-section,
+  .homepage-sections .home-solutions-section,
+  .homepage-sections .home-inquiry{
+    padding-top:44px!important;
+    padding-bottom:48px!important;
+  }
+  .homepage-sections .why-artdon-head,
+  .homepage-sections .clean-section-head,
+  .homepage-sections .featured-projects-heading,
+  .homepage-sections .home-solutions-heading{
+    margin-bottom:22px!important;
+  }
+  .homepage-sections .why-artdon-head h2,
+  .homepage-sections .artdon-v7153-title,
+  .homepage-sections .featured-projects-heading h2,
+  .homepage-sections .home-solutions-heading h2,
+  .homepage-sections .home-inquiry h2{
+    font-size:30px!important;
+    line-height:1.06!important;
+  }
+  .homepage-sections .why-artdon-head>p:not(.home-eyebrow),
+  .homepage-sections .featured-projects-heading>p:last-child,
+  .homepage-sections .home-solutions-heading>p,
+  .homepage-sections .home-inquiry-copy>span{
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow:hidden!important;
+    font-size:14px!important;
+    line-height:1.5!important;
+  }
+  .homepage-sections .why-artdon-card:nth-child(n+5),
+  .homepage-sections .featured-project-card:nth-child(n+3),
+  .homepage-sections .home-solution-card:nth-child(n+5){
+    display:none!important;
+  }
+  .homepage-sections .why-artdon-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+  .homepage-sections .why-artdon-card{
+    padding:17px 15px 18px!important;
+  }
+  .homepage-sections .why-artdon-icon{
+    width:32px!important;
+    height:32px!important;
+    margin-bottom:12px!important;
+  }
+  .homepage-sections .why-artdon-card h3{
+    font-size:16px!important;
+    line-height:1.16!important;
+    margin-bottom:7px!important;
+  }
+  .homepage-sections .why-artdon-card p{
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow:hidden!important;
+    font-size:12px!important;
+    line-height:1.45!important;
+  }
+  .homepage-sections .artdon-v7153-tabs{
+    overflow-x:auto!important;
+    flex-wrap:nowrap!important;
+    padding-bottom:4px!important;
+    -webkit-overflow-scrolling:touch;
+  }
+  .homepage-sections .artdon-v7153-tab{
+    flex:0 0 auto!important;
+  }
+  .homepage-sections .artdon-v7153-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:12px!important;
+  }
+  .homepage-sections .artdon-v7153-card{
+    min-height:0!important;
+  }
+  .homepage-sections .artdon-v7153-card img{
+    aspect-ratio:1/1!important;
+  }
+  .homepage-sections .artdon-v7153-copy{
+    padding:12px 0 0!important;
+  }
+  .homepage-sections .artdon-v7153-name{
+    font-size:15px!important;
+    line-height:1.18!important;
+  }
+  .mobile-home-section-more{
+    display:block!important;
+    margin-top:20px!important;
+  }
+  .mobile-home-section-more a{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    min-height:48px!important;
+    padding:0 16px!important;
+    background:#111!important;
+    color:#fff!important;
+    font-size:14px!important;
+    font-weight:760!important;
+    text-decoration:none!important;
+  }
+  .mobile-home-section-more span{color:#d71920!important;font-size:20px!important;}
+  .homepage-sections .featured-projects-grid{
+    gap:14px!important;
+  }
+  .homepage-sections .featured-project-card figure{
+    aspect-ratio:16/10!important;
+  }
+  .homepage-sections .featured-project-copy{
+    padding:16px 16px 18px!important;
+  }
+  .homepage-sections .featured-project-copy h3{
+    font-size:20px!important;
+  }
+  .homepage-sections .featured-project-description{
+    display:none!important;
+  }
+  .homepage-sections .home-solutions-grid{
+    gap:12px!important;
+  }
+  .homepage-sections .home-solution-card{
+    aspect-ratio:16/10!important;
+  }
+  .homepage-sections .home-solution-copy>.home-rich-body{
+    -webkit-line-clamp:1!important;
+    font-size:13px!important;
+  }
+  .homepage-sections .home-inquiry{
+    display:block!important;
+  }
+  .homepage-sections .home-inquiry .inquiry-panel{
+    display:none!important;
+  }
+  .homepage-sections .inquiry-contact-card{
+    margin-top:18px!important;
+  }
+}

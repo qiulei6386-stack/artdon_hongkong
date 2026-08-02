@@ -182,8 +182,8 @@ $schema = artdon_schema_graph([
   <meta name="theme-color" content="#ffffff">
   <link rel="canonical" href="<?= e($siteUrl) ?>/">
   <link rel="preload" href="<?= e($slides[0]['image'] ?? 'assets/img/hero/hero-track-systems.webp') ?>" as="image" fetchpriority="high">
-  <link rel="preload" href="assets/css/artdon_home.css?v=6.12.15" as="style">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
+  <link rel="preload" href="assets/css/artdon_home.css?v=6.12.16" as="style">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.16">
   <link rel="preload" href="assets/css/home_section_themes.css?v=5.7.1" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="assets/css/home_section_themes.css?v=5.7.1"></noscript>
   <link rel="preload" href="assets/css/artdon_component_safety.css?v=6.8.5" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -632,6 +632,9 @@ html,body{overflow-x:hidden!important;}
         </a>
       <?php endforeach; ?>
     </div>
+    <div class="mobile-home-section-more">
+      <a href="/products.php">View all product families <span>→</span></a>
+    </div>
   </section>
 <?php endif; ?>
 
@@ -876,9 +879,13 @@ html,body{overflow-x:hidden!important;}
   var section = root.closest('.artdon-v7153-products');
   var tabs = section ? Array.prototype.slice.call(section.querySelectorAll('.artdon-v7153-tab')) : [];
   var cards = Array.prototype.slice.call(root.querySelectorAll('.artdon-v7153-card'));
+  function mobileLimit(){
+    return window.matchMedia && window.matchMedia('(max-width: 760px)').matches ? 8 : Infinity;
+  }
   function show(board){
     var shown = 0;
     var total = 0;
+    var limit = mobileLimit();
     tabs.forEach(function(tab){
       var active = tab.getAttribute('data-home-board') === board;
       tab.classList.toggle('is-active', active);
@@ -888,7 +895,7 @@ html,body{overflow-x:hidden!important;}
       var boards = ' ' + (card.getAttribute('data-home-boards') || '') + ' ';
       var match = boards.indexOf(' ' + board + ' ') !== -1;
       if (match) total++;
-      var visible = match;
+      var visible = match && shown < limit;
       card.hidden = !visible;
       if (visible) shown++;
     });
@@ -896,6 +903,10 @@ html,body{overflow-x:hidden!important;}
   tabs.forEach(function(tab){
     tab.addEventListener('click', function(){ show(tab.getAttribute('data-home-board') || 'all'); });
   });
+  window.addEventListener('resize', function(){
+    var active = section ? section.querySelector('.artdon-v7153-tab.is-active') : null;
+    show((active && active.getAttribute('data-home-board')) || (tabs[0] && tabs[0].getAttribute('data-home-board')) || 'all');
+  }, {passive:true});
   if (tabs[0]) show(tabs[0].getAttribute('data-home-board') || 'all');
 })();
 </script>

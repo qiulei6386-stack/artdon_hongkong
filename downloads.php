@@ -95,7 +95,7 @@ function artdon_download_query(array $changes): string {
   <meta property="og:site_name" content="<?= artdon_v710_e($company) ?>"><meta property="og:type" content="website"><meta property="og:url" content="<?= artdon_v710_e($canonical) ?>">
   <meta property="og:title" content="<?= artdon_v710_e($pageTitle) ?>"><meta property="og:description" content="<?= artdon_v710_e($pageDescription) ?>"><meta property="og:image" content="<?= artdon_v710_e($ogImage) ?>">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="<?= artdon_v710_e($pageTitle) ?>"><meta name="twitter:description" content="<?= artdon_v710_e($pageDescription) ?>"><meta name="twitter:image" content="<?= artdon_v710_e($ogImage) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15"><link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.16"><link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
 <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
   <script type="application/ld+json"><?= artdon_v710_json($schema) ?></script>
 </head>
