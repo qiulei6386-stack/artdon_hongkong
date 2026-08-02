@@ -38,10 +38,18 @@ if (!function_exists('web_public_cache_key')) {
     {
         $host = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
         $uri = (string)($_SERVER['REQUEST_URI'] ?? '/');
+        $query = $_GET;
+        if ($query) {
+            ksort($query);
+        }
+        $queryKey = $query ? http_build_query($query) : '';
         // V7.1.8.106: include this cache file mtime in the key so category/menu
         // fixes take effect immediately after overwrite instead of waiting for old HTML TTL.
-        $version = 'v718137-' . (string)@filemtime(__FILE__);
-        return sha1($group . '|' . $version . '|' . $host . '|' . $uri);
+        // V7.1.8.138: include the normalized GET parameters as an extra guard so
+        // filtered pages such as downloads.php?type=other can never populate the
+        // default downloads.php cache entry if the server URI omits the query string.
+        $version = 'v718138-' . (string)@filemtime(__FILE__);
+        return sha1($group . '|' . $version . '|' . $host . '|' . $uri . '|' . $queryKey);
     }
 }
 

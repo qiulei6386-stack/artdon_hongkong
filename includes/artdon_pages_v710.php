@@ -141,6 +141,7 @@ if (!function_exists('artdon_v710_type_key')) {
     {
         $value = strtolower(trim($value));
         $value = str_replace(['_',' '], '-', $value);
+        if ($value === '' || $value === 'all') return 'all';
         $aliases = [
             'datasheets'=>'datasheet','data-sheet'=>'datasheet','data-sheets'=>'datasheet','specification'=>'datasheet','specifications'=>'datasheet','pdf'=>'datasheet',
             'manual'=>'installation','manuals'=>'installation','installation-manual'=>'installation','instructions'=>'installation',
@@ -152,7 +153,7 @@ if (!function_exists('artdon_v710_type_key')) {
         ];
         if (isset($aliases[$value])) return $aliases[$value];
         if (isset(artdon_v710_download_types()[$value])) return $value;
-        return $value === '' ? 'all' : 'other';
+        return 'other';
     }
 }
 
