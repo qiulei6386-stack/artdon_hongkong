@@ -95,7 +95,7 @@ function artdon_download_query(array $changes): string {
   <meta property="og:site_name" content="<?= artdon_v710_e($company) ?>"><meta property="og:type" content="website"><meta property="og:url" content="<?= artdon_v710_e($canonical) ?>">
   <meta property="og:title" content="<?= artdon_v710_e($pageTitle) ?>"><meta property="og:description" content="<?= artdon_v710_e($pageDescription) ?>"><meta property="og:image" content="<?= artdon_v710_e($ogImage) ?>">
   <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="<?= artdon_v710_e($pageTitle) ?>"><meta name="twitter:description" content="<?= artdon_v710_e($pageDescription) ?>"><meta name="twitter:image" content="<?= artdon_v710_e($ogImage) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.10"><link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15"><link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
 <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
   <script type="application/ld+json"><?= artdon_v710_json($schema) ?></script>
 </head>
@@ -161,6 +161,6 @@ function artdon_download_query(array $changes): string {
   <section class="ap-cta"><div><h2>Need a file that is not listed?</h2><p>Tell us the product family, model and project stage. Our team will check the latest available technical document.</p></div><div class="ap-cta-actions"><a class="ap-button" href="contact.php?subject=technical-files">Contact technical support</a><a class="ap-button ap-button-light" href="products.php">Browse products</a></div></section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
 <script src="assets/js/artdon_pages_v710.js?v=7.1.0" defer></script>
 </body></html>

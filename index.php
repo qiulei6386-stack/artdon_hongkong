@@ -182,8 +182,8 @@ $schema = artdon_schema_graph([
   <meta name="theme-color" content="#ffffff">
   <link rel="canonical" href="<?= e($siteUrl) ?>/">
   <link rel="preload" href="<?= e($slides[0]['image'] ?? 'assets/img/hero/hero-track-systems.webp') ?>" as="image" fetchpriority="high">
-  <link rel="preload" href="assets/css/artdon_home.css?v=6.12.14" as="style">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.14">
+  <link rel="preload" href="assets/css/artdon_home.css?v=6.12.15" as="style">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
   <link rel="preload" href="assets/css/home_section_themes.css?v=5.7.1" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="assets/css/home_section_themes.css?v=5.7.1"></noscript>
   <link rel="preload" href="assets/css/artdon_component_safety.css?v=6.8.5" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -859,7 +859,7 @@ html,body{overflow-x:hidden!important;}
 </div>
 
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
 
 
 

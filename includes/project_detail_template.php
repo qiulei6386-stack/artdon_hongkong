@@ -333,7 +333,7 @@ $projectDetailSchema = artdon_schema_graph([
   <meta property="og:image" content="<?= project_detail_e($projectImage) ?>">
   <link rel="preload" as="image" href="<?= project_detail_e(project_detail_public_path($projectImage)) ?>" fetchpriority="high">
   <?= artdon_schema_script($projectDetailSchema) ?>
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.12">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/project-detail.css?v=1.0.0">
 </head>
@@ -419,6 +419,6 @@ $projectDetailSchema = artdon_schema_graph([
   </section>
 </div>
 <?php include dirname(__DIR__) . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
 </body>
 </html>

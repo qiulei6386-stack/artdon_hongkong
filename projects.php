@@ -33,7 +33,7 @@ $heroImage = artdon_projects_asset(['assets/img/projects/featured-retail.webp', 
   <meta property="og:title" content="<?= web_e($pageTitle) ?>">
   <meta property="og:description" content="<?= web_e($pageDescription) ?>">
   <meta property="og:image" content="<?= web_e($heroImage) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.12">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/projects.css?v=1.0.0">
 </head>
@@ -103,7 +103,7 @@ $heroImage = artdon_projects_asset(['assets/img/projects/featured-retail.webp', 
   </section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
 <script src="assets/js/projects.js?v=1.0.0" defer></script>
 </body>
 </html>

@@ -257,7 +257,7 @@ $raSchema = artdon_schema_graph([
   <link rel="canonical" href="<?= ra_e($canonical) ?>">
   <?php if (trim((string)($page['hero_image'] ?? '')) !== ''): ?><link rel="preload" as="image" href="<?= ra_e(ra_public_path((string)$page['hero_image'])) ?>" fetchpriority="high"><?php endif; ?>
   <?= artdon_schema_script($raSchema) ?>
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.11">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_catalog_families.css?v=7.0.6">
@@ -454,7 +454,7 @@ $raSchema = artdon_schema_graph([
 </div>
 
 <?php include dirname(__DIR__) . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
 <script src="assets/js/solution-detail.js?v=1.0.0" defer></script>
 </body>
 </html>

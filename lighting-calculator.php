@@ -36,7 +36,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   <meta name="twitter:title" content="<?= web_e($pageTitle) ?>">
   <meta name="twitter:description" content="<?= web_e($pageDescription) ?>">
   <meta name="twitter:image" content="<?= web_e($ogImage) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.10">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.15">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
   <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.1.0">
@@ -228,7 +228,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   </section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.13" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
 <script src="assets/js/lighting-calculator/ies-parser.js?v=3.1.0" defer></script>
 <script src="assets/js/lighting-calculator/lux-engine.js?v=3.1.0" defer></script>
 <script src="assets/js/lighting-calculator/room-layout.js?v=3.1.0" defer></script>
