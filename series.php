@@ -780,6 +780,46 @@ $seriesSchema = artdon_schema_graph([
 @media(max-width:1180px){
   .series-v717 .s717-card .s717-card-body > h3{margin-bottom:30px!important;}
 }
+
+/* V7.1.8.189: mobile decision order.
+   On phone screens, move size selection and downloads immediately after the hero.
+   Desktop keeps the original storytelling order. */
+@media(max-width:680px){
+  .series-v717{
+    display:flex!important;
+    flex-direction:column!important;
+  }
+  .series-v717 .s717-breadcrumb{order:0!important;}
+  .series-v717 #overview{order:1!important;}
+  .series-v717 #products{order:2!important;}
+  .series-v717 #downloads{order:3!important;}
+  .series-v717 .s717-support{order:4!important;}
+  .series-v717 #why{order:5!important;}
+  .series-v717 #characteristics{order:6!important;}
+  .series-v717 #applications{order:7!important;}
+  .series-v717 #projects{order:8!important;}
+  .series-v717 .s717-related{order:9!important;}
+  .series-v717 #products{
+    padding-top:48px!important;
+  }
+  .series-v717 #products .s717-variants-head h2{
+    font-size:clamp(32px,10vw,42px)!important;
+  }
+  .series-v717 #downloads,
+  .series-v717 .s717-support{
+    margin:0 auto!important;
+    border-left:1px solid var(--s717-line)!important;
+    border-right:1px solid var(--s717-line)!important;
+  }
+  .series-v717 #downloads .s717-button,
+  .series-v717 .s717-support-actions a{
+    width:100%!important;
+    justify-content:center!important;
+  }
+  .series-v717 .s717-support-actions{
+    justify-content:stretch!important;
+  }
+}
 </style>
 </head>
 <body>
