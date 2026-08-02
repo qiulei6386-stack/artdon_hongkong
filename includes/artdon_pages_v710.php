@@ -531,7 +531,12 @@ if (!function_exists('artdon_v710_sitemap_urls')) {
                 if (function_exists('artdon_projects_from_db')) {
                     foreach (artdon_projects_from_db($pdo, true) as $project) {
                         $slug = trim((string)($project['slug'] ?? ''));
-                        if ($slug !== '') $add('project-detail.php?slug='.rawurlencode($slug), 'monthly', '0.6');
+                        if ($slug !== '') {
+                            $projectPath = function_exists('artdon_project_pretty_url')
+                                ? artdon_project_pretty_url($slug)
+                                : ('/projects/' . rawurlencode($slug));
+                            $add($projectPath, 'monthly', '0.6');
+                        }
                     }
                 }
             } catch (Throwable $e) {}

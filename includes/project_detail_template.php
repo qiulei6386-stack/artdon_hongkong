@@ -159,7 +159,9 @@ $projectCategory = trim((string)($project['category'] ?? 'Commercial'));
 $projectImage = project_detail_public_path((string)($project['hero_image'] ?? ($projectDetail['hero_image'] ?? ($project['image'] ?? 'assets/img/projects/featured-retail.webp'))));
 $projectListImage = project_detail_public_path((string)($project['image'] ?? $projectImage));
 $projectDescription = trim((string)($project['description'] ?? 'A professional lighting project with tailored luminaires, optical control and application support.'));
-$projectUrl = 'project-detail.php?slug=' . rawurlencode((string)($project['slug'] ?? project_detail_slug($projectTitle)));
+$projectUrl = function_exists('artdon_project_pretty_url')
+    ? artdon_project_pretty_url((string)($project['slug'] ?? project_detail_slug($projectTitle)))
+    : ('/projects/' . rawurlencode((string)($project['slug'] ?? project_detail_slug($projectTitle))));
 $solution = is_array($projectDetail['solution'] ?? null) ? $projectDetail['solution'] : [];
 $solutionUrl = project_detail_url((string)($solution['button_url'] ?? ''), project_detail_solution_url($projectCategory));
 $solutionLabel = trim((string)($solution['button_label'] ?? '')) ?: ('EXPLORE ' . strtoupper($projectCategory === 'Museum & Gallery' ? 'MUSEUM GALLERY' : $projectCategory) . ' SOLUTION');
@@ -194,7 +196,7 @@ if ($projectMetaYear !== '' && !str_contains($detailTitleBase, $projectMetaYear)
 }
 $detailTitle = $detailTitleBase . ' | Artdon Project';
 $detailDescription = project_detail_meta_text($projectDescription, 160);
-$detailCanonical = ($siteUrl !== '' ? $siteUrl : 'https://artdonlighting.com') . '/' . $projectUrl;
+$detailCanonical = rtrim(($siteUrl !== '' ? $siteUrl : 'https://artdonlighting.com'), '/') . '/' . ltrim($projectUrl, '/');
 $projectDetailSiteUrl = rtrim((string)($siteUrl ?: 'https://artdonlighting.com'), '/');
 $projectDetailSchema = artdon_schema_graph([
     artdon_schema_organization(is_array($site ?? null) ? $site : [], $projectDetailSiteUrl),

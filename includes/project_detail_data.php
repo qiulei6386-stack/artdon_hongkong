@@ -37,6 +37,16 @@ function artdon_project_migrate(PDO $pdo): void
         UNIQUE KEY uniq_slug (slug),
         KEY idx_active_sort (is_active, sort_order)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS web_project_redirects (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+        old_slug VARCHAR(160) NOT NULL,
+        new_slug VARCHAR(160) NOT NULL,
+        note VARCHAR(255) NOT NULL DEFAULT '',
+        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uniq_old_slug (old_slug),
+        KEY idx_new_slug (new_slug)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 }
 
 function artdon_project_default_detail(array $project): array
@@ -151,8 +161,8 @@ function artdon_project_normalize(array $row): array
         'products' => (string)($row['products_text'] ?? ''),
         'sort_order' => (int)($row['sort_order'] ?? 0),
         'is_active' => (int)($row['is_active'] ?? 1) === 1,
-        'url' => 'project-detail.php?slug=' . rawurlencode((string)($row['slug'] ?? '')),
-        'detail_url' => 'project-detail.php?slug=' . rawurlencode((string)($row['slug'] ?? '')),
+        'url' => artdon_project_pretty_url((string)($row['slug'] ?? '')),
+        'detail_url' => artdon_project_pretty_url((string)($row['slug'] ?? '')),
         'detail' => $detail,
     ];
     $fallback = artdon_project_default_detail($project);
@@ -166,6 +176,12 @@ function artdon_project_normalize(array $row): array
     if ($project['hero_image'] === '') $project['hero_image'] = (string)($project['image'] ?: ($project['detail']['hero_image'] ?? ''));
     if ($project['image'] === '') $project['image'] = $project['hero_image'];
     return $project;
+}
+
+function artdon_project_pretty_url(string $slug): string
+{
+    $slug = artdon_project_slug($slug);
+    return $slug !== '' ? '/projects/' . rawurlencode($slug) : '/project.php';
 }
 
 function artdon_projects_from_db(PDO $pdo, bool $activeOnly = true): array
@@ -183,6 +199,16 @@ function artdon_project_find(PDO $pdo, string $slug): ?array
     $stmt->execute([$slug]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return is_array($row) ? artdon_project_normalize($row) : null;
+}
+
+function artdon_project_redirect_target(PDO $pdo, string $oldSlug): string
+{
+    artdon_project_migrate($pdo);
+    $oldSlug = artdon_project_slug($oldSlug);
+    if ($oldSlug === '') return '';
+    $stmt = $pdo->prepare('SELECT new_slug FROM web_project_redirects WHERE old_slug=? LIMIT 1');
+    $stmt->execute([$oldSlug]);
+    return artdon_project_slug((string)($stmt->fetchColumn() ?: ''));
 }
 
 function artdon_project_product_map(PDO $pdo): array
