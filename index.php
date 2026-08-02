@@ -140,11 +140,25 @@ function artdon_home_v7153_product_boards(array $product, bool $dynamic): string
 }
 function artdon_home_v7153_product_url(array $product): string {
   $url = trim((string)($product['url'] ?? ''));
-  if ($url !== '' && $url !== '#') return $url;
+  if ($url !== '' && $url !== '#') {
+    if (function_exists('artdon_pretty_series_url_v71868') && preg_match('/(?:^|\/)series\.php\?slug=([^&]+)/', $url, $m)) {
+      $seriesSlug = rawurldecode((string)$m[1]);
+      $categorySlug = trim((string)($product['category_slug'] ?? ''));
+      if ($seriesSlug !== '' && $categorySlug !== '') {
+        return artdon_pretty_series_url_v71868($categorySlug, ['slug' => $seriesSlug, 'series_name' => (string)($product['series_name'] ?? $product['title'] ?? $product['name'] ?? '')]);
+      }
+    }
+    if (function_exists('artdon_pretty_series_url_v71868') && preg_match('/(?:^|\/)product\.php\?slug=([^&]+)/', $url) && trim((string)($product['series_slug'] ?? '')) !== '') {
+      return artdon_pretty_series_url_v71868((string)($product['category_slug'] ?? ''), ['slug' => (string)$product['series_slug'], 'series_name' => (string)($product['series_name'] ?? $product['title'] ?? $product['name'] ?? '')]);
+    }
+    return $url;
+  }
   $slug = trim((string)($product['slug'] ?? $product['key'] ?? $product['id'] ?? ''));
   if ($slug === '') return 'products.php';
   $source = strtolower((string)($product['source_type'] ?? $product['type_kind'] ?? $product['kind'] ?? 'series'));
-  if (strpos($source, 'product') !== false && strpos($source, 'series') === false) return 'product.php?slug='.rawurlencode($slug);
+  if (strpos($source, 'product') !== false && strpos($source, 'series') === false && trim((string)($product['series_slug'] ?? '')) !== '' && function_exists('artdon_pretty_series_url_v71868')) {
+    return artdon_pretty_series_url_v71868((string)($product['category_slug'] ?? ''), ['slug' => (string)$product['series_slug'], 'series_name' => (string)($product['series_name'] ?? $product['title'] ?? $product['name'] ?? '')]);
+  }
   return 'series.php?slug='.rawurlencode($slug);
 }
 function artdon_home_v7153_product_type(array $product): string {

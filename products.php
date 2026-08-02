@@ -1087,8 +1087,13 @@ function artdon_catalog_variant_filter_values_v71889(array $variant, array $card
 $itemList = [];
 foreach ($items as $index=>$item) {
     if ($productMode) {
-        $url = artdon_pretty_product_url_v71868((string)($item['category_slug'] ?? $categorySlug), (string)($item['series_slug'] ?? 'Product'), $item);
-        $name = (string)($item['name'] ?? '');
+        $seriesForUrl = [
+            'slug' => (string)($item['series_slug'] ?? ''),
+            'series_name' => (string)($item['series_display_name'] ?? $item['series_name'] ?? ''),
+            'name' => (string)($item['series_record_name'] ?? $item['series_title'] ?? ''),
+        ];
+        $url = artdon_pretty_series_url_v71868((string)($item['category_slug'] ?? $categorySlug), $seriesForUrl);
+        $name = trim((string)($item['series_display_name'] ?? $item['series_name'] ?? $item['series_record_name'] ?? '')) ?: (string)($item['name'] ?? '');
     } else {
         $url = artdon_pretty_series_url_v71868((string)($item['category_slug'] ?? $categorySlug), $item);
         $name = (string)(($item['series_name'] ?? '') ?: ($item['name'] ?? ''));
@@ -1344,13 +1349,13 @@ if (is_file($__artdonCardV7093)) {
       <?php else: ?>
       <div class="catalog-grid catalog-grid-v51 <?= $productMode?'catalog-grid-products':'catalog-grid-grouped' ?>"<?= (!$productMode && $categorySlug!=='all' && $activeCategoryFamilyIntro!=='') ? ' style="margin-top:0!important;padding-top:0!important"' : '' ?>>
         <?php if($productMode): ?>
-          <?php foreach($items as $variantIndex=>$variant): $card=web_product_variant_catalog_card($variant); $card['url']=artdon_pretty_product_url_v71868((string)($variant['category_slug'] ?? $categorySlug), (string)($variant['series_slug'] ?? 'Product'), $variant); $variantPower=trim((string)($variant['power_text']??'')); $variantBeamRaw=$variant['beam_angle']??[]; $variantBeam=artdon_catalog_value_to_text_v71888($variantBeamRaw); $variantBeam=str_replace(' ', ' / ', preg_replace('/\s+/', ' ', trim($variantBeam)));  ?>
+          <?php foreach($items as $variantIndex=>$variant): $card=web_product_variant_catalog_card($variant); $variantSeriesForUrl=['slug'=>(string)($variant['series_slug']??''),'series_name'=>(string)($variant['series_display_name']??$variant['series_name']??''),'name'=>(string)($variant['series_record_name']??$variant['series_title']??'')]; $card['url']=artdon_pretty_series_url_v71868((string)($variant['category_slug'] ?? $categorySlug), $variantSeriesForUrl); $variantPower=trim((string)($variant['power_text']??'')); $variantBeamRaw=$variant['beam_angle']??[]; $variantBeam=artdon_catalog_value_to_text_v71888($variantBeamRaw); $variantBeam=str_replace(' ', ' / ', preg_replace('/\s+/', ' ', trim($variantBeam)));  ?>
           <?php $variantFilterAttr=artdon_catalog_filter_json_attr_v71889(artdon_catalog_variant_filter_values_v71889($variant, $card, $categorySlug, $categoryNamesBySlug)); ?>
           <?php $variantSearchRaw=artdon_catalog_card_search_text_v71894($variant, $card); ?>
           <?php $variantSearchAttr=web_e($variantSearchRaw); ?>
           <?php $variantTitleAttr=web_e(trim((string)($variant['name'] ?? '') . ' ' . (string)($variant['model_code'] ?? '') . ' ' . (string)($variant['slug'] ?? ''))); ?>
           <article class="catalog-card catalog-card-v51 catalog-rich-card catalog-concrete-product-card" data-artdon-filter-card="1" data-artdon-filter-values='<?= $variantFilterAttr ?>' data-artdon-series-key="<?= $variantTitleAttr ?>" data-artdon-model-key="<?= $variantSearchAttr ?>" data-artdon-series-search-text="<?= $variantTitleAttr ?>" data-artdon-model-search-text="<?= $variantSearchAttr ?>" data-artdon-search-title="<?= $variantTitleAttr ?>" data-artdon-product-search-text="<?= $variantSearchAttr ?>" data-artdon-search-text="<?= $variantSearchAttr ?>" style="<?= web_e(catalog_card_scale_style($variant['card_image_scale'] ?? 100)) ?>">
-            <a class="catalog-card-link" href="<?= web_e($card['url']) ?>" aria-label="View <?= web_e($card['name']) ?>">
+            <a class="catalog-card-link" href="<?= web_e($card['url']) ?>" aria-label="View series for <?= web_e($card['name']) ?>">
               <figure class="catalog-card-image">
 <!-- ARTDON_V7093_DIRECT_SERIES_BADGE_START -->
 <?php if (isset($product) && is_array($product) && function_exists('artdon_card_v7093_badge_html')) echo artdon_card_v7093_badge_html('series', $product, $pdo ?? null); ?>
@@ -1369,7 +1374,7 @@ if (is_file($__artdonCardV7093)) {
                   <?php if($variantBeam!==''): ?><div class="catalog-card-detail-row catalog-card-detail-beam"><dt>Beam Angle:</dt><dd><?= web_e($variantBeam) ?></dd></div><?php endif; ?>
                 </dl>
                 <?php if($card['tags']): ?><div class="catalog-card-tags"><?php foreach($card['tags'] as $tag): ?><span><?= web_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?>
-                <span class="catalog-card-mobile-cta">View Product →</span>
+                <span class="catalog-card-mobile-cta">View Series →</span>
               </div>
             </a>
           </article>

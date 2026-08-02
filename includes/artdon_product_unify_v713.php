@@ -539,7 +539,7 @@ function artdon_v713_build_item_from_row(string $table, string $kind, array $col
     $text = trim((string)($textCol !== '' ? ($r[$textCol] ?? '') : ''));
     $url = $kind === 'product'
         ? artdon_pretty_product_url_v71868($cs, 'product', ['model_code' => $slug, 'slug' => $slug, 'name' => $title])
-        : 'series.php?slug='.rawurlencode($slug);
+        : artdon_pretty_series_url_v71868($cs, ['slug' => $slug, 'series_name' => $title, 'name' => $title]);
     return [
         'type'=>$kind,
         'id'=>$id,
@@ -551,6 +551,28 @@ function artdon_v713_build_item_from_row(string $table, string $kind, array $col
         'url'=>$url,
         '_source_table'=>$table,
     ];
+}
+
+function artdon_v713_series_url_from_variant_row(PDO $pdo, array $row, string $fallbackCategory = ''): string
+{
+    $seriesId = (int)($row['series_id'] ?? 0);
+    if ($seriesId > 0 && artdon_v713_table_exists($pdo, 'web_products')) {
+        try {
+            $stmt = $pdo->prepare('SELECT id, slug, name, series_name, category_slug FROM web_products WHERE id=? LIMIT 1');
+            $stmt->execute([$seriesId]);
+            $series = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+            if (is_array($series) && trim((string)($series['slug'] ?? '')) !== '') {
+                return artdon_pretty_series_url_v71868((string)($series['category_slug'] ?? $fallbackCategory), $series);
+            }
+        } catch (Throwable $e) {
+            // Fall through to the legacy-safe fallback below.
+        }
+    }
+    $seriesSlug = trim((string)($row['series_slug'] ?? $row['series'] ?? ''));
+    if ($seriesSlug !== '') {
+        return artdon_pretty_series_url_v71868($fallbackCategory, ['slug' => $seriesSlug, 'series_name' => (string)($row['series_name'] ?? '')]);
+    }
+    return '';
 }
 
 function artdon_v713_catalog_search(PDO $pdo, string $q='', string $type='', string $cat='', int $limit=30): array {
@@ -748,7 +770,7 @@ function artdon_v713_lookup_catalog_item(PDO $pdo, string $type, int $id, string
         $kind = artdon_v713_guess_type($table, $type);
         if ($kind !== $type) continue;
         $wanted = ['id'];
-        foreach (['series_name','product_name','name','title','model','sku','code','slug','category_slug','category','family_slug','type_slug','product_category','source_category','cover_image','image','main_image','hero_image','product_image','thumb_image','thumbnail','photo','img','picture','image_url','subtitle','short_description','description','summary','intro','sort_order','is_published','published','status'] as $c) {
+        foreach (['series_id','series_slug','series','series_name','product_name','name','title','model','sku','code','slug','category_slug','category','family_slug','type_slug','product_category','source_category','cover_image','image','main_image','hero_image','product_image','thumb_image','thumbnail','photo','img','picture','image_url','subtitle','short_description','description','summary','intro','sort_order','is_published','published','status'] as $c) {
             if (isset($cols[$c])) $wanted[] = $c;
         }
         $wanted = array_values(array_unique($wanted));
@@ -763,6 +785,10 @@ function artdon_v713_lookup_catalog_item(PDO $pdo, string $type, int $id, string
             $descCol = artdon_v713_desc_col($cols);
             $item['image'] = $imgCol !== '' ? (string)($r[$imgCol] ?? '') : '';
             $item['text'] = $descCol !== '' ? trim((string)($r[$descCol] ?? '')) : (string)($item['text'] ?? '');
+            if ($type === 'product') {
+                $seriesUrl = artdon_v713_series_url_from_variant_row($pdo, $r, (string)($item['category_slug'] ?? ''));
+                if ($seriesUrl !== '') $item['url'] = $seriesUrl;
+            }
             if ($item['text'] === '' && $savedName !== '') $item['text'] = '';
             if ($savedSlug !== '' && (string)$item['slug'] === '') $item['slug'] = $savedSlug;
             if ($savedName !== '' && (string)$item['title'] === '') $item['title'] = $savedName;
@@ -827,7 +853,7 @@ function artdon_v713_home_public_data(?PDO $pdo = null): array {
                     'category_name'=>(string)($catMap[(string)($slot['category_slug'] ?? '')]['display_name'] ?? (string)($slot['category_slug'] ?? '')),
                     'image'=>'',
                     'text'=>'',
-                    'url'=>$type === 'product' ? artdon_pretty_product_url_v71868((string)($slot['category_slug'] ?? 'products'), 'product', ['model_code' => $savedSlug !== '' ? $savedSlug : (string)$id, 'slug' => $savedSlug !== '' ? $savedSlug : (string)$id, 'name' => $savedName]) : 'series.php?slug='.rawurlencode($savedSlug !== '' ? $savedSlug : (string)$id),
+                    'url'=>$type === 'product' ? artdon_pretty_product_url_v71868((string)($slot['category_slug'] ?? 'products'), 'product', ['model_code' => $savedSlug !== '' ? $savedSlug : (string)$id, 'slug' => $savedSlug !== '' ? $savedSlug : (string)$id, 'name' => $savedName]) : artdon_pretty_series_url_v71868((string)($slot['category_slug'] ?? 'products'), ['slug' => $savedSlug !== '' ? $savedSlug : (string)$id, 'series_name' => $savedName]),
                 ];
             }
             $merged[$key] = $item;

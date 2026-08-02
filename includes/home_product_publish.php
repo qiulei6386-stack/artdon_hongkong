@@ -3,6 +3,15 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/product_hierarchy.php';
+require_once __DIR__ . '/pretty_urls_v71868.php';
+
+function web_home_product_series_public_url(array $series): string
+{
+    if (function_exists('artdon_pretty_series_url_v71868')) {
+        return artdon_pretty_series_url_v71868((string)($series['category_slug'] ?? ''), $series);
+    }
+    return 'series.php?slug=' . rawurlencode((string)($series['slug'] ?? ''));
+}
 
 function web_home_product_publish_ready(PDO $pdo): bool
 {
@@ -208,7 +217,7 @@ function web_home_product_source(PDO $pdo, string $type, int $id, bool $publishe
             'tag'=>trim((string)($row['family_label'] ?? '')) ?: (trim((string)($row['series_name'] ?? '')) ?: 'Series'),
             'text'=>trim((string)($row['card_subtitle'] ?? '')) ?: trim((string)($row['short_description'] ?? '')),
             'image'=>(string)($row['cover_image'] ?? ''),
-            'url'=>'series.php?slug='.rawurlencode((string)$row['slug']),
+            'url'=>web_home_product_series_public_url($row),
             'category_slug'=>(string)($row['category_slug'] ?? ''),
         ];
     }
@@ -221,11 +230,12 @@ function web_home_product_source(PDO $pdo, string $type, int $id, bool $publishe
             'source_type'=>'variant','source_id'=>(int)$row['id'],'name'=>(string)$row['name'],
             'series_name'=>(string)($series['series_name'] ?: $series['name']),'model_code'=>(string)($row['model_code'] ?? ''),
             'slug'=>(string)$row['slug'],'is_published'=>(int)$row['is_published'] && (int)$series['is_published'],
+            'series_slug'=>(string)($series['slug'] ?? ''),
             'title'=>(string)$row['name'],
             'tag'=>trim((string)($row['model_code'] ?? '')) ?: (trim((string)($series['series_name'] ?? '')) ?: 'Product'),
             'text'=>trim((string)($row['short_description'] ?? '')) ?: trim((string)($series['short_description'] ?? '')),
             'image'=>trim((string)($row['cover_image'] ?? '')) ?: (string)($series['cover_image'] ?? ''),
-            'url'=>'product.php?slug='.rawurlencode((string)$row['slug']),
+            'url'=>web_home_product_series_public_url($series),
             'category_slug'=>(string)($series['category_slug'] ?? ''),
         ];
     }
@@ -386,6 +396,8 @@ function web_home_product_public_data(PDO $pdo): array
             'categories'=>implode(' ',array_values(array_unique($keys))),
             'source_type'=>(string)$row['source_type'],
             'source_id'=>(int)$row['source_id'],
+            'series_slug'=>(string)($source['series_slug'] ?? ''),
+            'category_slug'=>(string)($source['category_slug'] ?? ''),
         ];
     }
     if (!$items) return ['tabs'=>[],'items'=>[],'dynamic'=>false];
