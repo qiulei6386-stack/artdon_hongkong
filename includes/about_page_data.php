@@ -44,7 +44,7 @@ function artdon_about_default_pages(): array
     $product = artdon_about_asset(['assets/img/products/track-system-full.webp', 'assets/img/products/track-spot-module.webp', $office]);
 
     $stats6 = [
-        ['title'=>'18+', 'text'=>'Years Experience', 'sort_order'=>10, 'is_active'=>1],
+        ['title'=>'Since 2007', 'text'=>'Lighting Manufacturer', 'sort_order'=>10, 'is_active'=>1],
         ['title'=>'100+', 'text'=>'Employees', 'sort_order'=>20, 'is_active'=>1],
         ['title'=>'20+', 'text'=>'CNC Machines', 'sort_order'=>30, 'is_active'=>1],
         ['title'=>'6,000 m²', 'text'=>'Factory Area', 'sort_order'=>40, 'is_active'=>1],
@@ -52,7 +52,7 @@ function artdon_about_default_pages(): array
         ['title'=>'OEM / ODM', 'text'=>'Customization', 'sort_order'=>60, 'is_active'=>1],
     ];
     $stats5 = [
-        ['title'=>'18+', 'text'=>'Years Experience', 'sort_order'=>10, 'is_active'=>1],
+        ['title'=>'Since 2007', 'text'=>'Lighting Manufacturer', 'sort_order'=>10, 'is_active'=>1],
         ['title'=>'100+', 'text'=>'Employees', 'sort_order'=>20, 'is_active'=>1],
         ['title'=>'20+', 'text'=>'CNC Machines', 'sort_order'=>30, 'is_active'=>1],
         ['title'=>'OEM / ODM', 'text'=>'Development', 'sort_order'=>40, 'is_active'=>1],
@@ -109,9 +109,9 @@ function artdon_about_default_pages(): array
         ],
         'why-artdon' => [
             'slug'=>'why-artdon','page_title'=>'Why Artdon | Architectural Lighting Manufacturer','menu_title'=>'Why Artdon',
-            'hero_title'=>"Why Leading\nLighting Brands\nChoose Artdon",'hero_subtitle'=>'Architectural lighting manufacturer with 18+ years of OEM & ODM experience.',
+            'hero_title'=>"Why Leading\nLighting Brands\nChoose Artdon",'hero_subtitle'=>'Architectural lighting manufacturer since 2007 with OEM & ODM experience.',
             'hero_image'=>$office,'hero_image_alt'=>'Artdon factory and architectural lighting manufacturing','button_text'=>'EXPLORE FACTORY →','button_url'=>'index.php#why-choose-artdon',
-            'seo_title'=>'Why Artdon | Architectural Lighting Manufacturer','seo_description'=>'Architectural lighting manufacturer with 18+ years of OEM and ODM experience.','sort_order'=>20,'is_active'=>1,
+            'seo_title'=>'Why Artdon | Architectural Lighting Manufacturer','seo_description'=>'Architectural lighting manufacturer since 2007 with OEM and ODM experience.','sort_order'=>20,'is_active'=>1,
             'content_json'=>[
                 'stats'=>['title'=>'Statistics','items'=>$stats5],
                 'content_cards'=>['title'=>'Why Artdon','items'=>$whyCards],
@@ -126,7 +126,7 @@ function artdon_about_default_pages(): array
             'content_json'=>[
                 'overview'=>['title'=>'Factory Overview','text'=>'Advanced equipment, skilled team and streamlined processes ensure high quality and reliable delivery.'],
                 'stats'=>['title'=>'Factory Overview','items'=>[
-                    ['title'=>'18+','text'=>'Years Experience','sort_order'=>10,'is_active'=>1], ['title'=>'100+','text'=>'Employees','sort_order'=>20,'is_active'=>1], ['title'=>'6,000m²','text'=>'Factory Area','sort_order'=>30,'is_active'=>1], ['title'=>'20+','text'=>'CNC Machines','sort_order'=>40,'is_active'=>1], ['title'=>'OEM / ODM','text'=>'Customization','sort_order'=>50,'is_active'=>1],
+                    ['title'=>'Since 2007','text'=>'Lighting Manufacturer','sort_order'=>10,'is_active'=>1], ['title'=>'100+','text'=>'Employees','sort_order'=>20,'is_active'=>1], ['title'=>'6,000m²','text'=>'Factory Area','sort_order'=>30,'is_active'=>1], ['title'=>'20+','text'=>'CNC Machines','sort_order'=>40,'is_active'=>1], ['title'=>'OEM / ODM','text'=>'Customization','sort_order'=>50,'is_active'=>1],
                 ]],
                 'image_modules'=>['title'=>'Factory Sections','items'=>[
                     ['title'=>'CNC Machining','image'=>$office,'sort_order'=>10,'is_active'=>1], ['title'=>'Assembly','image'=>$retail,'sort_order'=>20,'is_active'=>1], ['title'=>'Warehouse','image'=>$office,'sort_order'=>30,'is_active'=>1], ['title'=>'Packaging','image'=>$museum,'sort_order'=>40,'is_active'=>1],

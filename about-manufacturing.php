@@ -39,7 +39,7 @@ $heroAlt = 'Artdon factory manufacturing workshop';
 $overviewTitle = 'Factory Overview';
 $overviewText = 'Advanced equipment, skilled team and streamlined processes ensure high quality and reliable delivery.';
 $stats = [
-    ['value'=>'18+','label'=>'Years Experience'],
+    ['value'=>'Since 2007','label'=>'Lighting Manufacturer'],
     ['value'=>'100+','label'=>'Employees'],
     ['value'=>'6,000m²','label'=>'Factory Area'],
     ['value'=>'20+','label'=>'CNC Machines'],

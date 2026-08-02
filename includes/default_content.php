@@ -168,7 +168,7 @@ function web_default_content(): array
             'title'=>'6 Reasons to Partner With Us',
             'intro'=>'',
             'cards'=>[
-                ['active'=>1,'icon'=>'experience','badge'=>'17+','title'=>'17+ Years Experience','text'=>'Since 2007, we have been dedicated to architectural and commercial lighting with rich industry expertise.','button_label'=>'Learn More About Us','button_url'=>'contact.php'],
+                ['active'=>1,'icon'=>'experience','badge'=>'2007','title'=>'Since 2007','text'=>'Artdon has been dedicated to architectural and commercial lighting with stable manufacturing and project support experience.','button_label'=>'Learn More About Us','button_url'=>'contact.php'],
                 ['active'=>1,'icon'=>'custom','badge'=>'','title'=>'OEM & ODM Capability','text'=>'From concept to product, we provide custom designs, private labels and project-based solutions to meet your unique needs.','button_label'=>'Start Your Custom Project','button_url'=>'contact.php'],
                 ['active'=>1,'icon'=>'factory','badge'=>'','title'=>'In-house Manufacturing','text'=>'CNC machining, assembly, testing and quality control are completed in-house to support stable production.','button_label'=>'Visit Our Factory','button_url'=>'contact.php'],
                 ['active'=>1,'icon'=>'delivery','badge'=>'','title'=>'Fast Response & Delivery','text'=>'Quick response to inquiries and flexible production scheduling support samples, projects and repeat orders.','button_label'=>'Contact Us Now','button_url'=>'contact.php'],

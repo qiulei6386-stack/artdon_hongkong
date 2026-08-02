@@ -163,7 +163,7 @@ function sol_solutions_page_config(array $saved, array $scenes): array {
             'eyebrow'=>'WHY CHOOSE ARTDON',
             'title'=>'Built for Professional Projects',
             'items'=>[
-                ['active'=>1,'title'=>'19+ Years Experience','text'=>'Deep know-how in architectural and commercial lighting.','icon'=>'years'],
+                ['active'=>1,'title'=>'Since 2007','text'=>'Long-term know-how in architectural and commercial lighting.','icon'=>'years'],
                 ['active'=>1,'title'=>'OEM & ODM','text'=>'Flexible product development for brand and project needs.','icon'=>'oem'],
                 ['active'=>1,'title'=>'Fast Sample','text'=>'Efficient sampling to keep projects moving.','icon'=>'sample'],
                 ['active'=>1,'title'=>'Optical Design','text'=>'Precise beams, low glare and high visual comfort.','icon'=>'optics'],

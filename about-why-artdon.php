@@ -24,16 +24,16 @@ $heroImage = about_asset([
     'assets/img/projects/featured-office.webp',
 ]);
 $pageTitle = 'Why Artdon | Architectural Lighting Manufacturer';
-$pageDescription = 'Architectural lighting manufacturer with 18+ years of OEM and ODM experience.';
+$pageDescription = 'Architectural lighting manufacturer since 2007 with OEM and ODM experience.';
 $seoKeywords = '';
 $canonical = $siteUrl . '/about-why-artdon.php';
 $heroTitle = "Why Leading\nLighting Brands\nChoose Artdon";
-$heroSubtitle = 'Architectural lighting manufacturer with 18+ years of OEM & ODM experience.';
+$heroSubtitle = 'Architectural lighting manufacturer since 2007 with OEM & ODM experience.';
 $heroAlt = 'Artdon factory and architectural lighting manufacturing';
 $heroButtonText = 'EXPLORE FACTORY →';
 $heroButtonUrl = 'index.php#why-choose-artdon';
 $stats = [
-    ['value'=>'18+','label'=>'Years Experience'],
+    ['value'=>'Since 2007','label'=>'Lighting Manufacturer'],
     ['value'=>'100+','label'=>'Employees'],
     ['value'=>'20+','label'=>'CNC Machines'],
     ['value'=>'OEM / ODM','label'=>'Development'],

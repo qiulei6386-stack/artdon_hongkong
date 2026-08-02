@@ -32,7 +32,7 @@ $cards = [
 $cardsTitle = 'Explore Artdon';
 $cardsActive = true;
 $stats = [
-    ['value'=>'18+','label'=>'Years Experience'],
+    ['value'=>'Since 2007','label'=>'Lighting Manufacturer'],
     ['value'=>'100+','label'=>'Employees'],
     ['value'=>'20+','label'=>'CNC Machines'],
     ['value'=>'6,000 m²','label'=>'Factory Area'],
