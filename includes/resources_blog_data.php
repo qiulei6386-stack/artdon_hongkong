@@ -70,42 +70,42 @@ function artdon_resource_blog_default_body(array $article): array
 
 function artdon_resource_blog_default_detail_content(array $article): array
 {
-    $title = (string)($article['title'] ?? 'Understanding Beam Angle in Track Lighting');
-    $summary = (string)($article['summary'] ?? 'Learn how beam angle impacts lighting performance and how to choose the right beam for retail, museums and commercial spaces.');
+    $title = (string)($article['title'] ?? 'Lighting Insight');
+    $summary = (string)($article['summary'] ?? 'Practical lighting information for professional architectural lighting projects.');
     $image = (string)($article['image'] ?? 'assets/img/hero/hero-technical-downloads.webp');
     return [
         'key_takeaways'=>[
-            'Beam angle controls how concentrated or spread out the light appears on the target surface.',
-            'Narrow beams create strong accent effects for display highlights and premium merchandise.',
-            'Medium beams are suitable for most retail, gallery and commercial lighting layouts.',
-            'Mounting height, product distance and desired contrast should be checked together.',
+            'Define the project application and visual task before selecting luminaires.',
+            'Check glare control, color quality, beam distribution and installation conditions together.',
+            'Use verified technical files to support calculation, coordination and final specification.',
+            'Confirm final product configuration with the quoted project requirements.',
         ],
         'sections'=>[
-            ['id'=>'what-is-beam-angle','number'=>'01','title'=>'What Is Beam Angle?','paragraphs'=>[$summary, 'Beam angle describes the spread of light emitted from a luminaire. It influences brightness, contrast, visual focus and the feeling of depth in a space.']],
-            ['id'=>'common-beam-angles','number'=>'02','title'=>'Common Beam Angles','paragraphs'=>['Track lighting commonly uses very narrow, narrow, medium and wide beam angles. Each option creates a different visual effect and should be selected according to the application.']],
-            ['id'=>'choose-right-beam','number'=>'03','title'=>'How to Choose the Right Beam Angle','paragraphs'=>['Choose a narrow beam when the target area is small or the display requires strong contrast. Use medium beams for balanced merchandise lighting and wide beams where comfortable ambient illumination is required.']],
-            ['id'=>'mounting-height','number'=>'04','title'=>'Beam Angle and Mounting Height','paragraphs'=>['Higher ceilings usually require careful beam selection to maintain useful illuminance. Wider beams cover more area, while narrow beams maintain stronger intensity on a specific object.']],
-            ['id'=>'conclusion','number'=>'05','title'=>'Conclusion','paragraphs'=>['The right beam angle improves visual hierarchy, reduces wasted light and helps the space feel intentional. For professional projects, confirm beam angle together with CCT, CRI, glare control and mounting position.']],
+            ['id'=>'overview','number'=>'01','title'=>'Overview','paragraphs'=>[$summary]],
+            ['id'=>'why-it-matters','number'=>'02','title'=>'Why It Matters','paragraphs'=>['Professional lighting decisions affect visual comfort, product presentation, energy use and long-term project reliability.']],
+            ['id'=>'selection-factors','number'=>'03','title'=>'Key Selection Factors','paragraphs'=>['Review the application, mounting height, optical performance, glare control, color quality, control method and maintenance requirements before final selection.']],
+            ['id'=>'project-check','number'=>'04','title'=>'Project Check','paragraphs'=>['For commercial projects, confirm lighting intent, drawings, technical files and product availability before quotation or installation planning.']],
+            ['id'=>'conclusion','number'=>'05','title'=>'Conclusion','paragraphs'=>['A clear specification process helps designers, contractors and suppliers keep lighting performance consistent from concept to delivery.']],
         ],
-        'card_grid_title'=>'Common Beam Angles',
+        'card_grid_title'=>'Specification Checklist',
         'cards_after_section'=>'02',
         'beam_cards'=>[
-            ['angle'=>'15°','title'=>'Very Narrow','text'=>'Sharp accent lighting for small objects and focused display points.','image'=>'assets/img/hero/hero-track-systems.webp'],
-            ['angle'=>'24°','title'=>'Narrow','text'=>'Strong highlights for retail displays, walls and feature zones.','image'=>'assets/img/products/track-spot-module.webp'],
-            ['angle'=>'36°','title'=>'Medium','text'=>'Balanced illumination for most commercial and gallery applications.','image'=>'assets/img/projects/featured-retail.webp'],
-            ['angle'=>'60°','title'=>'Wide','text'=>'Soft ambient lighting for larger areas and comfortable circulation.','image'=>'assets/img/projects/featured-office.webp'],
+            ['angle'=>'01','title'=>'Application','text'=>'Match the luminaire type to the space, task and visual priority.','image'=>'assets/img/hero/hero-track-systems.webp'],
+            ['angle'=>'02','title'=>'Optics','text'=>'Check beam distribution, glare control and color quality together.','image'=>'assets/img/products/track-spot-module.webp'],
+            ['angle'=>'03','title'=>'Installation','text'=>'Confirm mounting method, ceiling conditions and maintenance access.','image'=>'assets/img/projects/featured-retail.webp'],
+            ['angle'=>'04','title'=>'Documents','text'=>'Use datasheets, IES/LDT files and drawings for project coordination.','image'=>'assets/img/projects/featured-office.webp'],
         ],
-        'table_title'=>'Beam Angle and Mounting Height',
+        'table_title'=>'Project Specification Checklist',
         'table_after_section'=>'04',
-        'table_headers'=>['Ceiling Height','Recommended Beam Angle','Best Use'],
+        'table_headers'=>['Item','What to Check','Why It Matters'],
         'mounting_table'=>[
-            ['height'=>'2.5–3m','beam'=>'15°–24°','use'=>'Accent lighting, display highlights'],
-            ['height'=>'3–4m','beam'=>'24°–36°','use'=>'General lighting, retail, galleries'],
-            ['height'=>'4m+','beam'=>'36°–60°','use'=>'Ambient lighting, large areas'],
+            ['height'=>'Application','beam'=>'Retail, hospitality, office, museum or residential','use'=>'Defines brightness, glare and visual hierarchy requirements'],
+            ['height'=>'Product files','beam'=>'Datasheet, IES/LDT, drawings and installation guide','use'=>'Supports calculation, coordination and approval'],
+            ['height'=>'Project conditions','beam'=>'Mounting height, ceiling type, controls and finish','use'=>'Prevents selection or installation mismatch'],
         ],
         'cta_after_section'=>'03',
         'mid_cta'=>[
-            'title'=>'Need help selecting the right beam angle for your project?',
+            'title'=>'Need help selecting lighting products for your project?',
             'text'=>'Our lighting experts are ready to support you.',
             'button_text'=>'TALK TO OUR EXPERT →',
             'button_url'=>'contact.php?subject=technical',
@@ -115,7 +115,7 @@ function artdon_resource_blog_default_detail_content(array $article): array
             'text'=>'Precision accent lighting supports premium merchandise presentation with soft ambient balance.',
             'image'=>$image,
             'image_alt'=>'Dior Boutique lighting project',
-            'params'=>['3000K CCT','15°/24° Beam Angle','CRI ≥ 90 High Color Rendering'],
+            'params'=>['3000K CCT','High CRI','Low-glare accent lighting'],
             'url'=>'project.php',
         ],
     ];
