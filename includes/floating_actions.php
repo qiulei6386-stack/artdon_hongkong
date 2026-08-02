@@ -22,6 +22,8 @@ $__faText = static function (string $key, string $fallback) use ($__faSite, $__f
 $__faCompany = trim((string)($__company ?? ($__faSite['company'] ?? '')));
 if ($__faCompany === '') $__faCompany = 'Artdon Lighting Limited';
 $__faEmail = trim((string)($__email ?? ($__faSite['email'] ?? ''))) ?: 'sales@artdon.cn';
+$__faWhatsApp = preg_replace('/\D+/', '', (string)($__faSite['whatsapp'] ?? $__faDefaults['whatsapp'] ?? '8613925332972'));
+$__faWhatsAppHref = $__faWhatsApp !== '' ? ('https://wa.me/' . $__faWhatsApp) : '';
 $__faContext = [
     'page_type' => 'page',
     'title' => trim((string)($pageTitle ?? '')),
@@ -348,6 +350,7 @@ if (isset($series) && is_array($series)) {
   background:#fff7f7;border-radius:14px;color:#222;font-size:13px;line-height:1.45
 }
 .artdon-fi-mini-notice-v718109 strong{font-weight:900;color:#111}.artdon-fi-mini-notice-v718109 span{color:#666}
+.artdon-float-v71871 [data-af-whatsapp]{display:none}
 .artdon-fi-mobile-label-v718192{display:none}
 .artdon-fi-grid-v71871{gap:14px 16px!important}
 .artdon-fi-field-v71871{gap:7px!important}
@@ -358,6 +361,8 @@ if (isset($series) && is_array($series)) {
 .artdon-fi-field-v71871 input{height:50px!important}.artdon-fi-field-v71871 textarea{min-height:126px!important}
 .artdon-fi-actions-v71871{margin-top:18px!important}.artdon-fi-submit-v71871{min-width:210px!important;padding:15px 24px!important}.artdon-fi-cancel-v71871{font-size:15px!important}
 @media(max-width:820px){
+  .artdon-float-v71871 [data-af-copy]{display:none!important}
+  .artdon-float-v71871 [data-af-whatsapp]{display:grid!important}
   .artdon-fi-shell-v718109{grid-template-columns:1fr;min-height:0}.artdon-fi-aside-v718109{padding:22px 20px}.artdon-fi-aside-v718109 h3{font-size:24px}.artdon-fi-trust-v718109{grid-template-columns:1fr;gap:8px}.artdon-fi-main-v718109{padding:24px 18px 20px}.artdon-fi-panel-v71871{overflow:auto!important}.artdon-fi-grid-v71871{grid-template-columns:1fr!important}.artdon-fi-head-v71871 h2{font-size:28px!important}
   .artdon-fi-field-v71871.is-mobile-optional-v718192{display:none!important}
   .artdon-fi-desktop-label-v718192{display:none!important}
@@ -371,6 +376,7 @@ if (isset($series) && is_array($series)) {
 <nav class="artdon-float-v71871" data-artdon-float-actions-v71871 data-context='<?= web_e(json_encode($__faContext, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>' data-email="<?= web_e($__faEmail) ?>" data-company="<?= web_e($__faCompany) ?>" aria-label="Quick actions">
   <button type="button" data-af-inquiry aria-label="Send inquiry"><span class="label">Inquiry</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7h10M7 11h7M6.5 18.5 3 21V5.8C3 4.25 4.25 3 5.8 3h12.4C19.75 3 21 4.25 21 5.8v8.4c0 1.55-1.25 2.8-2.8 2.8H9.2l-2.7 1.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <a data-af-email href="mailto:<?= web_e($__faEmail) ?>" aria-label="Email Artdon"><span class="label">Email</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6.5h16v11H4v-11Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="m5 7 7 6 7-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  <?php if ($__faWhatsAppHref !== ''): ?><a data-af-whatsapp href="<?= web_e($__faWhatsAppHref) ?>" target="_blank" rel="noopener" aria-label="Chat with Artdon on WhatsApp"><span class="label">Chat with Artdon</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20.2 11.75a8.18 8.18 0 0 1-12.03 7.18L4 20l1.1-4a8.2 8.2 0 1 1 15.1-4.25Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8.2 7.7c.22-.5.45-.52.82-.53h.34c.14 0 .34.06.45.34l.9 2.1c.08.2.06.38-.04.55l-.7 1c-.11.15-.09.33 0 .48.44.8 1.14 1.52 1.93 2 .17.1.36.12.51-.02l1.15-1.08c.16-.15.35-.18.55-.08l2.02.96c.24.12.34.27.32.48-.05.73-.42 1.5-1.03 1.92-.55.38-1.27.55-2.16.36-1.38-.3-3.12-1.28-4.5-2.68-1.4-1.41-2.3-3.1-2.48-4.3-.13-.8.05-1.14.36-1.52.2-.25.4-.36.56-.44Z" fill="currentColor"/></svg></a><?php endif; ?>
   <button type="button" data-af-copy aria-label="Copy link"><span class="label">Copy current link</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 1 0-7.07-7.07L10.9 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 11a5 5 0 0 0-7.07 0L4.8 13.12a5 5 0 1 0 7.07 7.07L13.1 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
 </nav>
 <div class="artdon-copy-toast-v71871" data-af-toast>Link copied</div>

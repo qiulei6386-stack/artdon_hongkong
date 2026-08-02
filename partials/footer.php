@@ -33,6 +33,8 @@ $__email = trim((string)($__contact['email_value'] ?? ''));
 $__telephone = trim((string)($__contact['telephone_value'] ?? ''));
 $__mobile = trim((string)($__contact['mobile_value'] ?? ''));
 $__whatsapp = preg_replace('/\D+/', '', (string)($__contact['whatsapp_number'] ?? ''));
+$__mobilePrimary = trim(preg_split('/\s*\/\s*/', $__mobile)[0] ?? $__mobile);
+$__mobileDisplay = $__mobilePrimary !== '' ? $__mobilePrimary : $__mobile;
 $__socials = array_values(array_filter($__bottom['social'] ?? [], static fn($item): bool => is_array($item)));
 $__brandActive = web_footer_bool($__brand['active'] ?? true);
 $__contactActive = web_footer_bool($__contact['active'] ?? true);
@@ -106,8 +108,8 @@ $__primaryClasses[] = $__contactActive ? 'has-contact' : 'without-contact';
           <?php if ($__telephone !== ''): ?>
             <div class="footer-v611__contact-row is-telephone"><dt><?= web_e($__contact['telephone_label'] ?? 'Tel') ?></dt><dd><a href="tel:<?= web_e(preg_replace('/[^0-9+]/', '', $__telephone)) ?>"><?= web_e($__telephone) ?></a></dd></div>
           <?php endif; ?>
-          <?php if ($__mobile !== ''): ?>
-            <div class="footer-v611__contact-row is-mobile"><dt><?= web_e($__contact['mobile_label'] ?? 'Mobile / WhatsApp') ?></dt><dd><a href="<?= web_e($__whatsapp !== '' ? 'https://wa.me/'.$__whatsapp : 'tel:'.preg_replace('/[^0-9+]/', '', $__mobile)) ?>"<?= $__whatsapp !== '' ? ' target="_blank" rel="noopener"' : '' ?>><?= web_e($__mobile) ?></a></dd></div>
+          <?php if ($__mobileDisplay !== ''): ?>
+            <div class="footer-v611__contact-row is-mobile"><dt><?= web_e($__contact['mobile_label'] ?? 'WhatsApp') ?></dt><dd><a href="<?= web_e($__whatsapp !== '' ? 'https://wa.me/'.$__whatsapp : 'tel:'.preg_replace('/[^0-9+]/', '', $__mobileDisplay)) ?>"<?= $__whatsapp !== '' ? ' target="_blank" rel="noopener"' : '' ?>><?= web_e($__mobileDisplay) ?></a></dd></div>
           <?php endif; ?>
         </dl>
         <?php if (trim((string)($__contact['button_label'] ?? '')) !== '' && trim((string)($__contact['button_url'] ?? '')) !== ''): ?>

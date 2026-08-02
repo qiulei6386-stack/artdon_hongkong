@@ -15,7 +15,7 @@ function web_default_content(): array
             'contact_name' => 'Sukie',
             'email' => 'sales@artdon.cn',
             'telephone' => '+86-760-22211886',
-            'mobile' => '+86-13925332972 / +86-13751710245',
+            'mobile' => '+86-13925332972',
             'whatsapp' => '8613925332972',
             'location' => 'No. 15 Zhihe 3rd Street, Yumin Dongsheng, Xiaolan Town, Zhongshan City, Guangdong, China (Post Code: 528414)',
             'facebook' => '',
@@ -303,7 +303,7 @@ function web_default_content(): array
             'contact_person_label'=>'Contact',
             'email_label'=>'Email',
             'telephone_label'=>'Tel',
-            'mobile_label'=>'Mobile / WhatsApp',
+            'mobile_label'=>'WhatsApp',
             'copyright'=>'© 2026 Artdon Lighting Limited',
             'legal'=>[
                 ['label'=>'Privacy Policy','href'=>'contact.php#privacy'],
