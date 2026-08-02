@@ -462,10 +462,41 @@ if (isset($series) && is_array($series)) {
     if(!project)return fallback;
     return clean(String(template||'Inquiry about: {project}').replace(/\{project\}/gi,project));
   }
-  function isGetQuoteTrigger(trigger){
+  function isMobileView(){
+    return !window.matchMedia || window.matchMedia('(max-width: 820px)').matches;
+  }
+  function triggerLabel(trigger){
+    return clean(trigger?.textContent||'').replace(/[→›»]+/g,'').trim();
+  }
+  function isInquiryCtaTrigger(trigger){
     if(!trigger||trigger.closest('[data-af-modal]'))return false;
-    var label=clean(trigger.textContent||'').replace(/[→›»]+/g,'').trim();
-    return /^get\s+a\s+quote\b/i.test(label);
+    var label=triggerLabel(trigger);
+    if(/^(get|request)\s+(a\s+)?quote\b/i.test(label))return true;
+    if(!isMobileView())return false;
+    return /^(discuss\b.*\bproject|project\s+inquiry|talk\s+to\s+our\s+engineers|ask\s+our\s+team)\b/i.test(label);
+  }
+  function inquiryKind(trigger,prod){
+    var label=triggerLabel(trigger);
+    if(/^(discuss\b.*\bproject|project\s+inquiry|talk\s+to\s+our\s+engineers|ask\s+our\s+team)\b/i.test(label))return 'project';
+    if(prod || /quote/i.test(label))return 'quotation';
+    if(/technical|file|download/i.test(label))return 'technical';
+    return 'project';
+  }
+  function setMobileInquiryLabels(){
+    if(!isMobileView())return;
+    document.querySelectorAll('a,button').forEach(function(el){
+      if(el.closest('[data-af-modal]')||el.closest('[data-artdon-float-actions-v71871]'))return;
+      if(el.getAttribute('data-mobile-inquiry-label-applied')==='1')return;
+      var label=triggerLabel(el);
+      var next='';
+      if(/^(get|request)\s+(a\s+)?quote\b/i.test(label))next='Request a Quote';
+      else if(/^(discuss\b.*\bproject|project\s+inquiry|talk\s+to\s+our\s+engineers)\b/i.test(label))next='Discuss a Project';
+      if(!next)return;
+      var arrow=/[→›»]/.test(el.textContent||'')?' →':'';
+      el.setAttribute('data-mobile-inquiry-label-applied','1');
+      el.setAttribute('data-mobile-inquiry-original',el.textContent||'');
+      el.textContent=next+arrow;
+    });
   }
   function currentUrl(){return location.href.split('#')[0]}
   function legacyReturnUrl(){
@@ -485,6 +516,7 @@ if (isset($series) && is_array($series)) {
     setVal('[data-af-field-page-type]', ctx.page_type||'page');
     setVal('[data-af-field-page-title]', pageTitle());
     setVal('[data-af-field-return]', legacyReturnUrl());
+    setVal('[data-af-form] input[name="support_type"]', inquiryKind(trigger,prod));
     var subtitle=q('[data-af-modal-subtitle]'); if(subtitle) subtitle.textContent=formatProjectText(subtitle.getAttribute('data-template'),prod,subtitle.getAttribute('data-default')||'Send us your product or project requirement.');
     var msg=q('[data-af-message]');
     if(msg){
@@ -527,7 +559,7 @@ if (isset($series) && is_array($series)) {
   var inquiryBtn=q('[data-af-inquiry]',root); if(inquiryBtn) inquiryBtn.addEventListener('click',function(){openInquiry(inquiryBtn)});
   document.addEventListener('click',function(e){
     var target=e.target&&e.target.closest?e.target.closest('a,button'):null;
-    if(!isGetQuoteTrigger(target))return;
+    if(!isInquiryCtaTrigger(target))return;
     e.preventDefault();
     e.stopImmediatePropagation();
     openInquiry(target);
@@ -537,5 +569,7 @@ if (isset($series) && is_array($series)) {
   document.addEventListener('click',function(e){if(e.target&&e.target.matches('[data-af-close]'))closeInquiry();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeInquiry();});
   bindForm();
+  setMobileInquiryLabels();
+  window.addEventListener('resize',setMobileInquiryLabels,{passive:true});
 })();
 </script>
