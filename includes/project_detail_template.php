@@ -133,6 +133,95 @@ function project_detail_solution_url(string $category): string
         default => 'solutions.php',
     };
 }
+function project_detail_application_profile(array $project, array $projectInfo): array
+{
+    $raw = strtolower(trim(implode(' ', [
+        (string)($projectInfo['application'] ?? ''),
+        (string)($project['category'] ?? ''),
+        (string)($project['title'] ?? ''),
+        (string)($project['location'] ?? ''),
+    ])));
+    $profiles = [
+        'transport' => [
+            'name' => 'Public Space / Transport Lighting',
+            'short' => 'Transport Lighting',
+            'solution_url' => 'solutions.php',
+            'solution_label' => 'EXPLORE TRANSPORT LIGHTING SOLUTION',
+            'solution_text' => 'Explore public-space and transport lighting solutions for airports, stations and high-traffic passenger environments, with emphasis on wayfinding, visual comfort and reliable architectural illumination.',
+            'cta_title' => 'Planning a Public Space or Transport Lighting Project?',
+            'cta_text' => 'Artdon supports airport, station and public-area lighting projects with suitable luminaires, optical control and project-based technical guidance.',
+        ],
+        'retail' => [
+            'name' => 'Retail Lighting',
+            'short' => 'Retail Lighting',
+            'solution_url' => 'solutions-retail.php',
+            'solution_label' => 'EXPLORE RETAIL SOLUTION',
+            'solution_text' => 'Explore retail lighting solutions for stores, boutiques, malls and display areas where merchandise visibility, contrast control and customer experience are essential.',
+            'cta_title' => 'Planning a Retail Lighting Project?',
+            'cta_text' => 'Artdon provides architectural lighting products and project support for retail stores, shopping malls and commercial display environments.',
+        ],
+        'hospitality' => [
+            'name' => 'Hospitality Lighting',
+            'short' => 'Hospitality Lighting',
+            'solution_url' => 'solutions-hospitality.php',
+            'solution_label' => 'EXPLORE HOSPITALITY SOLUTION',
+            'solution_text' => 'Explore hospitality lighting solutions for hotels, restaurants and guest environments, balancing warm ambience, glare control and architectural detail.',
+            'cta_title' => 'Planning a Hospitality Lighting Project?',
+            'cta_text' => 'Artdon supports hotel and hospitality projects with layered lighting, warm visual comfort and product selection for guest-facing spaces.',
+        ],
+        'office' => [
+            'name' => 'Office Lighting',
+            'short' => 'Office Lighting',
+            'solution_url' => 'solutions-office.php',
+            'solution_label' => 'EXPLORE OFFICE SOLUTION',
+            'solution_text' => 'Explore office lighting solutions for workplaces, meeting areas and reception spaces where visual comfort, efficiency and architectural consistency matter.',
+            'cta_title' => 'Planning an Office Lighting Project?',
+            'cta_text' => 'Artdon supports office lighting projects with efficient luminaires, comfortable optics and application guidance for productive work environments.',
+        ],
+        'museum' => [
+            'name' => 'Museum & Gallery Lighting',
+            'short' => 'Museum & Gallery',
+            'solution_url' => 'solutions-museum-gallery.php',
+            'solution_label' => 'EXPLORE MUSEUM & GALLERY SOLUTION',
+            'solution_text' => 'Explore museum and gallery lighting solutions for artwork, exhibits and cultural spaces, with focus on beam control, low glare and careful visual hierarchy.',
+            'cta_title' => 'Planning a Museum or Gallery Lighting Project?',
+            'cta_text' => 'Artdon supports museum and gallery projects with precise accent lighting, optical control and application-focused product recommendations.',
+        ],
+        'residential' => [
+            'name' => 'Residential Lighting',
+            'short' => 'Residential Lighting',
+            'solution_url' => 'solutions-residential.php',
+            'solution_label' => 'EXPLORE RESIDENTIAL SOLUTION',
+            'solution_text' => 'Explore residential lighting solutions for villas, apartments and private interiors where comfort, atmosphere and architectural integration are important.',
+            'cta_title' => 'Planning a Residential Lighting Project?',
+            'cta_text' => 'Artdon supports villa and residential lighting projects with comfortable optics, warm ambience and discreet architectural luminaires.',
+        ],
+        'commercial' => [
+            'name' => 'Commercial Lighting',
+            'short' => 'Commercial Lighting',
+            'solution_url' => 'solutions-office.php',
+            'solution_label' => 'EXPLORE COMMERCIAL LIGHTING SOLUTION',
+            'solution_text' => 'Explore commercial lighting solutions for public, office and mixed-use environments where reliable performance, visual comfort and architectural consistency are required.',
+            'cta_title' => 'Planning a Commercial Lighting Project?',
+            'cta_text' => 'Artdon supports commercial projects with architectural luminaires, optical guidance and project-based lighting recommendations.',
+        ],
+    ];
+    $key = 'commercial';
+    if (preg_match('/airport|station|rail|transport|terminal|public space|concourse|metro|subway|high-speed/i', $raw)) {
+        $key = 'transport';
+    } elseif (preg_match('/hotel|hospitality|guest|restaurant|lobby/i', $raw)) {
+        $key = 'hospitality';
+    } elseif (preg_match('/museum|gallery|exhibition|cultural/i', $raw)) {
+        $key = 'museum';
+    } elseif (preg_match('/villa|residential|home|apartment|house/i', $raw)) {
+        $key = 'residential';
+    } elseif (preg_match('/office|workplace|business center|meeting/i', $raw)) {
+        $key = 'office';
+    } elseif (preg_match('/retail|store|boutique|mall|showroom|supermarket|duty free|fashion|shopping/i', $raw)) {
+        $key = 'retail';
+    }
+    return $profiles[$key];
+}
 function project_detail_meta_text(string $text, int $max = 160): string
 {
     $text = trim(preg_replace('/\s+/', ' ', strip_tags($text)) ?? '');
@@ -163,14 +252,15 @@ $projectUrl = function_exists('artdon_project_pretty_url')
     ? artdon_project_pretty_url((string)($project['slug'] ?? project_detail_slug($projectTitle)))
     : ('/projects/' . rawurlencode((string)($project['slug'] ?? project_detail_slug($projectTitle))));
 $solution = is_array($projectDetail['solution'] ?? null) ? $projectDetail['solution'] : [];
-$solutionUrl = project_detail_url((string)($solution['button_url'] ?? ''), project_detail_solution_url($projectCategory));
-$solutionLabel = trim((string)($solution['button_label'] ?? '')) ?: ('EXPLORE ' . strtoupper($projectCategory === 'Museum & Gallery' ? 'MUSEUM GALLERY' : $projectCategory) . ' SOLUTION');
-$solutionText = trim((string)($solution['text'] ?? '')) ?: 'Explore the lighting solution behind this project and see how product selection, beam angles and visual comfort can support similar applications.';
+$applicationProfile = project_detail_application_profile($project, $projectInfo);
+$solutionUrl = project_detail_url((string)($applicationProfile['solution_url'] ?? ''), project_detail_solution_url($projectCategory));
+$solutionLabel = (string)($applicationProfile['solution_label'] ?? ('EXPLORE ' . strtoupper($projectCategory === 'Museum & Gallery' ? 'MUSEUM GALLERY' : $projectCategory) . ' SOLUTION'));
+$solutionText = (string)($applicationProfile['solution_text'] ?? 'Explore the lighting solution behind this project and see how product selection, beam angles and visual comfort can support similar applications.');
 $solutionImage = project_detail_public_path((string)($solution['image'] ?? $projectListImage));
 $cta = is_array($projectDetail['cta'] ?? null) ? $projectDetail['cta'] : [];
 $ctaImage = project_detail_public_path((string)($cta['image'] ?? $projectListImage));
-$ctaTitle = trim((string)($cta['title'] ?? '')) ?: 'Planning a Similar Project?';
-$ctaText = trim((string)($cta['text'] ?? '')) ?: 'Talk to our lighting experts and get a tailored lighting solution for your project.';
+$ctaTitle = (string)($applicationProfile['cta_title'] ?? 'Planning a Similar Project?');
+$ctaText = (string)($applicationProfile['cta_text'] ?? 'Talk to our lighting experts and get a tailored lighting solution for your project.');
 $ctaButton = trim((string)($cta['button_label'] ?? '')) ?: 'DISCUSS YOUR PROJECT →';
 $ctaButtonUrl = trim((string)($cta['button_url'] ?? 'inquiry'));
 $heroOverlay = (int)($projectDetail['hero_overlay'] ?? 1) === 1;
