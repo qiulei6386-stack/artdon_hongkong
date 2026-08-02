@@ -348,6 +348,7 @@ if (isset($series) && is_array($series)) {
   background:#fff7f7;border-radius:14px;color:#222;font-size:13px;line-height:1.45
 }
 .artdon-fi-mini-notice-v718109 strong{font-weight:900;color:#111}.artdon-fi-mini-notice-v718109 span{color:#666}
+.artdon-fi-mobile-label-v718192{display:none}
 .artdon-fi-grid-v71871{gap:14px 16px!important}
 .artdon-fi-field-v71871{gap:7px!important}
 .artdon-fi-field-v71871 label{font-size:11px!important;letter-spacing:.16em!important;color:#3f4652!important}
@@ -358,6 +359,12 @@ if (isset($series) && is_array($series)) {
 .artdon-fi-actions-v71871{margin-top:18px!important}.artdon-fi-submit-v71871{min-width:210px!important;padding:15px 24px!important}.artdon-fi-cancel-v71871{font-size:15px!important}
 @media(max-width:820px){
   .artdon-fi-shell-v718109{grid-template-columns:1fr;min-height:0}.artdon-fi-aside-v718109{padding:22px 20px}.artdon-fi-aside-v718109 h3{font-size:24px}.artdon-fi-trust-v718109{grid-template-columns:1fr;gap:8px}.artdon-fi-main-v718109{padding:24px 18px 20px}.artdon-fi-panel-v71871{overflow:auto!important}.artdon-fi-grid-v71871{grid-template-columns:1fr!important}.artdon-fi-head-v71871 h2{font-size:28px!important}
+  .artdon-fi-field-v71871.is-mobile-optional-v718192{display:none!important}
+  .artdon-fi-desktop-label-v718192{display:none!important}
+  .artdon-fi-mobile-label-v718192{display:inline!important}
+  .artdon-fi-field-v71871 input{height:48px!important}
+  .artdon-fi-field-v71871 textarea{min-height:112px!important}
+  .artdon-fi-mini-notice-v718109{margin-bottom:14px!important}
 }
 
 </style>
@@ -403,8 +410,9 @@ if (isset($series) && is_array($series)) {
       <input type="hidden" name="return_url" data-af-field-return value="index.php">
       <div class="artdon-fi-grid-v71871">
         <div class="artdon-fi-field-v71871"><label><?= web_e($__faText('quote_modal_name_label', 'Name *')) ?></label><input name="name" required autocomplete="name"></div>
-        <div class="artdon-fi-field-v71871"><label><?= web_e($__faText('quote_modal_email_label', 'Email *')) ?></label><input name="email" type="email" required autocomplete="email"></div>
-        <div class="artdon-fi-field-v71871"><label><?= web_e($__faText('quote_modal_company_label', 'Company')) ?></label><input name="company" autocomplete="organization"></div>
+        <div class="artdon-fi-field-v71871"><label><span class="artdon-fi-desktop-label-v718192" aria-hidden="true"><?= web_e($__faText('quote_modal_email_label', 'Email *')) ?></span><span class="artdon-fi-mobile-label-v718192" aria-hidden="true">Email or WhatsApp *</span></label><input name="email" type="email" required autocomplete="email"></div>
+        <div class="artdon-fi-field-v71871"><label>WhatsApp</label><input name="whatsapp" autocomplete="tel" inputmode="tel" placeholder="+86 139 2533 2972"></div>
+        <div class="artdon-fi-field-v71871 is-mobile-optional-v718192"><label><?= web_e($__faText('quote_modal_company_label', 'Company')) ?></label><input name="company" autocomplete="organization"></div>
         <div class="artdon-fi-field-v71871"><label><?= web_e($__faText('quote_modal_country_label', 'Country')) ?></label><input name="country" autocomplete="country-name"></div>
         <div class="artdon-fi-field-v71871 full"><label><?= web_e($__faText('quote_modal_requirement_label', 'Project requirement')) ?></label><textarea name="message" data-af-message placeholder="<?= web_e($__faText('quote_modal_requirement_placeholder', 'Tell us quantity, project type, beam angle, CCT or other requirements.')) ?>"></textarea></div>
       </div>
@@ -483,6 +491,8 @@ if (isset($series) && is_array($series)) {
     return 'project';
   }
   function setMobileInquiryLabels(){
+    var emailField=q('[data-af-form] input[name="email"]');
+    if(emailField)emailField.setAttribute('aria-label',isMobileView()?'Email or WhatsApp':'Email');
     if(!isMobileView())return;
     document.querySelectorAll('a,button').forEach(function(el){
       if(el.closest('[data-af-modal]')||el.closest('[data-artdon-float-actions-v71871]'))return;
