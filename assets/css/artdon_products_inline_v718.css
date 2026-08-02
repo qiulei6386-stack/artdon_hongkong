@@ -743,6 +743,19 @@ main.catalog-v50 .catalog-grid [data-artdon-filter-card].artdon-v718103-hidden,
 main.catalog-v50 .catalog-family-divider.artdon-v718103-hidden{display:none!important;}
 main.catalog-v50 .catalog-filter-group label.is-zero-count{display:none!important;}
 
+/* V7.1.8.191: category intro pages keep desktop clean, but show search on phones. */
+main.catalog-v50 .catalog-results-head.has-family-intro-v718127 .catalog-results-search-v718104.catalog-mobile-category-search-v718191{
+  display:none!important;
+}
+@media (max-width:800px){
+  main.catalog-v50 .catalog-results-head.has-family-intro-v718127 .catalog-results-search-v718104.catalog-mobile-category-search-v718191{
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:18px 0 0!important;
+  }
+}
+
 /* products.php inline style block 13 */
 main.catalog-v50 .catalog-results-head.has-family-intro-v718127{
   margin-bottom:0!important;

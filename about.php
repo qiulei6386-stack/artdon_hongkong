@@ -309,6 +309,6 @@ $marketJson = json_encode([
 <?php if ($marketHasGoogle): ?>
 <script src="https://maps.googleapis.com/maps/api/js?key=<?= web_e(rawurlencode($marketApiKey)) ?>&callback=initAboutGlobalMap" async defer></script>
 <?php endif; ?>
-<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 </body>
 </html>

@@ -37,7 +37,11 @@ if (!function_exists('artdon_header_product_menu_items_v718106')) {
                     if ($slug === '' || $slug === 'all') continue;
                     $label = trim((string)($cat['display_name'] ?? ($cat['name'] ?? ''))) ?: ucwords(str_replace('-', ' ', $slug));
                     $href = function_exists('artdon_pretty_category_url_v71868') ? artdon_pretty_category_url_v71868($slug) : ('products.php?category=' . rawurlencode($slug));
-                    $items[] = ['label'=>$label, 'href'=>$href];
+                    $items[] = [
+                        'label'=>$label,
+                        'href'=>$href,
+                        'mobile_href'=>'products.php?category=' . rawurlencode($slug),
+                    ];
                 }
             }
         } catch (Throwable $e) {
@@ -129,7 +133,8 @@ $__quoteUrl = artdon_normalize_front_url_v71868(trim((string)($__site['header_qu
           <?php foreach($__items as $__item):
             $__itemLabel=is_array($__item)?(string)($__item['label']??($__item[0]??'')):'';
             $__itemHref=is_array($__item)?artdon_normalize_front_url_v71868((string)($__item['href']??($__item[1]??'#'))):'#';
-          ?><a href="<?= web_e($__itemHref) ?>"<?= $__label==='products' && strtolower(trim($__itemLabel))==='all products' ? ' data-mobile-menu-all-products' : '' ?>><?= web_e($__itemLabel) ?></a><?php endforeach; ?>
+            $__itemMobileHref = is_array($__item) ? trim((string)($__item['mobile_href'] ?? '')) : '';
+          ?><a href="<?= web_e($__itemHref) ?>"<?= $__label==='products' && strtolower(trim($__itemLabel))==='all products' ? ' data-mobile-menu-all-products' : '' ?><?= $__label==='products' && $__itemMobileHref!=='' ? ' data-mobile-product-filter-url="'.web_e(artdon_normalize_front_url_v71868($__itemMobileHref)).'"' : '' ?>><?= web_e($__itemLabel) ?></a><?php endforeach; ?>
         </div></div><?php endif; ?>
       </div>
     <?php endforeach; ?>

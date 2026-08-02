@@ -161,6 +161,6 @@ function artdon_download_query(array $changes): string {
   <section class="ap-cta"><div><h2>Need a file that is not listed?</h2><p>Tell us the product family, model and project stage. Our team will check the latest available technical document.</p></div><div class="ap-cta-actions"><a class="ap-button" href="contact.php?subject=technical-files">Contact technical support</a><a class="ap-button ap-button-light" href="products.php">Browse products</a></div></section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 <script src="assets/js/artdon_pages_v710.js?v=7.1.0" defer></script>
 </body></html>

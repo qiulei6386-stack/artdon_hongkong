@@ -254,7 +254,7 @@ $schema = [
   </section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('[data-download-section]').forEach(function(section){

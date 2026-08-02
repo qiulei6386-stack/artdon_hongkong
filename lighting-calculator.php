@@ -228,7 +228,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   </section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 <script src="assets/js/lighting-calculator/ies-parser.js?v=3.1.0" defer></script>
 <script src="assets/js/lighting-calculator/lux-engine.js?v=3.1.0" defer></script>
 <script src="assets/js/lighting-calculator/room-layout.js?v=3.1.0" defer></script>

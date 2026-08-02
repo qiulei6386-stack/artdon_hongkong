@@ -419,6 +419,6 @@ $projectDetailSchema = artdon_schema_graph([
   </section>
 </div>
 <?php include dirname(__DIR__) . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 </body>
 </html>

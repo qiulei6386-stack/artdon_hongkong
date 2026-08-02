@@ -25,6 +25,16 @@ if(navToggle&&siteNav){
       window.setTimeout(scrollMobileNavToProducts, 520);
     }
   });
+  siteNav.querySelectorAll('[data-mobile-product-filter-url]').forEach(link=>{
+    link.addEventListener('click',event=>{
+      if(!window.matchMedia || !window.matchMedia('(max-width: 900px)').matches) return;
+      const target=link.getAttribute('data-mobile-product-filter-url');
+      if(!target) return;
+      event.preventDefault();
+      closeNav();
+      window.location.href=target;
+    });
+  });
   siteNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeNav));
   document.addEventListener('keydown',event=>{ if(event.key==='Escape'&&siteNav.classList.contains('open')) closeNav(); });
 }

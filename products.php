@@ -1160,7 +1160,7 @@ if (is_file($__artdonCardV7093)) {
 
 <!-- ARTDON_V71887_PRODUCTS_APPROVED_FILTER_GROUPS_START -->
 <!-- ARTDON_V71886_PRODUCTS_FILTER_LEFT_LOCK_FOOTER_GUARD_START -->
-  <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.188">
+  <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.191">
 <script>
 (function(){
   function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
@@ -1323,13 +1323,12 @@ if (is_file($__artdonCardV7093)) {
           <p><?php if($productMode): ?><?= $total ?> product<?= $total===1?'':'s' ?> from <?= $seriesCount ?> series<?php else: ?><?= $total ?> series<?php endif; ?></p>
           <?php if(!$productMode && $categorySlug!=='all' && $activeCategoryFamilyIntro!==''): ?><p class="catalog-results-family-intro"><?= web_e($activeCategoryFamilyIntro) ?></p><?php endif; ?>
         </div>
-        <?php if(!(!$productMode && $categorySlug!=='all' && $activeCategoryFamilyIntro!=='')): ?>
-        <form class="catalog-search catalog-results-search-v718104" method="get" action="products.php" role="search" data-product-search-form autocomplete="off">
+        <?php $showMobileCategorySearchV718191 = (!$productMode && $categorySlug!=='all' && $activeCategoryFamilyIntro!==''); ?>
+        <form class="catalog-search catalog-results-search-v718104<?= $showMobileCategorySearchV718191 ? ' catalog-mobile-category-search-v718191' : '' ?>" method="get" action="products.php" role="search" data-product-search-form autocomplete="off">
           <?php if($categorySlug!=='all'): ?><input type="hidden" name="category" value="<?= web_e($categorySlug) ?>"><?php endif; ?>
           <label for="catalogSearch">Search products</label>
           <div><input id="catalogSearch" type="search" name="q" value="<?= web_e($clientInitialQuery) ?>" placeholder="Product name or model" autocomplete="off"><button type="submit">Search</button></div>
         </form>
-        <?php endif; ?>
       </header>
 
       <?php if($productMode && ($activeFilterLabels || $query!=='')): ?>
@@ -1421,7 +1420,7 @@ if (is_file($__artdonCardV7093)) {
 </main>
 <?php artdon_render_seo_internal_links('products', $canonical, 'Explore product and application hubs', 'Use these links to compare product families, application solutions and project references.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 
 <!-- ARTDON_V71868_PRODUCTS_PRETTY_URL_ADDRESS_BAR_START -->
 <script>
