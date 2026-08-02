@@ -145,7 +145,7 @@ $projectSchema = artdon_schema_graph([
   <meta property="og:image" content="<?= web_e($heroImage) ?>">
   <link rel="preload" as="image" href="<?= web_e($heroImage) ?>" fetchpriority="high">
   <?= artdon_schema_script($projectSchema) ?>
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.17">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <style>
     .project-page{background:#fff;color:#111;overflow-x:hidden}
@@ -284,7 +284,7 @@ $projectSchema = artdon_schema_graph([
 </main>
 <?php artdon_render_seo_internal_links('projects', $canonical, 'Explore projects by lighting application', 'Connect project references with solution pages and product categories used in commercial lighting design.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.17" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
 <script>
 (function(){
   var tabs=Array.prototype.slice.call(document.querySelectorAll('.project-tab'));

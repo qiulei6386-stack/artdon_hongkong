@@ -117,7 +117,7 @@ if ($variant && $series && empty($prettyModelV71865) && in_array(($_SERVER['REQU
 
 if (!$variant || !$series) {
     http_response_code(404);
-    ?><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/"><title>Product not found | Artdon Lighting</title><link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.17">
+    ?><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="/"><title>Product not found | Artdon Lighting</title><link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4"><link rel="stylesheet" href="assets/css/artdon_product_hierarchy.css?v=6.12.31">
 <!-- ARTDON_V7093_SIMPLE_BOOT_START -->
 <?php
@@ -845,7 +845,7 @@ $productSchema = artdon_schema_graph([
   <?php if(!empty($images[0]['image'])): ?><link rel="preload" as="image" href="<?= web_e(web_public_path((string)$images[0]['image'])) ?>" fetchpriority="high"><?php endif; ?>
   <meta property="og:type" content="product"><meta property="og:title" content="<?= web_e($pageTitle) ?>"><meta property="og:description" content="<?= web_e($pageDescription) ?>">
   <?php if($images): ?><meta property="og:image" content="<?= web_e(($siteUrl!==''?$siteUrl.'/':'').ltrim((string)$images[0]['image'],'/')) ?>"><?php endif; ?>
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.17">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_product_hierarchy.css?v=6.12.31">
   <link rel="stylesheet" href="assets/css/artdon_product_detail_v61232.css?v=6.12.46">
@@ -1115,7 +1115,7 @@ if (is_file($__artdonCardV7093)) {
 </div>
 
 <?php include __DIR__.'/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.17" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
 <script src="assets/js/artdon_product_inline_v718.js?v=7.1.8.186" defer></script>
 
 <!-- ARTDON_V71822_SHARE_LINK_SCRIPT_START -->

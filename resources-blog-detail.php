@@ -115,7 +115,7 @@ function bd_angle_svg(string $angle): string
   <meta property="og:title" content="<?= bd_e($pageTitle) ?>">
   <meta property="og:description" content="<?= bd_e($pageDescription) ?>">
   <meta property="og:image" content="<?= bd_e(artdon_v710_absolute_url($siteUrl, (string)$article['image'])) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.17">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.1">
   <style>
@@ -182,7 +182,7 @@ function bd_angle_svg(string $angle): string
   </section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.17" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.18" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   var links=[].slice.call(document.querySelectorAll('.bd-toc a'));

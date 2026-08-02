@@ -342,7 +342,7 @@ function sv717_variant_accessories(array $variant): array {
 
 if (!$series) {
     http_response_code(404);
-    ?><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Series not found | Artdon Lighting</title><link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.17"></head><body><?php include __DIR__ . '/partials/header.php'; ?><main style="padding:120px 40px"><h1>Series not found</h1><p>The requested product family is not available.</p><p><a href="products.php">Back to products</a></p></main><?php include __DIR__ . '/partials/footer.php'; ?>
+    ?><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Series not found | Artdon Lighting</title><link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18"></head><body><?php include __DIR__ . '/partials/header.php'; ?><main style="padding:120px 40px"><h1>Series not found</h1><p>The requested product family is not available.</p><p><a href="products.php">Back to products</a></p></main><?php include __DIR__ . '/partials/footer.php'; ?>
 <script>
 (function(){
   var button = document.getElementById('s717DimToggle');
@@ -461,7 +461,7 @@ $seriesSchema = artdon_schema_graph([
 <link rel="canonical" href="<?= sv717_e($canonicalV71866) ?>">
 <?php if (!empty($heroImages[0]['image'])): ?><link rel="preload" as="image" href="<?= sv717_e($heroImages[0]['image']) ?>" fetchpriority="high"><?php endif; ?>
 <?= artdon_schema_script($seriesSchema) ?>
-<link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.17">
+<link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
 <link rel="stylesheet" href="assets/css/artdon_product_hierarchy.css?v=6.4.0">
 <style>
 :root{--s717-shell:min(1520px,calc(100vw - 72px));--s717-red:#d71920;--s717-ink:#080808;--s717-gray:#676b71;--s717-line:#e2e2e2;--s717-soft:#f4f4f4;--s717-panel:#f3f3f3}
