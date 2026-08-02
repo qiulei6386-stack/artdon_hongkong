@@ -377,16 +377,6 @@ if(is_file($__artdonV7092Runtime)){require_once $__artdonV7092Runtime;artdon_car
   background:transparent!important;
   text-shadow:none!important;
 }
-.home-clean-products.artdon-v7153-products .artdon-v7153-empty{
-  display:none !important;
-  grid-column:1/-1 !important;
-  border:1px dashed #cfd4da !important;
-  padding:30px !important;
-  color:#70747a !important;
-  font-weight:800 !important;
-  background:#fafafa !important;
-}
-.home-clean-products.artdon-v7153-products .artdon-v7153-empty.is-visible{display:block!important;}
 @media(max-width:900px){
   .home-clean-products.artdon-v7153-products .artdon-v7153-title{font-size:38px!important;}
   .home-clean-products.artdon-v7153-products .artdon-v7153-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important;}
@@ -641,7 +631,6 @@ html,body{overflow-x:hidden!important;}
           </span>
         </a>
       <?php endforeach; ?>
-      <div class="artdon-v7153-empty<?= $artdonV7153Shown ? '' : ' is-visible' ?>">No product is published in this homepage tab yet.</div>
     </div>
   </section>
 <?php endif; ?>
@@ -887,7 +876,6 @@ html,body{overflow-x:hidden!important;}
   var section = root.closest('.artdon-v7153-products');
   var tabs = section ? Array.prototype.slice.call(section.querySelectorAll('.artdon-v7153-tab')) : [];
   var cards = Array.prototype.slice.call(root.querySelectorAll('.artdon-v7153-card'));
-  var empty = root.querySelector('.artdon-v7153-empty');
   function show(board){
     var shown = 0;
     var total = 0;
@@ -904,7 +892,6 @@ html,body{overflow-x:hidden!important;}
       card.hidden = !visible;
       if (visible) shown++;
     });
-    if (empty) empty.classList.toggle('is-visible', total === 0);
   }
   tabs.forEach(function(tab){
     tab.addEventListener('click', function(){ show(tab.getAttribute('data-home-board') || 'all'); });
