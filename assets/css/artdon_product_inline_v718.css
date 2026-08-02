@@ -2262,3 +2262,66 @@ html.artdon-share-modal-lock-v25 body{
   text-transform:uppercase!important;
   font-weight:950!important;
 }
+
+/* V7.1.8.188: final mobile file-center styling for product Technical Downloads. */
+@media(max-width:560px){
+  .product-variant-page #technical-files .variant-downloads{
+    border:1px solid var(--artdon-detail-line,#d9d9d9)!important;
+    background:#fff!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a{
+    min-height:76px!important;
+    padding:16px 14px!important;
+    gap:14px!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a:first-child{
+    border-top:0!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a .variant-download-main{
+    display:grid!important;
+    gap:6px!important;
+    min-width:0!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a .variant-download-label{
+    display:block!important;
+    color:#111!important;
+    font-size:17px!important;
+    line-height:1.22!important;
+    font-weight:650!important;
+    letter-spacing:-.01em!important;
+    text-transform:none!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a small{
+    display:block!important;
+    color:#777!important;
+    font-size:11px!important;
+    line-height:1.2!important;
+    font-weight:850!important;
+    letter-spacing:.14em!important;
+    text-transform:uppercase!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a strong{
+    min-width:86px!important;
+    min-height:36px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #111!important;
+    border-radius:999px!important;
+    background:#111!important;
+    color:#fff!important;
+    font-size:10px!important;
+    line-height:1!important;
+    letter-spacing:.1em!important;
+  }
+}
+
+/* V7.1.8.190: keep mobile Technical Downloads button text legible after base link overrides. */
+@media(max-width:560px){
+  .product-variant-page #technical-files>.variant-downloads>a>strong,
+  .product-variant-page #technical-files>div.variant-downloads>a>strong,
+  .product-variant-page #technical-files .variant-downloads a strong{
+    color:#fff!important;
+    -webkit-text-fill-color:#fff!important;
+  }
+}

@@ -223,6 +223,72 @@ if (is_file($__artdonCardV7093)) {
     letter-spacing:.12em!important;
   }
 }
+/* V7.1.8.191: mobile technical downloads behave like a compact file center. */
+.product-variant-page #technical-files .variant-downloads a .variant-download-main{
+  display:grid!important;
+  gap:6px!important;
+  min-width:0!important;
+}
+.product-variant-page #technical-files .variant-downloads a .variant-download-label{
+  display:block!important;
+  margin:0!important;
+  color:#111!important;
+  font-size:clamp(17px,1.08vw,22px)!important;
+  line-height:1.22!important;
+  font-weight:650!important;
+  letter-spacing:-.01em!important;
+  text-transform:none!important;
+}
+.product-variant-page #technical-files .variant-downloads a small{
+  display:block!important;
+  margin:0!important;
+  color:#777!important;
+  font-size:11px!important;
+  line-height:1.2!important;
+  font-weight:850!important;
+  letter-spacing:.14em!important;
+  text-transform:uppercase!important;
+}
+@media(max-width:560px){
+  .product-variant-page #technical-files{
+    padding-top:46px!important;
+  }
+  .product-variant-page #technical-files header p{
+    color:#d71920!important;
+    letter-spacing:.2em!important;
+  }
+  .product-variant-page #technical-files header h2{
+    font-size:32px!important;
+    letter-spacing:-.045em!important;
+  }
+  .product-variant-page #technical-files .variant-downloads{
+    border:1px solid var(--artdon-detail-line,#d9d9d9)!important;
+    background:#fff!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a{
+    min-height:76px!important;
+    padding:16px 14px!important;
+    gap:14px!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a:first-child{
+    border-top:0!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a .variant-download-label{
+    font-size:17px!important;
+  }
+  .product-variant-page #technical-files .variant-downloads a strong{
+    min-width:86px!important;
+    min-height:36px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid #111!important;
+    border-radius:999px!important;
+    background:#111!important;
+    color:#fff!important;
+    font-size:10px!important;
+    letter-spacing:.1em!important;
+  }
+}
 </style>
 <!-- ARTDON_V71817_DOWNLOADS_VERTICAL_END -->
 
@@ -587,13 +653,42 @@ $generatedDatasheetPdfUrl = 'product_pdf.php?' . http_build_query([
     'autoprint' => '1',
 ]);
 $downloads = [
-    ['label'=>'Datasheet','path'=>$generatedDatasheetPdfUrl,'generated_pdf'=>true],
-    ['label'=>'IES / LDT','path'=>$variant['photometric_path'],'generated_pdf'=>false],
-    ['label'=>'High-res image','path'=>$downloadHighResImage,'generated_pdf'=>false],
-    ['label'=>'Dimension drawing','path'=>$dimensionImage,'generated_pdf'=>false],
-    ['label'=>'Installation manual','path'=>$variant['installation_path'],'generated_pdf'=>false],
+    ['label'=>'Datasheet','path'=>$generatedDatasheetPdfUrl,'generated_pdf'=>true,'kind'=>'PDF'],
+    ['label'=>'IES / LDT','path'=>$variant['photometric_path'],'generated_pdf'=>false,'kind'=>'IES/LDT'],
+    ['label'=>'Product image','path'=>$downloadHighResImage,'generated_pdf'=>false,'kind'=>'Image'],
+    ['label'=>'Dimension drawing','path'=>$dimensionImage,'generated_pdf'=>false,'kind'=>'Drawing'],
+    ['label'=>'Installation guide','path'=>$variant['installation_path'],'generated_pdf'=>false,'kind'=>'PDF'],
 ];
 $downloadCount = count(array_filter($downloads, static fn($d) => trim((string)$d['path']) !== ''));
+if (!function_exists('artdon_product_download_ext_v718191')) {
+    function artdon_product_download_ext_v718191(string $path, string $kind = ''): string {
+        if (strtolower(trim($kind)) === 'pdf') return 'PDF';
+        $clean = strtolower((string)parse_url($path, PHP_URL_PATH));
+        $ext = pathinfo($clean, PATHINFO_EXTENSION);
+        if ($ext !== '') {
+            if ($ext === 'webp' || $ext === 'jpg' || $ext === 'jpeg' || $ext === 'png') return strtoupper($ext === 'jpg' ? 'JPG' : $ext);
+            if ($ext === 'zip') return 'ZIP';
+            if ($ext === 'pdf') return 'PDF';
+            if ($ext === 'ies' || $ext === 'ldt') return strtoupper($ext);
+            return strtoupper($ext);
+        }
+        return trim($kind) !== '' ? trim($kind) : 'FILE';
+    }
+}
+if (!function_exists('artdon_product_download_size_v718191')) {
+    function artdon_product_download_size_v718191(string $path, bool $generated = false): string {
+        if ($generated) return 'Generated PDF';
+        $clean = (string)parse_url($path, PHP_URL_PATH);
+        $clean = ltrim(rawurldecode($clean), '/');
+        if ($clean === '') return '';
+        $file = __DIR__ . '/' . $clean;
+        if (!is_file($file)) return '';
+        $bytes = filesize($file);
+        if (!$bytes) return '';
+        if ($bytes >= 1048576) return number_format($bytes / 1048576, 1) . ' MB';
+        return max(1, (int)ceil($bytes / 1024)) . ' KB';
+    }
+}
 
 // V7.1.8.16: product-detail "More products" uses the same parameter extraction logic as the series page cards.
 // V7.1.8.18: downloads are forced vertical on the live page; More products card typography is hard-reset to series.php style.
@@ -860,7 +955,7 @@ if (is_file($__artdonCardV7093)) {
 ?>
 <!-- ARTDON_V7093_SIMPLE_BOOT_END -->
 <!-- ARTDON_V7179_DIMENSION_SCALE_START -->
-<link rel="stylesheet" href="assets/css/artdon_product_inline_v718.css?v=7.1.8.187">
+<link rel="stylesheet" href="assets/css/artdon_product_inline_v718.css?v=7.1.8.190">
 <!-- ARTDON_V7179_DIMENSION_SCALE_END -->
 
 <!-- ARTDON_V71812_DETAIL_SECTION_ALIGNMENT_START -->
@@ -1060,8 +1155,8 @@ if (is_file($__artdonCardV7093)) {
 
   <?php if($downloadCount>0 || $variant['video_url']!==''): ?>
   <section class="variant-section" id="technical-files">
-    <header><p>Downloads</p><h2>Planning files</h2></header>
-    <div class="variant-downloads"><?php foreach($downloads as $download): if(trim((string)$download['path'])==='')continue; $downloadHref = !empty($download['generated_pdf']) ? (string)$download['path'] : web_public_path((string)$download['path']); ?><a href="<?= web_e($downloadHref) ?>" target="_blank" rel="noopener"><span><?= web_e($download['label']) ?></span><strong>Download ↗</strong></a><?php endforeach; ?><?php if($variant['video_url']!==''): ?><a href="<?= web_e($variant['video_url']) ?>" target="_blank" rel="noopener"><span>Product video</span><strong>Watch ↗</strong></a><?php endif; ?></div>
+    <header><p>Technical files</p><h2>Technical Downloads</h2></header>
+    <div class="variant-downloads"><?php foreach($downloads as $download): if(trim((string)$download['path'])==='')continue; $downloadHref = !empty($download['generated_pdf']) ? (string)$download['path'] : web_public_path((string)$download['path']); $downloadExt = artdon_product_download_ext_v718191((string)$download['path'], (string)($download['kind'] ?? '')); $downloadSize = artdon_product_download_size_v718191((string)$download['path'], !empty($download['generated_pdf'])); ?><a href="<?= web_e($downloadHref) ?>" target="_blank" rel="noopener"><span class="variant-download-main"><span class="variant-download-label"><?= web_e($download['label']) ?></span><small><?= web_e($downloadExt) ?> · EN<?= $downloadSize!=='' ? ' · '.web_e($downloadSize) : '' ?></small></span><strong>Download ↗</strong></a><?php endforeach; ?><?php if($variant['video_url']!==''): ?><a href="<?= web_e($variant['video_url']) ?>" target="_blank" rel="noopener"><span class="variant-download-main"><span class="variant-download-label">Product video</span><small>VIDEO · EN</small></span><strong>Watch ↗</strong></a><?php endif; ?></div>
   </section>
   <?php endif; ?>
 
