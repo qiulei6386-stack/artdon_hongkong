@@ -197,7 +197,7 @@ $solutionSchema = artdon_schema_graph([
   <link rel="stylesheet" href="assets/css/artdon_catalog_families.css?v=7.0.6">
   <link rel="stylesheet" href="assets/css/artdon_catalog_layout_v708.css?v=7.0.8">
   <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.184">
-  <link rel="stylesheet" href="assets/css/solution-detail.css?v=1.0.14">
+  <link rel="stylesheet" href="assets/css/solution-detail.css?v=1.0.15">
 </head>
 <body class="solution-detail-page">
 <?php include dirname(__DIR__) . '/partials/header.php'; ?>

@@ -1515,3 +1515,216 @@ body.ra-retail-application-detail.ra-page-fashion-store .sd-cta .sd-btn-primary:
     grid-template-columns:1fr;
   }
 }
+
+/* V1.0.15: mobile solution pages read as a guided project flow, not a dense article. */
+@media(max-width:760px){
+  body.solution-detail-page{
+    --sd-mobile-pad:46px;
+  }
+  body.solution-detail-page .sd-hero{
+    min-height:470px;
+  }
+  body.solution-detail-page .sd-hero-inner{
+    padding:58px 0 44px;
+  }
+  body.solution-detail-page .sd-hero h1{
+    max-width:11ch;
+    margin-bottom:16px;
+    font-size:clamp(38px,11.4vw,46px);
+    line-height:1.02;
+    letter-spacing:-.045em;
+  }
+  body.solution-detail-page .sd-hero-copy{
+    max-width:34ch;
+    font-size:15px;
+    line-height:1.55;
+  }
+  body.solution-detail-page .sd-hero-actions{
+    display:grid;
+    gap:10px;
+    margin-top:22px;
+  }
+  body.solution-detail-page .sd-sticky-tabs{
+    top:66px;
+    z-index:70;
+    border-top:1px solid rgba(0,0,0,.06);
+    box-shadow:0 10px 26px rgba(0,0,0,.06);
+  }
+  body.solution-detail-page .sd-tab-list{
+    width:100%;
+    height:54px;
+    gap:8px;
+    padding:0 14px;
+    scroll-padding-left:14px;
+    -webkit-overflow-scrolling:touch;
+  }
+  body.solution-detail-page .sd-tab-list a{
+    height:34px;
+    padding:0 14px;
+    border:1px solid #ddd;
+    border-radius:999px;
+    background:#fff;
+    color:#222;
+    font-size:12px;
+    font-weight:850;
+    letter-spacing:.02em;
+    text-transform:none;
+  }
+  body.solution-detail-page .sd-tab-list a.is-active,
+  body.solution-detail-page .sd-tab-list a:hover{
+    border-color:var(--sd-red);
+    background:var(--sd-red);
+    color:#fff;
+  }
+  body.solution-detail-page .sd-section{
+    padding:var(--sd-mobile-pad) 0;
+  }
+  body.solution-detail-page .sd-section-head{
+    margin:0 0 22px;
+    text-align:left;
+  }
+  body.solution-detail-page .sd-section-head:before{
+    display:block;
+    margin:0 0 8px;
+    color:var(--sd-red);
+    font-size:12px;
+    line-height:1;
+    font-weight:950;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+  }
+  body.solution-detail-page #challenges .sd-section-head:before{content:"01 / Problems";}
+  body.solution-detail-page #design-guide .sd-section-head:before{content:"02 / Design goals";}
+  body.solution-detail-page #recommended-products .sd-section-head:before{content:"03 / Recommended products";}
+  body.solution-detail-page #retail-projects .sd-section-head:before{content:"04 / Applications & projects";}
+  body.solution-detail-page #support .sd-section-head:before{content:"05 / Project support";}
+  body.solution-detail-page .sd-section-head h2{
+    max-width:12ch;
+    font-size:clamp(28px,8.4vw,34px);
+    line-height:1.04;
+    letter-spacing:-.04em;
+  }
+  body.solution-detail-page .sd-challenge-grid,
+  body.solution-detail-page .sd-support-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:12px;
+    border:0;
+  }
+  body.solution-detail-page .sd-challenge,
+  body.solution-detail-page .sd-support{
+    display:grid;
+    grid-template-columns:42px minmax(0,1fr);
+    gap:12px 14px;
+    align-items:start;
+    padding:16px 14px;
+    border:1px solid var(--sd-line)!important;
+    border-radius:14px;
+    background:#fff;
+    text-align:left;
+  }
+  body.solution-detail-page .sd-icon-circle,
+  body.solution-detail-page .sd-support-icon{
+    grid-row:1 / span 2;
+    width:42px;
+    height:42px;
+    margin:0;
+    border-radius:12px;
+    background:#fafafa;
+  }
+  body.solution-detail-page .sd-icon-circle svg,
+  body.solution-detail-page .sd-support-icon svg{
+    width:22px;
+    height:22px;
+  }
+  body.solution-detail-page .sd-challenge h3,
+  body.solution-detail-page .sd-support h3{
+    margin:1px 0 4px;
+    font-size:16px;
+    line-height:1.22;
+  }
+  body.solution-detail-page .sd-challenge p,
+  body.solution-detail-page .sd-support p{
+    font-size:13px;
+    line-height:1.48;
+  }
+  body.solution-detail-page .sd-guide-layout{
+    gap:14px;
+    min-height:0;
+  }
+  body.solution-detail-page .sd-guide-list{
+    gap:10px;
+  }
+  body.solution-detail-page .sd-guide-item{
+    padding:14px;
+    border:1px solid var(--sd-line);
+    border-radius:14px;
+    background:#fff;
+  }
+  body.solution-detail-page .sd-guide-image{
+    min-height:0;
+    height:220px;
+    border-radius:14px;
+  }
+  body.solution-detail-page .sd-guide-panel{
+    padding:18px 16px;
+    border-radius:14px;
+    gap:14px;
+  }
+  body.solution-detail-page .sd-product-catalog.catalog-v50{
+    margin-left:-14px;
+    margin-right:-14px;
+    padding:0 14px 8px;
+    scroll-snap-type:x proximity;
+  }
+  body.solution-detail-page .sd-product-catalog.catalog-v50 .catalog-card{
+    scroll-snap-align:start;
+  }
+  body.solution-detail-page .sd-product-catalog.catalog-v50:after{
+    content:"Swipe to compare products →";
+    display:block;
+    margin:10px 0 0;
+    color:#777;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.06em;
+  }
+  body.solution-detail-page .sd-application-grid{
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+  body.solution-detail-page .sd-application-link{
+    display:grid;
+    grid-template-columns:118px minmax(0,1fr);
+    gap:14px;
+    align-items:center;
+    padding:10px;
+    border:1px solid var(--sd-line);
+    border-radius:14px;
+    background:#fff;
+  }
+  body.solution-detail-page .sd-application figure{
+    height:86px;
+    margin:0;
+    border-radius:10px;
+  }
+  body.solution-detail-page .sd-application h3{
+    text-align:left;
+    font-size:16px;
+  }
+  body.solution-detail-page .sd-center-actions{
+    margin-top:18px;
+  }
+  body.solution-detail-page .sd-cta{
+    min-height:0;
+  }
+  body.solution-detail-page .sd-cta-inner{
+    padding:36px 0;
+    gap:18px;
+  }
+  body.solution-detail-page .sd-cta h2{
+    max-width:12ch;
+    font-size:30px;
+    letter-spacing:-.035em;
+  }
+}
