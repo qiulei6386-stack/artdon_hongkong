@@ -820,6 +820,112 @@ $seriesSchema = artdon_schema_graph([
     justify-content:stretch!important;
   }
 }
+
+/* V7.1.8.190: mobile quick size cards.
+   The early size chooser should be scan-first: model, power, size, beam and a
+   clear detail action before deeper accessories/content. */
+.s717-card-mobile-action{display:none;}
+@media(max-width:680px){
+  .series-v717 #products .s717-variants-toolbar{
+    display:block!important;
+  }
+  .series-v717 #products .s717-dim-note{
+    margin-top:10px!important;
+    font-size:12px!important;
+    line-height:1.45!important;
+  }
+  .series-v717 #products .s717-card{
+    display:grid!important;
+    grid-template-columns:112px minmax(0,1fr)!important;
+    border:1px solid #d8d8d8!important;
+    background:#fff!important;
+  }
+  .series-v717 #products .s717-card figure{
+    aspect-ratio:auto!important;
+    min-height:100%!important;
+    height:100%!important;
+    background:#eef0f1!important;
+  }
+  .series-v717 #products .s717-card figure img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+    padding:12px!important;
+  }
+  .series-v717 #products .s717-card-body{
+    padding:16px 16px 16px!important;
+    min-height:0!important;
+  }
+  .series-v717 #products .s717-card h3{
+    margin:0 0 10px!important;
+    font-size:20px!important;
+    line-height:1.12!important;
+  }
+  .series-v717 #products .s717-specs{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:5px!important;
+    margin:0!important;
+    font-size:13px!important;
+    line-height:1.34!important;
+  }
+  .series-v717 #products .s717-specs p{
+    display:grid!important;
+    grid-template-columns:84px minmax(0,1fr)!important;
+    gap:6px!important;
+    margin:0!important;
+  }
+  .series-v717 #products .s717-spec-lumen{
+    display:none!important;
+  }
+  .series-v717 #products .s717-tags{
+    margin:11px 0 0!important;
+    gap:6px!important;
+  }
+  .series-v717 #products .s717-tags span{
+    padding:5px 8px!important;
+    font-size:11px!important;
+  }
+  .series-v717 #products .s717-tags span:nth-child(n+3){
+    display:none!important;
+  }
+  .series-v717 #products .s717-accessories{
+    margin:10px 0 0!important;
+    padding:10px 0 0!important;
+  }
+  .series-v717 #products .s717-accessory-list{
+    display:none!important;
+  }
+  .series-v717 #products .s717-accessories-title,
+  .series-v717 #products .s717-accessory-more{
+    display:inline!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    color:#777!important;
+    font-size:10px!important;
+    letter-spacing:.12em!important;
+  }
+  .series-v717 #products .s717-card-mobile-action{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:36px!important;
+    margin-top:12px!important;
+    padding:0 14px!important;
+    border:1px solid #111!important;
+    border-radius:999px!important;
+    background:#111!important;
+    color:#fff!important;
+    font-size:11px!important;
+    font-weight:900!important;
+    letter-spacing:.12em!important;
+    text-transform:uppercase!important;
+  }
+  .series-v717 #products .s717-specs .s717-spec-lumen{
+    display:none!important;
+  }
+}
 </style>
 </head>
 <body>
@@ -892,7 +998,7 @@ $seriesSchema = artdon_schema_graph([
       <?php foreach($variants as $vIndex=>$v): $spec=sv717_variant_specs($v,$series,(int)$vIndex,count($variants)); $img=trim((string)($v['cover_image']??'')) ?: sv717_first_image($series,$content); ?>
       <?php $dimImg = trim((string)($v['dimension_image'] ?? '')); $dimAlt = trim((string)($v['dimension_alt'] ?? '')) ?: ((string)$v['name'] . ' dimension drawing'); ?>
       <?php $accItems = sv717_variant_accessories($v); $accPreview = array_slice($accItems,0,4); $accRemaining = max(0,count($accItems)-count($accPreview)); ?>
-      <a class="s717-card" href="<?= sv717_e(artdon_pretty_product_url_v71868($category, $series, $v)) ?>"><figure><img class="s717-card-image" src="<?= sv717_e($img) ?>" data-main-src="<?= sv717_e($img) ?>" data-main-alt="<?= sv717_e($v['name']) ?>" data-dim-src="<?= sv717_e($dimImg) ?>" data-dim-alt="<?= sv717_e($dimAlt) ?>" alt="<?= sv717_e($v['name']) ?>" title="<?= sv717_e($v['name']) ?>" loading="lazy"></figure><div class="s717-card-body"><h3><?= sv717_e($v['name']) ?></h3><div class="s717-specs"><?php if($spec['power']!==''): ?><p>Wattage: <b><?= sv717_e($spec['power']) ?></b></p><?php endif; ?><?php if($spec['size']!==''): ?><p>Size: <b><?= sv717_e($spec['size']) ?></b></p><?php endif; ?><?php if($spec['lumen']!==''): ?><p>Lumen Output: <b><?= sv717_e($spec['lumen']) ?></b></p><?php endif; ?><?php if($spec['beam']!==''): ?><p>Beam Angle: <b><?= sv717_e($spec['beam']) ?></b></p><?php endif; ?></div><?php if($spec['tags']): ?><div class="s717-tags"><?php foreach(array_slice($spec['tags'],0,4) as $tag): ?><span><?= sv717_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?><?php if($accPreview): ?><div class="s717-accessories"><span class="s717-accessories-title">Accessories</span><div class="s717-accessory-list"><?php foreach($accPreview as $acc): ?><span class="s717-accessory"><img src="<?= sv717_e($acc['image']) ?>" alt="<?= sv717_e($acc['alt']) ?>" title="<?= sv717_e($acc['alt']) ?>" loading="lazy"><span><b><?= sv717_e($acc['title'] ?: 'Accessory') ?></b><?php if(trim((string)$acc['model']) !== ''): ?><em><?= sv717_e($acc['model']) ?></em><?php endif; ?></span></span><?php endforeach; ?></div><?php if($accRemaining>0): ?><span class="s717-accessory-more">+<?= (int)$accRemaining ?> more accessories</span><?php endif; ?></div><?php endif; ?></div></a>
+      <a class="s717-card" href="<?= sv717_e(artdon_pretty_product_url_v71868($category, $series, $v)) ?>"><figure><img class="s717-card-image" src="<?= sv717_e($img) ?>" data-main-src="<?= sv717_e($img) ?>" data-main-alt="<?= sv717_e($v['name']) ?>" data-dim-src="<?= sv717_e($dimImg) ?>" data-dim-alt="<?= sv717_e($dimAlt) ?>" alt="<?= sv717_e($v['name']) ?>" title="<?= sv717_e($v['name']) ?>" loading="lazy"></figure><div class="s717-card-body"><h3><?= sv717_e($v['name']) ?></h3><div class="s717-specs"><?php if($spec['power']!==''): ?><p class="s717-spec-power">Wattage: <b><?= sv717_e($spec['power']) ?></b></p><?php endif; ?><?php if($spec['size']!==''): ?><p class="s717-spec-size">Size: <b><?= sv717_e($spec['size']) ?></b></p><?php endif; ?><?php if($spec['lumen']!==''): ?><p class="s717-spec-lumen">Lumen Output: <b><?= sv717_e($spec['lumen']) ?></b></p><?php endif; ?><?php if($spec['beam']!==''): ?><p class="s717-spec-beam">Beam Angle: <b><?= sv717_e($spec['beam']) ?></b></p><?php endif; ?></div><?php if($spec['tags']): ?><div class="s717-tags"><?php foreach(array_slice($spec['tags'],0,4) as $tag): ?><span><?= sv717_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?><?php if($accPreview): ?><div class="s717-accessories"><span class="s717-accessories-title">Accessories</span><div class="s717-accessory-list"><?php foreach($accPreview as $acc): ?><span class="s717-accessory"><img src="<?= sv717_e($acc['image']) ?>" alt="<?= sv717_e($acc['alt']) ?>" title="<?= sv717_e($acc['alt']) ?>" loading="lazy"><span><b><?= sv717_e($acc['title'] ?: 'Accessory') ?></b><?php if(trim((string)$acc['model']) !== ''): ?><em><?= sv717_e($acc['model']) ?></em><?php endif; ?></span></span><?php endforeach; ?></div><?php if($accRemaining>0): ?><span class="s717-accessory-more">+<?= (int)$accRemaining ?> more accessories</span><?php endif; ?></div><?php endif; ?><span class="s717-card-mobile-action">View details →</span></div></a>
       <?php endforeach; ?>
     </div>
   </section>
