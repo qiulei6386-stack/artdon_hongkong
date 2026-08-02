@@ -80,15 +80,40 @@ foreach ($articles as $article) {
     if (!isset($grouped[$cat])) $grouped[$cat] = [];
     $grouped[$cat][] = $article;
 }
+$blogArticleSchemas = [];
+foreach (array_slice($articles, 0, 12) as $article) {
+    if (!is_array($article)) continue;
+    $articleUrl = artdon_schema_abs_url((string)($article['url'] ?? ''), $siteUrl);
+    if ($articleUrl === '') continue;
+    $blogArticleSchemas[] = artdon_schema_article([
+        'title' => (string)($article['title'] ?? ''),
+        'summary' => (string)($article['summary'] ?? ''),
+        'image' => (string)($article['image'] ?? ''),
+        'author' => (string)($article['author'] ?? 'Artdon Lighting Team'),
+        'date' => (string)($article['date'] ?? ''),
+        'category' => (string)($article['category_label'] ?? $article['category'] ?? 'Blog'),
+    ], $articleUrl, $siteUrl);
+}
 $schema = artdon_schema_graph([
     artdon_schema_organization($site, $siteUrl),
     artdon_schema_website($site, $siteUrl),
-    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'Blog'),
+    artdon_schema_webpage($canonical, $pageTitle, $pageDescription, $siteUrl, 'CollectionPage'),
+    artdon_schema_clean([
+        '@type' => 'Blog',
+        '@id' => $canonical . '#blog',
+        'url' => $canonical,
+        'name' => $pageTitle,
+        'description' => $pageDescription,
+        'publisher' => ['@id' => rtrim($siteUrl, '/') . '/#organization'],
+        'blogPost' => array_map(static fn(array $node): array => ['@id' => (string)($node['@id'] ?? '')], $blogArticleSchemas),
+        'inLanguage' => 'en',
+    ]),
     artdon_schema_breadcrumb([
         ['name'=>'Home','url'=>'/'],
         ['name'=>'Resources','url'=>'/resources.php'],
         ['name'=>'Blog & Insights','url'=>'/resources-blog.php'],
     ], $siteUrl),
+    ...$blogArticleSchemas,
 ]);
 function rb_icon(string $key): string
 {
