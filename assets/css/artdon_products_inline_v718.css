@@ -741,7 +741,7 @@ main.catalog-v50 .catalog-grid-grouped .catalog-family-divider .catalog-family-i
 /* products.php inline style block 12 */
 main.catalog-v50 .catalog-grid [data-artdon-filter-card].artdon-v718103-hidden,
 main.catalog-v50 .catalog-family-divider.artdon-v718103-hidden{display:none!important;}
-main.catalog-v50 .catalog-filter-group label.is-zero-count{opacity:.38;}
+main.catalog-v50 .catalog-filter-group label.is-zero-count{display:none!important;}
 
 /* products.php inline style block 13 */
 main.catalog-v50 .catalog-results-head.has-family-intro-v718127{

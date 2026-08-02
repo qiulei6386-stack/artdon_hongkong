@@ -1160,7 +1160,7 @@ if (is_file($__artdonCardV7093)) {
 
 <!-- ARTDON_V71887_PRODUCTS_APPROVED_FILTER_GROUPS_START -->
 <!-- ARTDON_V71886_PRODUCTS_FILTER_LEFT_LOCK_FOOTER_GUARD_START -->
-  <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.185">
+  <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.186">
 <script>
 (function(){
   function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
@@ -1294,11 +1294,13 @@ if (is_file($__artdonCardV7093)) {
         <?php if($query!==''): ?><input type="hidden" name="q" value="<?= web_e($query) ?>"><?php endif; ?>
         <div class="catalog-filter-head"><strong>Filter</strong><a href="products.php<?= $categorySlug!=='all'?'?category='.rawurlencode($categorySlug):'' ?>" data-catalog-filter-reset>Reset</a></div>
         <?php if(!$filterTree): ?><p class="catalog-filter-empty">No filter data is available for the current catalogue.</p><?php endif; ?>
-        <?php foreach($filterTree as $group): $groupSlug=(string)$group['slug']; $selectedValues=$selectedFilters[$groupSlug]??[]; $open=!empty($group['is_default_open'])||$selectedValues; ?>
+        <?php foreach($filterTree as $group): $groupSlug=(string)$group['slug']; $selectedValues=$selectedFilters[$groupSlug]??[]; $visibleOptions=array_values(array_filter((array)($group['options']??[]), static function($option) use ($selectedValues): bool {
+          return ((int)($option['usage_count']??0) > 0) || in_array((string)($option['slug']??''), $selectedValues, true);
+        })); if(!$visibleOptions) continue; $open=!empty($group['is_default_open'])||$selectedValues; ?>
         <details class="catalog-filter-group" <?= $open?'open':'' ?>>
           <summary><?= web_e($group['name']) ?><span></span></summary>
           <div>
-            <?php foreach($group['options'] as $option): $checked=in_array((string)$option['slug'],$selectedValues,true); $type=$group['input_type']==='radio'?'radio':'checkbox'; ?>
+            <?php foreach($visibleOptions as $option): $checked=in_array((string)$option['slug'],$selectedValues,true); $type=$group['input_type']==='radio'?'radio':'checkbox'; ?>
             <label><input type="<?= $type ?>" name="f[<?= web_e($groupSlug) ?>][]" value="<?= web_e($option['slug']) ?>" <?= $checked?'checked':'' ?>><span><?= web_e($option['name']) ?></span><small><?= (int)($option['usage_count']??0) ?></small></label>
             <?php endforeach; ?>
           </div>
@@ -1649,7 +1651,11 @@ if (is_file($__artdonCardV7093)) {
           if(cardHasValue(card, g, val)) n++;
         });
         small.textContent=String(n);
-        if(label) label.classList.toggle('is-zero-count', n===0 && !input.checked);
+        if(label){
+          var hideZero=n===0 && !input.checked;
+          label.classList.toggle('is-zero-count', hideZero);
+          label.hidden=hideZero;
+        }
       });
     }
     function normalizeAllChoice(changed){
