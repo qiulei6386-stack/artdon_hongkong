@@ -1160,7 +1160,7 @@ if (is_file($__artdonCardV7093)) {
 
 <!-- ARTDON_V71887_PRODUCTS_APPROVED_FILTER_GROUPS_START -->
 <!-- ARTDON_V71886_PRODUCTS_FILTER_LEFT_LOCK_FOOTER_GUARD_START -->
-  <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.186">
+  <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.188">
 <script>
 (function(){
   function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
@@ -1364,12 +1364,13 @@ if (is_file($__artdonCardV7093)) {
                 <h3><?= web_e($card['name']) ?></h3>
                 <?php if($card['subtitle']!==''): ?><p class="catalog-card-subtitle"><?= web_e($card['subtitle']) ?></p><?php endif; ?>
                 <dl class="catalog-card-detail-list">
-                  <?php if($variantPower!==''): ?><div><dt>Wattage:</dt><dd><?= web_e($variantPower) ?></dd></div><?php endif; ?>
-                  <?php if($card['size_value']!==''): ?><div><dt><?= web_e($card['size_label']) ?>:</dt><dd><?= web_e($card['size_value']) ?></dd></div><?php endif; ?>
-                  <?php if($card['output_value']!==''): ?><div><dt><?= web_e($card['output_label']) ?>:</dt><dd><?= web_e($card['output_value']) ?></dd></div><?php endif; ?>
-                  <?php if($variantBeam!==''): ?><div><dt>Beam Angle:</dt><dd><?= web_e($variantBeam) ?></dd></div><?php endif; ?>
+                  <?php if($variantPower!==''): ?><div class="catalog-card-detail-row catalog-card-detail-power"><dt>Wattage:</dt><dd><?= web_e($variantPower) ?></dd></div><?php endif; ?>
+                  <?php if($card['size_value']!==''): ?><div class="catalog-card-detail-row catalog-card-detail-size"><dt><?= web_e($card['size_label']) ?>:</dt><dd><?= web_e($card['size_value']) ?></dd></div><?php endif; ?>
+                  <?php if($card['output_value']!==''): ?><div class="catalog-card-detail-row catalog-card-detail-output"><dt><?= web_e($card['output_label']) ?>:</dt><dd><?= web_e($card['output_value']) ?></dd></div><?php endif; ?>
+                  <?php if($variantBeam!==''): ?><div class="catalog-card-detail-row catalog-card-detail-beam"><dt>Beam Angle:</dt><dd><?= web_e($variantBeam) ?></dd></div><?php endif; ?>
                 </dl>
                 <?php if($card['tags']): ?><div class="catalog-card-tags"><?php foreach($card['tags'] as $tag): ?><span><?= web_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?>
+                <span class="catalog-card-mobile-cta">View Product →</span>
               </div>
             </a>
           </article>
@@ -1399,13 +1400,14 @@ if (is_file($__artdonCardV7093)) {
                 <h3><?= web_e($seriesDisplayName) ?></h3>
                 <?php if($card['subtitle']!==''): ?><p class="catalog-card-subtitle"><?= web_e($card['subtitle']) ?></p><?php endif; ?>
                 <dl class="catalog-card-detail-list">
-                  <?php if(($card['power_value']??'')!==''): ?><div><dt><?= web_e($card['power_label'] ?: 'Wattage') ?>:</dt><dd><?= web_e($card['power_value']) ?></dd></div><?php endif; ?>
-                  <?php if($card['size_value']!==''): ?><div><dt><?= web_e($card['size_label'] ?: 'Size') ?>:</dt><dd><?= web_e($card['size_value']) ?></dd></div><?php endif; ?>
-                  <?php if($card['output_value']!==''): ?><div><dt><?= web_e($card['output_label'] ?: 'Lumen Output') ?>:</dt><dd><?= web_e($card['output_value']) ?></dd></div><?php endif; ?>
-                  <?php if(($card['beam_value']??'')!==''): ?><div><dt><?= web_e($card['beam_label'] ?: 'Beam Angle') ?>:</dt><dd><?= web_e($card['beam_value']) ?></dd></div><?php endif; ?>
-                  <?php if(($card['best_for_value']??'')!==''): ?><div><dt>Best For:</dt><dd><?= web_e($card['best_for_value']) ?></dd></div><?php endif; ?>
+                  <?php if(($card['power_value']??'')!==''): ?><div class="catalog-card-detail-row catalog-card-detail-power"><dt><?= web_e($card['power_label'] ?: 'Wattage') ?>:</dt><dd><?= web_e($card['power_value']) ?></dd></div><?php endif; ?>
+                  <?php if($card['size_value']!==''): ?><div class="catalog-card-detail-row catalog-card-detail-size"><dt><?= web_e($card['size_label'] ?: 'Size') ?>:</dt><dd><?= web_e($card['size_value']) ?></dd></div><?php endif; ?>
+                  <?php if($card['output_value']!==''): ?><div class="catalog-card-detail-row catalog-card-detail-output"><dt><?= web_e($card['output_label'] ?: 'Lumen Output') ?>:</dt><dd><?= web_e($card['output_value']) ?></dd></div><?php endif; ?>
+                  <?php if(($card['beam_value']??'')!==''): ?><div class="catalog-card-detail-row catalog-card-detail-beam"><dt><?= web_e($card['beam_label'] ?: 'Beam Angle') ?>:</dt><dd><?= web_e($card['beam_value']) ?></dd></div><?php endif; ?>
+                  <?php if(($card['best_for_value']??'')!==''): ?><div class="catalog-card-detail-row catalog-card-detail-best-for"><dt>Best For:</dt><dd><?= web_e($card['best_for_value']) ?></dd></div><?php endif; ?>
                 </dl>
                 <?php if($card['tags']): ?><div class="catalog-card-tags"><?php foreach($card['tags'] as $tag): ?><span><?= web_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?>
+                <span class="catalog-card-mobile-cta">View Series →</span>
               </div>
             </a>
           </article>
