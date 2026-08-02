@@ -1160,7 +1160,7 @@ if (is_file($__artdonCardV7093)) {
 
 <!-- ARTDON_V71887_PRODUCTS_APPROVED_FILTER_GROUPS_START -->
 <!-- ARTDON_V71886_PRODUCTS_FILTER_LEFT_LOCK_FOOTER_GUARD_START -->
-<link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.184">
+  <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.185">
 <script>
 (function(){
   function ready(fn){ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
@@ -1280,10 +1280,15 @@ if (is_file($__artdonCardV7093)) {
     <?php endforeach; ?>
   </nav>
 
-  <button class="catalog-filter-toggle" type="button" data-catalog-filter-toggle aria-expanded="false">Filter products <span><?= $productMode?$total:'+' ?></span></button>
+  <button class="catalog-filter-toggle" type="button" data-catalog-filter-toggle aria-expanded="false" aria-controls="catalogFilters">Filter products <span><?= $productMode?$total:'+' ?></span></button>
 
   <div class="catalog-layout">
+    <div class="catalog-filter-backdrop" data-catalog-filter-backdrop data-catalog-filter-close hidden></div>
     <aside class="catalog-filters" id="catalogFilters">
+      <div class="catalog-filter-mobile-head">
+        <strong>Filter products</strong>
+        <button type="button" data-catalog-filter-close aria-label="Close filters">×</button>
+      </div>
       <form method="get" action="products.php" data-product-filter-form autocomplete="off">
         <?php if($categorySlug!=='all'): ?><input type="hidden" name="category" value="<?= web_e($categorySlug) ?>"><?php endif; ?>
         <?php if($query!==''): ?><input type="hidden" name="q" value="<?= web_e($query) ?>"><?php endif; ?>
@@ -1300,6 +1305,10 @@ if (is_file($__artdonCardV7093)) {
         </details>
         <?php endforeach; ?>
         <button class="catalog-apply" type="submit">Apply filters</button>
+        <div class="catalog-filter-mobile-actions" aria-label="Mobile filter actions">
+          <a href="products.php<?= $categorySlug!=='all'?'?category='.rawurlencode($categorySlug):'' ?>" data-catalog-filter-mobile-reset>Reset</a>
+          <button type="submit" data-catalog-filter-mobile-show data-label-singular="<?= $productMode?'Product':'Series' ?>" data-label-plural="<?= $productMode?'Products':'Series' ?>">Show <?= (int)$total ?> <?= $productMode?'Products':'Series' ?></button>
+        </div>
       </form>
     </aside>
 
@@ -1408,7 +1417,7 @@ if (is_file($__artdonCardV7093)) {
 </main>
 <?php artdon_render_seo_internal_links('products', $canonical, 'Explore product and application hubs', 'Use these links to compare product families, application solutions and project references.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.14" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.15" defer></script>
 
 <!-- ARTDON_V71868_PRODUCTS_PRETTY_URL_ADDRESS_BAR_START -->
 <script>

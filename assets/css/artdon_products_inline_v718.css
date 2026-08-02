@@ -851,3 +851,134 @@ main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list dd{
     grid-template-rows:auto minmax(0,auto)!important;
   }
 }
+
+/* V7.1.8.185: mobile catalogue filters become a bottom sheet.
+   Desktop keeps the approved left-column filter behaviour. */
+.catalog-filter-backdrop,
+.catalog-filter-mobile-head,
+.catalog-filter-mobile-actions{display:none;}
+
+@media(max-width:800px){
+  body.catalog-filter-open{
+    overflow:hidden!important;
+  }
+  main.catalog-v50 .catalog-filter-backdrop.is-open{
+    display:block!important;
+    position:fixed!important;
+    inset:0!important;
+    z-index:11990!important;
+    background:rgba(0,0,0,.5)!important;
+    backdrop-filter:blur(2px);
+  }
+  main.catalog-v50 .catalog-filters{
+    display:block!important;
+    position:fixed!important;
+    left:0!important;
+    right:0!important;
+    top:auto!important;
+    bottom:0!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    height:min(82dvh,720px)!important;
+    max-height:min(82dvh,720px)!important;
+    margin:0!important;
+    padding:0!important;
+    z-index:12000!important;
+    background:#fff!important;
+    border:0!important;
+    border-radius:22px 22px 0 0!important;
+    box-shadow:0 -18px 45px rgba(0,0,0,.24)!important;
+    overflow:hidden!important;
+    transform:translateY(110%)!important;
+    transition:transform .24s ease!important;
+  }
+  main.catalog-v50 .catalog-filters.is-open{
+    transform:translateY(0)!important;
+  }
+  main.catalog-v50 .catalog-filter-mobile-head{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    min-height:64px!important;
+    padding:0 18px!important;
+    border-bottom:1px solid rgba(0,0,0,.1)!important;
+    background:#fff!important;
+  }
+  main.catalog-v50 .catalog-filter-mobile-head strong{
+    font-size:18px!important;
+    font-weight:800!important;
+    letter-spacing:-.01em!important;
+  }
+  main.catalog-v50 .catalog-filter-mobile-head button{
+    width:42px!important;
+    height:42px!important;
+    border:1px solid rgba(0,0,0,.18)!important;
+    border-radius:50%!important;
+    background:#fff!important;
+    color:#111!important;
+    font-size:30px!important;
+    line-height:1!important;
+    cursor:pointer!important;
+  }
+  main.catalog-v50 .catalog-filters form{
+    height:calc(100% - 64px)!important;
+    max-height:none!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding:0 18px 96px!important;
+    box-sizing:border-box!important;
+    background:#fff!important;
+  }
+  main.catalog-v50 .catalog-filter-head{
+    display:none!important;
+  }
+  main.catalog-v50 .catalog-filter-group{
+    padding:18px 0!important;
+  }
+  main.catalog-v50 .catalog-filter-group summary{
+    min-height:44px!important;
+    font-size:16px!important;
+  }
+  main.catalog-v50 .catalog-filter-group label{
+    min-height:38px!important;
+    font-size:15px!important;
+  }
+  main.catalog-v50 .catalog-apply{
+    display:none!important;
+  }
+  main.catalog-v50 .catalog-filter-mobile-actions{
+    display:grid!important;
+    grid-template-columns:104px minmax(0,1fr)!important;
+    gap:10px!important;
+    position:sticky!important;
+    bottom:0!important;
+    z-index:4!important;
+    margin:18px -18px -96px!important;
+    padding:14px 18px calc(14px + env(safe-area-inset-bottom))!important;
+    background:linear-gradient(180deg,rgba(255,255,255,.86),#fff 28%)!important;
+    border-top:1px solid rgba(0,0,0,.1)!important;
+    box-shadow:0 -10px 24px rgba(255,255,255,.92)!important;
+  }
+  main.catalog-v50 .catalog-filter-mobile-actions a,
+  main.catalog-v50 .catalog-filter-mobile-actions button{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-height:52px!important;
+    border-radius:999px!important;
+    font-weight:800!important;
+    text-decoration:none!important;
+    letter-spacing:.02em!important;
+  }
+  main.catalog-v50 .catalog-filter-mobile-actions a{
+    border:1px solid rgba(0,0,0,.18)!important;
+    background:#fff!important;
+    color:#111!important;
+  }
+  main.catalog-v50 .catalog-filter-mobile-actions button{
+    border:1px solid #111!important;
+    background:#111!important;
+    color:#fff!important;
+  }
+}

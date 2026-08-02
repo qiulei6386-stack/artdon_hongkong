@@ -174,11 +174,15 @@ document.querySelectorAll('.hero-video').forEach(video=>{
 
 // V5.0 product catalogue filters and product gallery.
 (() => {
+  const mobileFilterQuery = window.matchMedia ? window.matchMedia('(max-width: 800px)') : null;
+  const isMobileFilter = () => mobileFilterQuery ? mobileFilterQuery.matches : window.innerWidth <= 800;
+
   const filterForm = document.querySelector('[data-product-filter-form]');
   if (filterForm) {
     let submitTimer = null;
     filterForm.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => {
       input.addEventListener('change', () => {
+        if (isMobileFilter()) return;
         clearTimeout(submitTimer);
         submitTimer = setTimeout(() => filterForm.requestSubmit(), 160);
       });
@@ -187,10 +191,62 @@ document.querySelectorAll('.hero-video').forEach(video=>{
 
   const filterToggle = document.querySelector('[data-catalog-filter-toggle]');
   const filters = document.getElementById('catalogFilters');
+  const filterBackdrop = document.querySelector('[data-catalog-filter-backdrop]');
+  const filterCloseButtons = Array.from(document.querySelectorAll('[data-catalog-filter-close]'));
+  const mobileShowButton = document.querySelector('[data-catalog-filter-mobile-show]');
+  const mobileResetButton = document.querySelector('[data-catalog-filter-mobile-reset]');
+  const updateMobileShowLabel = () => {
+    if (!mobileShowButton) return;
+    const visibleCards = Array.from(document.querySelectorAll('[data-artdon-filter-card]')).filter(card => {
+      if (card.hidden) return false;
+      if (card.classList.contains('artdon-v718103-hidden')) return false;
+      if (card.classList.contains('artdon-v71898-hidden')) return false;
+      if (card.classList.contains('artdon-v71895-hidden')) return false;
+      if (card.classList.contains('artdon-filter-hidden-v71889')) return false;
+      return card.style.display !== 'none';
+    }).length;
+    const count = visibleCards || Number((filterToggle && filterToggle.querySelector('span') ? filterToggle.querySelector('span').textContent : '').replace(/\D+/g, '')) || 0;
+    const singular = mobileShowButton.dataset.labelSingular || 'Product';
+    const plural = mobileShowButton.dataset.labelPlural || 'Products';
+    mobileShowButton.textContent = `Show ${count} ${count === 1 ? singular : plural}`;
+  };
+  const setFilterOpen = (open) => {
+    if (!filterToggle || !filters) return;
+    filters.classList.toggle('is-open', open);
+    filterToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    document.body.classList.toggle('catalog-filter-open', open);
+    if (filterBackdrop) {
+      filterBackdrop.classList.toggle('is-open', open);
+      filterBackdrop.hidden = !open;
+    }
+    if (open) {
+      updateMobileShowLabel();
+      window.setTimeout(updateMobileShowLabel, 260);
+    }
+  };
   if (filterToggle && filters) {
     filterToggle.addEventListener('click', () => {
-      const open = filters.classList.toggle('is-open');
-      filterToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      setFilterOpen(!filters.classList.contains('is-open'));
+    });
+    filterCloseButtons.forEach(button => button.addEventListener('click', () => setFilterOpen(false)));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && filters.classList.contains('is-open')) setFilterOpen(false);
+    });
+    window.addEventListener('resize', () => {
+      if (!isMobileFilter() && filters.classList.contains('is-open')) setFilterOpen(false);
+    });
+  }
+  if (filterForm) {
+    filterForm.addEventListener('change', () => window.setTimeout(updateMobileShowLabel, 40), true);
+    filterForm.addEventListener('submit', () => setFilterOpen(false), true);
+  }
+  if (mobileResetButton && filterForm) {
+    mobileResetButton.addEventListener('click', event => {
+      if (!isMobileFilter()) return;
+      event.preventDefault();
+      filterForm.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => { input.checked = false; });
+      filterForm.dispatchEvent(new Event('change', { bubbles: true }));
+      window.setTimeout(updateMobileShowLabel, 80);
     });
   }
 
