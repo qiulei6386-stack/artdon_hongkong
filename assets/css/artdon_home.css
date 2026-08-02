@@ -3330,6 +3330,9 @@ body.quote-modal-open{overflow:hidden;}
   .site-nav.open .nav-quote{
     flex:0 0 auto;
   }
+  .site-nav.open [data-mobile-menu-products]{
+    order:-20!important;
+  }
   .site-nav.open .nav-item{
     display:block!important;
     width:100%!important;

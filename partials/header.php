@@ -129,7 +129,7 @@ $__quoteUrl = artdon_normalize_front_url_v71868(trim((string)($__site['header_qu
           <?php foreach($__items as $__item):
             $__itemLabel=is_array($__item)?(string)($__item['label']??($__item[0]??'')):'';
             $__itemHref=is_array($__item)?artdon_normalize_front_url_v71868((string)($__item['href']??($__item[1]??'#'))):'#';
-          ?><a href="<?= web_e($__itemHref) ?>"><?= web_e($__itemLabel) ?></a><?php endforeach; ?>
+          ?><a href="<?= web_e($__itemHref) ?>"<?= $__label==='products' && strtolower(trim($__itemLabel))==='all products' ? ' data-mobile-menu-all-products' : '' ?>><?= web_e($__itemLabel) ?></a><?php endforeach; ?>
         </div></div><?php endif; ?>
       </div>
     <?php endforeach; ?>

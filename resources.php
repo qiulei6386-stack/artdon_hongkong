@@ -204,7 +204,7 @@ function resources_main_icon(string $key): string
   <meta property="og:title" content="<?= artdon_v710_e($pageTitle) ?>">
   <meta property="og:description" content="<?= artdon_v710_e($pageDescription) ?>">
   <meta property="og:image" content="<?= artdon_v710_e(artdon_v710_absolute_url($siteUrl, $heroImage)) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.16">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.17">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.1">
   <style>
@@ -297,6 +297,6 @@ function resources_main_icon(string $key): string
   </section>
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.16" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.17" defer></script>
 </body>
 </html>

@@ -1142,7 +1142,7 @@ if (!empty($items[0])) {
   <?php if($canonical!==''): ?><link rel="canonical" href="<?= web_e($canonical) ?>"><?php endif; ?>
   <?php if($productsFirstImage!==''): ?><link rel="preload" as="image" href="<?= web_e(web_public_path($productsFirstImage)) ?>" fetchpriority="high"><?php endif; ?>
   <meta property="og:type" content="website"><meta property="og:title" content="<?= web_e($pageTitle) ?>"><meta property="og:description" content="<?= web_e($pageDescription) ?>">
-  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.16">
+  <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.17">
   <link rel="stylesheet" href="assets/css/artdon_catalog_base.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.6">
   <link rel="stylesheet" href="assets/css/artdon_catalog_families.css?v=7.0.6">
@@ -1419,7 +1419,7 @@ if (is_file($__artdonCardV7093)) {
 </main>
 <?php artdon_render_seo_internal_links('products', $canonical, 'Explore product and application hubs', 'Use these links to compare product families, application solutions and project references.'); ?>
 <?php include __DIR__ . '/partials/footer.php'; ?>
-<script src="assets/js/artdon_home.js?v=6.12.16" defer></script>
+<script src="assets/js/artdon_home.js?v=6.12.17" defer></script>
 
 <!-- ARTDON_V71868_PRODUCTS_PRETTY_URL_ADDRESS_BAR_START -->
 <script>

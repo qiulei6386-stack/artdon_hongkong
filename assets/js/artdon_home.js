@@ -2,11 +2,11 @@ const navToggle=document.getElementById('navToggle');
 const siteNav=document.getElementById('siteNav');
 if(navToggle&&siteNav){
   const scrollMobileNavToProducts=()=>{
-    const productsItem=siteNav.querySelector('[data-mobile-menu-products]');
+    const productsItem=siteNav.querySelector('[data-mobile-menu-all-products]') || siteNav.querySelector('[data-mobile-menu-products]');
     if(!productsItem) { siteNav.scrollTop=0; return; }
     const navTop=siteNav.getBoundingClientRect().top;
     const itemTop=productsItem.getBoundingClientRect().top;
-    siteNav.scrollTop=Math.max(0, siteNav.scrollTop + itemTop - navTop - 6);
+    siteNav.scrollTop=Math.max(0, siteNav.scrollTop + itemTop - navTop - 10);
   };
   const closeNav=()=>{
     siteNav.classList.remove('open');
@@ -20,7 +20,9 @@ if(navToggle&&siteNav){
     if(open) {
       siteNav.scrollTop=0;
       requestAnimationFrame(scrollMobileNavToProducts);
-      window.setTimeout(scrollMobileNavToProducts, 180);
+      window.setTimeout(scrollMobileNavToProducts, 80);
+      window.setTimeout(scrollMobileNavToProducts, 220);
+      window.setTimeout(scrollMobileNavToProducts, 520);
     }
   });
   siteNav.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeNav));
