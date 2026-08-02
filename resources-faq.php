@@ -103,7 +103,7 @@ $schema = artdon_schema_graph([
         </div>
         <div class="rf-list" id="faqList">
           <?php foreach ($faqs as $index => $faq): ?>
-          <article class="rf-item" data-faq-item data-category="<?= artdon_v710_e((string)$faq['category']) ?>" data-search="<?= artdon_v710_e(strtolower((string)$faq['question'] . ' ' . (string)$faq['answer'])) ?>" <?= $index >= 10 ? 'hidden' : '' ?>>
+          <article class="rf-item" data-faq-item data-category="<?= artdon_v710_e((string)$faq['category']) ?>" data-search="<?= artdon_v710_e((string)$faq['question'] . ' ' . (string)$faq['answer']) ?>" <?= $index >= 10 ? 'hidden' : '' ?>>
             <button class="rf-q" type="button" aria-expanded="false"><span><?= artdon_v710_e((string)$faq['question']) ?></span><span aria-hidden="true">+</span></button>
             <div class="rf-a"><?= nl2br(artdon_v710_e((string)$faq['answer']), false) ?></div>
           </article>
@@ -125,7 +125,7 @@ $schema = artdon_schema_graph([
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   var items=[].slice.call(document.querySelectorAll('[data-faq-item]')), filters=[].slice.call(document.querySelectorAll('[data-faq-filter]')), search=document.getElementById('faqSearch'), load=document.getElementById('faqLoad'), wrap=document.getElementById('faqLoadWrap'), empty=document.getElementById('faqEmpty'), visibleLimit=10, active='all';
-  function apply(){var q=(search&&search.value||'').trim().toLowerCase(), matched=0, shown=0;items.forEach(function(item){var ok=(active==='all'||item.dataset.category===active)&&(!q||(item.dataset.search||'').indexOf(q)>-1);if(ok){matched++;var show=shown<visibleLimit;item.hidden=!show;if(show)shown++;}else{item.hidden=true;item.classList.remove('is-open');var b=item.querySelector('.rf-q span:last-child');if(b)b.textContent='+';}});if(empty)empty.hidden=matched!==0;if(wrap)wrap.hidden=matched<=visibleLimit;}
+  function apply(){var q=(search&&search.value||'').trim().toLowerCase(), matched=0, shown=0;items.forEach(function(item){var haystack=(item.dataset.search||'').toLowerCase();var ok=(active==='all'||item.dataset.category===active)&&(!q||haystack.indexOf(q)>-1);if(ok){matched++;var show=shown<visibleLimit;item.hidden=!show;if(show)shown++;}else{item.hidden=true;item.classList.remove('is-open');var b=item.querySelector('.rf-q span:last-child');if(b)b.textContent='+';}});if(empty)empty.hidden=matched!==0;if(wrap)wrap.hidden=matched<=visibleLimit;}
   filters.forEach(function(btn){btn.addEventListener('click',function(){active=btn.dataset.faqFilter||'all';visibleLimit=10;filters.forEach(function(b){b.classList.toggle('is-active',b===btn);});apply();});});
   if(search)search.addEventListener('input',function(){visibleLimit=10;apply();});
   if(load)load.addEventListener('click',function(){visibleLimit+=10;apply();});
