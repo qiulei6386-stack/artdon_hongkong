@@ -353,7 +353,7 @@ try {
     );
     $queueId = web_sync_enqueue($pdo, 'inquiry.created', $payload, 'inquiry-' . $inquiryId);
     $pdo->prepare("UPDATE web_inquiries SET sync_queue_id=?, sync_status='pending' WHERE id=?")->execute([$queueId, $inquiryId]);
-    if ($record['visitor_id'] !== '') {
+    if ($record['visitor_id'] !== '' && !web_va_is_excluded($pdo, $record['visitor_id'])) {
         $pdo->prepare("INSERT INTO web_visit_events(pageview_token,session_token,visitor_token,event_type,event_name,page_type,page_url,path,target_text,value_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,NOW())")
             ->execute([$record['visitor_pageview_id'], $record['visitor_session_id'], $record['visitor_id'], 'inquiry_submit', 'Submit inquiry', $record['page_type'], $record['page_url'], parse_url($record['page_url'], PHP_URL_PATH) ?: '', $record['email'], json_encode(['inquiry_id'=>$inquiryId,'company'=>$record['company'],'source'=>$record['source']], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
         web_va_update_profile($pdo, $record['visitor_id'], $record['visitor_session_id']);

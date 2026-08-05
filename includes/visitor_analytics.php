@@ -250,6 +250,25 @@ function web_va_migrate(PDO $pdo): void
         KEY `idx_visit_ip_group_last` (`last_seen_at`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    $pdo->exec("CREATE TABLE IF NOT EXISTS `web_visit_exclusions` (
+        `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        `visitor_id` VARCHAR(80) NOT NULL DEFAULT '',
+        `ip_address` VARCHAR(80) NOT NULL DEFAULT '',
+        `ip_group_key` VARCHAR(120) NOT NULL DEFAULT '',
+        `known_email` VARCHAR(190) NOT NULL DEFAULT '',
+        `known_company` VARCHAR(190) NOT NULL DEFAULT '',
+        `reason` VARCHAR(255) NOT NULL DEFAULT '',
+        `is_active` TINYINT(1) NOT NULL DEFAULT 1,
+        `created_by` BIGINT UNSIGNED NOT NULL DEFAULT 0,
+        `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` DATETIME DEFAULT NULL,
+        PRIMARY KEY (`id`),
+        KEY `idx_visit_exclude_visitor` (`visitor_id`,`is_active`),
+        KEY `idx_visit_exclude_ip` (`ip_address`,`is_active`),
+        KEY `idx_visit_exclude_ip_group` (`ip_group_key`,`is_active`),
+        KEY `idx_visit_exclude_active` (`is_active`,`created_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
     $sessionCols = [
         'ip_country_code'=>"`ip_country_code` VARCHAR(12) NOT NULL DEFAULT ''",
         'ip_country'=>"`ip_country` VARCHAR(120) NOT NULL DEFAULT ''",
@@ -486,6 +505,71 @@ function web_va_ip_group_key(string $ip, array $geo): string
     return substr(hash('sha256', $basis), 0, 32);
 }
 
+function web_va_is_excluded(PDO $pdo, string $visitor = '', string $ip = '', string $ipGroupKey = ''): bool
+{
+    $visitor = web_va_s($visitor, 80);
+    $ip = web_va_s($ip, 80);
+    $ipGroupKey = web_va_s($ipGroupKey, 120);
+    if ($visitor === '' && $ip === '' && $ipGroupKey === '') return false;
+    try {
+        $parts = [];
+        $params = [];
+        if ($visitor !== '') { $parts[] = "visitor_id=?"; $params[] = $visitor; }
+        if ($ip !== '') { $parts[] = "ip_address=?"; $params[] = $ip; }
+        if ($ipGroupKey !== '') { $parts[] = "ip_group_key=?"; $params[] = $ipGroupKey; }
+        $st = $pdo->prepare("SELECT COUNT(*) FROM web_visit_exclusions WHERE is_active=1 AND (" . implode(' OR ', $parts) . ")");
+        $st->execute($params);
+        return (int)$st->fetchColumn() > 0;
+    } catch (Throwable $ignored) {
+        return false;
+    }
+}
+
+function web_va_exclude_visitor(PDO $pdo, string $visitor, int $adminId = 0, string $reason = 'Manual exclude'): void
+{
+    $visitor = web_va_token($visitor, 80);
+    if ($visitor === '') return;
+    $now = date('Y-m-d H:i:s');
+    try {
+        $st = $pdo->prepare("SELECT visitor_id,last_ip,ip_group_key,known_email,known_company FROM web_visit_profiles WHERE visitor_id=? LIMIT 1");
+        $st->execute([$visitor]);
+        $profile = $st->fetch(PDO::FETCH_ASSOC) ?: [];
+        if (!$profile) {
+            $st = $pdo->prepare("SELECT visitor_token visitor_id,MAX(ip_address) last_ip,MAX(ip_group_key) ip_group_key,'' known_email,'' known_company FROM web_visit_sessions WHERE visitor_token=?");
+            $st->execute([$visitor]);
+            $profile = $st->fetch(PDO::FETCH_ASSOC) ?: [];
+        }
+        $ip = (string)($profile['last_ip'] ?? '');
+        $group = (string)($profile['ip_group_key'] ?? '');
+        $email = (string)($profile['known_email'] ?? '');
+        $company = (string)($profile['known_company'] ?? '');
+        $find = $pdo->prepare("SELECT id FROM web_visit_exclusions WHERE visitor_id=? LIMIT 1");
+        $find->execute([$visitor]);
+        $id = (int)$find->fetchColumn();
+        if ($id > 0) {
+            $pdo->prepare("UPDATE web_visit_exclusions SET ip_address=?,ip_group_key=?,known_email=?,known_company=?,reason=?,is_active=1,created_by=?,updated_at=? WHERE id=?")
+                ->execute([$ip,$group,$email,$company,$reason,$adminId,$now,$id]);
+        } else {
+            $pdo->prepare("INSERT INTO web_visit_exclusions(visitor_id,ip_address,ip_group_key,known_email,known_company,reason,is_active,created_by,created_at,updated_at) VALUES(?,?,?,?,?,?,1,?,?,?)")
+                ->execute([$visitor,$ip,$group,$email,$company,$reason,$adminId,$now,$now]);
+        }
+        $pdo->prepare("UPDATE web_visit_profiles SET manual_intent='excluded',is_bot=1,updated_at=? WHERE visitor_id=?")->execute([$now,$visitor]);
+        $pdo->prepare("UPDATE web_visit_sessions SET is_bot=1,updated_at=? WHERE visitor_token=?")->execute([$now,$visitor]);
+    } catch (Throwable $ignored) {}
+}
+
+function web_va_restore_visitor(PDO $pdo, string $visitor): void
+{
+    $visitor = web_va_token($visitor, 80);
+    if ($visitor === '') return;
+    $now = date('Y-m-d H:i:s');
+    try {
+        $pdo->prepare("UPDATE web_visit_exclusions SET is_active=0,updated_at=? WHERE visitor_id=?")->execute([$now,$visitor]);
+        $pdo->prepare("UPDATE web_visit_profiles SET manual_intent='',is_bot=0,updated_at=? WHERE visitor_id=? AND manual_intent='excluded'")->execute([$now,$visitor]);
+        $pdo->prepare("UPDATE web_visit_sessions SET is_bot=0,updated_at=? WHERE visitor_token=?")->execute([$now,$visitor]);
+    } catch (Throwable $ignored) {}
+}
+
 function web_va_lead_score(PDO $pdo, string $visitor): int
 {
     if ($visitor === '') return 0;
@@ -527,6 +611,13 @@ function web_va_lead_score(PDO $pdo, string $visitor): int
 function web_va_update_profile(PDO $pdo, string $visitor, string $session = '', array $context = []): void
 {
     if ($visitor === '') return;
+    if (web_va_is_excluded($pdo, $visitor)) {
+        try {
+            $pdo->prepare("UPDATE web_visit_profiles SET manual_intent='excluded',is_bot=1,updated_at=NOW() WHERE visitor_id=?")->execute([$visitor]);
+            $pdo->prepare("UPDATE web_visit_sessions SET is_bot=1,updated_at=NOW() WHERE visitor_token=?")->execute([$visitor]);
+        } catch (Throwable $ignored) {}
+        return;
+    }
     $now = date('Y-m-d H:i:s');
     $score = web_va_lead_score($pdo, $visitor);
     try {

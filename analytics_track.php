@@ -47,6 +47,10 @@ try {
     $isBot = web_va_bot_score($ua) ? 1 : 0;
     $now = date('Y-m-d H:i:s');
 
+    if (web_va_is_excluded($pdo, $visitor, $ip, $ipGroupKey)) {
+        web_va_json_out(['ok'=>true,'ignored'=>true,'reason'=>'excluded']);
+    }
+
     $stmt = $pdo->prepare('INSERT INTO web_visit_sessions(visitor_token,session_token,first_seen_at,last_seen_at,ip_address,ip_country_code,ip_country,ip_region,ip_city,ip_isp,ip_org,ip_geo_source,ip_geo_updated_at,user_agent,browser_language,device_type,browser,os,screen_size,timezone,landing_url,referrer,referrer_host,utm_source,utm_medium,utm_campaign,page_count,product_page_count,duration_seconds,visitor_fingerprint_hash,ip_group_key,is_bot,created_at,updated_at)
         VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,?,?,?,?,?,?,?)
         ON DUPLICATE KEY UPDATE last_seen_at=VALUES(last_seen_at),ip_address=VALUES(ip_address),ip_country_code=IF(VALUES(ip_country_code)<>\'\',VALUES(ip_country_code),ip_country_code),ip_country=IF(VALUES(ip_country)<>\'\',VALUES(ip_country),ip_country),ip_region=IF(VALUES(ip_region)<>\'\',VALUES(ip_region),ip_region),ip_city=IF(VALUES(ip_city)<>\'\',VALUES(ip_city),ip_city),ip_isp=IF(VALUES(ip_isp)<>\'\',VALUES(ip_isp),ip_isp),ip_org=IF(VALUES(ip_org)<>\'\',VALUES(ip_org),ip_org),ip_geo_source=IF(VALUES(ip_geo_source)<>\'\',VALUES(ip_geo_source),ip_geo_source),ip_geo_updated_at=IF(VALUES(ip_geo_source)<>\'\',VALUES(ip_geo_updated_at),ip_geo_updated_at),user_agent=VALUES(user_agent),browser_language=VALUES(browser_language),device_type=VALUES(device_type),browser=VALUES(browser),os=VALUES(os),screen_size=VALUES(screen_size),timezone=VALUES(timezone),visitor_fingerprint_hash=VALUES(visitor_fingerprint_hash),ip_group_key=VALUES(ip_group_key),is_bot=VALUES(is_bot),duration_seconds=GREATEST(duration_seconds,VALUES(duration_seconds)),updated_at=VALUES(updated_at)');
