@@ -256,6 +256,8 @@ $sort = (string)($_GET['sort'] ?? 'newest');
 $perPage = (int)($_GET['per_page'] ?? 50);
 $perPage = in_array($perPage, [20,50,100,200,300], true) ? $perPage : 50;
 $page = max(1, (int)($_GET['page'] ?? 1));
+$blacklistPerPage = 20;
+$blacklistPage = max(1, (int)($_GET['blacklist_page'] ?? 1));
 
 $where = [];
 $params = [];
@@ -302,9 +304,16 @@ $rows = $stmt->fetchAll();
 
 $activeBlockedIps = [];
 $activeBlacklistRows = [];
+$activeBlacklistTotal = 0;
+$activeBlacklistPages = 1;
 try {
-    $activeBlacklistRows = $pdo->query("SELECT * FROM web_inquiry_ip_blacklist WHERE is_active=1 ORDER BY updated_at DESC, id DESC LIMIT 100")->fetchAll() ?: [];
-    foreach ($activeBlacklistRows as $blockedRow) {
+    $activeBlacklistTotal = (int)$pdo->query("SELECT COUNT(*) FROM web_inquiry_ip_blacklist WHERE is_active=1")->fetchColumn();
+    $activeBlacklistPages = max(1, (int)ceil($activeBlacklistTotal / $blacklistPerPage));
+    $blacklistPage = min($blacklistPage, $activeBlacklistPages);
+    $blacklistOffset = ($blacklistPage - 1) * $blacklistPerPage;
+    $activeBlacklistRows = $pdo->query("SELECT * FROM web_inquiry_ip_blacklist WHERE is_active=1 ORDER BY updated_at DESC, id DESC LIMIT {$blacklistPerPage} OFFSET {$blacklistOffset}")->fetchAll() ?: [];
+    $allActiveBlacklistRows = $pdo->query("SELECT ip_address FROM web_inquiry_ip_blacklist WHERE is_active=1")->fetchAll() ?: [];
+    foreach ($allActiveBlacklistRows as $blockedRow) {
         $activeBlockedIps[(string)$blockedRow['ip_address']] = true;
     }
 } catch (Throwable $e) {}
@@ -333,13 +342,13 @@ admin_notice();
 .inquiry-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px}
 .inquiry-filter-grid{display:grid;grid-template-columns:repeat(6,minmax(140px,1fr));gap:12px;margin:14px 0 12px}
 .inquiry-filter-grid label{font-size:12px;font-weight:800;color:#64748b;display:flex;flex-direction:column;gap:6px}.inquiry-filter-grid input,.inquiry-filter-grid select{height:38px;border:1px solid #d8dee8;border-radius:10px;padding:0 10px;background:#fff;color:#0f172a}.inquiry-wide{grid-column:span 2}.inquiry-batch-bar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;background:#f8fafc;border:1px solid #e5eaf2;border-radius:14px;padding:12px;margin:12px 0}.inquiry-batch-bar .left,.inquiry-batch-bar .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.inquiry-batch-bar select{height:38px;border:1px solid #d8dee8;border-radius:10px;padding:0 10px;background:#fff}.inquiry-count-pill{display:inline-flex;gap:5px;align-items:center;border-radius:999px;background:#f1f5f9;color:#334155;padding:6px 10px;font-size:12px;font-weight:800}.inquiry-danger{border-color:#fecaca!important;color:#b91c1c!important;background:#fff5f5!important}.inquiry-row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.inquiry-small-btn{border:1px solid #d8dee8;border-radius:9px;background:#fff;padding:6px 10px;font-weight:800;font-size:12px;cursor:pointer;text-decoration:none;color:#0f172a}.inquiry-link-danger{color:#b91c1c!important}.inquiry-muted{color:#94a3b8;font-size:12px}.inquiry-msg{max-width:520px}.inquiry-msg span{white-space:pre-wrap}.inquiry-checkbox{width:18px;height:18px}.inquiry-pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0 0;flex-wrap:wrap}.inquiry-pagination .pages{display:flex;gap:8px;flex-wrap:wrap}.inquiry-pagination a,.inquiry-pagination span{border:1px solid #d8dee8;border-radius:10px;padding:7px 11px;text-decoration:none;font-weight:800;color:#0f172a;background:#fff}.inquiry-pagination .is-active{background:#111827;color:#fff;border-color:#111827}.inquiry-tabs-mini{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;background:#eef2f7;border-radius:10px;padding:6px}.inquiry-tabs-mini a{text-decoration:none;padding:8px 12px;border-radius:9px;background:#fff;color:#334155;font-weight:800;font-size:13px}.inquiry-tabs-mini a.is-active{background:#111827;color:#fff}.inquiry-tabs-mini .n{color:#94a3b8;font-size:11px;margin-left:4px}.inquiry-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 8px}.inquiry-section-title h3{margin:0;font-size:15px}.inquiry-filter-card{background:#fff;border:1px solid #e3e9f2;border-radius:16px;padding:14px;margin-bottom:16px}.admin-table th:first-child,.admin-table td:first-child{width:42px;text-align:center}.admin-table td{vertical-align:top}@media(max-width:1180px){.inquiry-filter-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}.inquiry-wide{grid-column:span 2}}@media(max-width:720px){.inquiry-filter-grid{grid-template-columns:1fr}.inquiry-wide{grid-column:span 1}.inquiry-batch-bar{align-items:stretch}.inquiry-batch-bar .left,.inquiry-batch-bar .right{width:100%}}
-.inquiry-blacklist-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:10px 0 0}.inquiry-blacklist-tools label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:800;color:#64748b}.inquiry-blacklist-tools input{height:38px;border:1px solid #d8dee8;border-radius:10px;padding:0 10px;background:#fff;color:#0f172a}.inquiry-ip-badge{display:inline-flex;border-radius:999px;padding:4px 8px;background:#f8fafc;color:#475569;font-size:12px;font-weight:800;margin-top:4px}.inquiry-ip-badge.is-blocked{background:#fff1f2;color:#be123c}.inquiry-blacklist-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.inquiry-blacklist-list form{display:inline-flex;gap:6px;align-items:center;border:1px solid #fee2e2;background:#fff7f7;border-radius:999px;padding:5px 6px 5px 10px;font-size:12px;color:#991b1b}
+.inquiry-blacklist-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:10px 0 0}.inquiry-blacklist-tools label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:800;color:#64748b}.inquiry-blacklist-tools input{height:38px;border:1px solid #d8dee8;border-radius:10px;padding:0 10px;background:#fff;color:#0f172a}.inquiry-ip-badge{display:inline-flex;border-radius:999px;padding:4px 8px;background:#f8fafc;color:#475569;font-size:12px;font-weight:800;margin-top:4px}.inquiry-ip-badge.is-blocked{background:#fff1f2;color:#be123c}.inquiry-blacklist-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.inquiry-blacklist-list form{display:inline-flex;gap:6px;align-items:center;border:1px solid #fee2e2;background:#fff7f7;border-radius:999px;padding:5px 6px 5px 10px;font-size:12px;color:#991b1b}.inquiry-blacklist-pager{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}.inquiry-blacklist-pager .pages{display:flex;gap:6px;flex-wrap:wrap}.inquiry-blacklist-pager a,.inquiry-blacklist-pager span{border:1px solid #d8dee8;border-radius:10px;padding:6px 10px;text-decoration:none;font-weight:800;color:#0f172a;background:#fff;font-size:12px}.inquiry-blacklist-pager .is-active{background:#111827;color:#fff;border-color:#111827}
 </style>
 <div class="status-card status-ok"><strong>官网询盘批量管理已启用</strong><br><span>删除只清理香港官网询盘记录，并取消未完成同步队列；广州侧只接收暂存池和任务提醒，不直接新增正式客户。</span></div>
 <section class="admin-card">
   <div class="inquiry-section-title">
     <h3>询盘 IP 黑名单</h3>
-    <span class="inquiry-count-pill">已启用 <?= count($activeBlacklistRows) ?> 个</span>
+    <span class="inquiry-count-pill">已启用 <?= (int)$activeBlacklistTotal ?> 个</span>
   </div>
   <form method="post" class="inquiry-blacklist-tools">
     <input type="hidden" name="csrf" value="<?= web_e(web_csrf_token()) ?>">
@@ -366,6 +375,16 @@ admin_notice();
         </form>
       <?php endforeach;?>
     </div>
+    <div class="inquiry-blacklist-pager">
+      <span>黑名单第 <?= (int)$blacklistPage ?> / <?= (int)$activeBlacklistPages ?> 页，每页 <?= (int)$blacklistPerPage ?> 个</span>
+      <div class="pages">
+        <?php if($blacklistPage>1):?><a href="<?= web_e(inquiry_make_url(['blacklist_page'=>$blacklistPage-1])) ?>">上一页</a><?php endif;?>
+        <?php $bs=max(1,$blacklistPage-2); $be=min($activeBlacklistPages,$blacklistPage+2); for($bp=$bs;$bp<=$be;$bp++):?><a class="<?= $bp===$blacklistPage?'is-active':'' ?>" href="<?= web_e(inquiry_make_url(['blacklist_page'=>$bp])) ?>"><?= (int)$bp ?></a><?php endfor;?>
+        <?php if($blacklistPage<$activeBlacklistPages):?><a href="<?= web_e(inquiry_make_url(['blacklist_page'=>$blacklistPage+1])) ?>">下一页</a><?php endif;?>
+      </div>
+    </div>
+  <?php else:?>
+    <div class="empty" style="margin-top:10px">暂无启用中的 IP 黑名单。</div>
   <?php endif;?>
 
   <div class="inquiry-section-title">
