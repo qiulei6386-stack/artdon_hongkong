@@ -252,6 +252,8 @@ $priorityFilter = trim((string)($_GET['priority'] ?? ''));
 $autoDispatchFilter = trim((string)($_GET['auto_dispatch'] ?? ''));
 $stagingLinkedFilter = trim((string)($_GET['staging_linked'] ?? ($_GET['crm_linked'] ?? '')));
 $taskLinkedFilter = trim((string)($_GET['task_linked'] ?? ($_GET['dispatch_linked'] ?? '')));
+$blacklistFilter = trim((string)($_GET['blacklist'] ?? 'normal'));
+if (!in_array($blacklistFilter, ['normal','blocked','all'], true)) $blacklistFilter = 'normal';
 $sort = (string)($_GET['sort'] ?? 'newest');
 $perPage = (int)($_GET['per_page'] ?? 50);
 $perPage = in_array($perPage, [20,50,100,200,300], true) ? $perPage : 50;
@@ -281,6 +283,11 @@ if ($stagingLinkedFilter === 'yes') { $where[] = 'COALESCE(bridge_inquiry_id,0)>
 if ($stagingLinkedFilter === 'no') { $where[] = 'COALESCE(bridge_inquiry_id,0)=0'; }
 if ($taskLinkedFilter === 'yes') { $where[] = 'COALESCE(dispatch_task_id,0)>0'; }
 if ($taskLinkedFilter === 'no') { $where[] = 'COALESCE(dispatch_task_id,0)=0'; }
+if ($blacklistFilter === 'blocked') {
+    $where[] = "EXISTS(SELECT 1 FROM web_inquiry_ip_blacklist bx WHERE bx.is_active=1 AND bx.ip_address=web_inquiries.ip_address)";
+} elseif ($blacklistFilter === 'normal') {
+    $where[] = "NOT EXISTS(SELECT 1 FROM web_inquiry_ip_blacklist bx WHERE bx.is_active=1 AND bx.ip_address=web_inquiries.ip_address)";
+}
 
 $whereSql = $where ? ' WHERE '.implode(' AND ', $where) : '';
 $orderSql = match ($sort) {
@@ -329,6 +336,12 @@ try {
 $processCounts = [];
 try {
     foreach ($pdo->query('SELECT internal_process_status, COUNT(*) total FROM web_inquiries GROUP BY internal_process_status')->fetchAll() as $r) { $processCounts[(string)$r['internal_process_status']] = (int)$r['total']; }
+} catch (Throwable $e) {}
+$blacklistCounts = ['all'=>0,'normal'=>0,'blocked'=>0];
+try {
+    $blacklistCounts['all'] = (int)$pdo->query('SELECT COUNT(*) FROM web_inquiries')->fetchColumn();
+    $blacklistCounts['blocked'] = (int)$pdo->query("SELECT COUNT(*) FROM web_inquiries WHERE EXISTS(SELECT 1 FROM web_inquiry_ip_blacklist bx WHERE bx.is_active=1 AND bx.ip_address=web_inquiries.ip_address)")->fetchColumn();
+    $blacklistCounts['normal'] = max(0, $blacklistCounts['all'] - $blacklistCounts['blocked']);
 } catch (Throwable $e) {}
 
 $countries = inquiry_distinct_values($pdo, 'country');
@@ -392,6 +405,11 @@ admin_notice();
     <span class="inquiry-count-pill">当前筛选 <?= (int)$total ?> 条 / 全部 <?= (int)array_sum($statusCounts) ?> 条</span>
   </div>
   <div class="inquiry-tabs-mini">
+    <a class="<?= $blacklistFilter==='normal'?'is-active':'' ?>" href="<?= web_e(inquiry_make_url(['blacklist'=>'normal','page'=>null])) ?>">正常询盘 <span class="n"><?= (int)$blacklistCounts['normal'] ?></span></a>
+    <a class="<?= $blacklistFilter==='blocked'?'is-active':'' ?>" href="<?= web_e(inquiry_make_url(['blacklist'=>'blocked','page'=>null])) ?>">已拉黑询盘 <span class="n"><?= (int)$blacklistCounts['blocked'] ?></span></a>
+    <a class="<?= $blacklistFilter==='all'?'is-active':'' ?>" href="<?= web_e(inquiry_make_url(['blacklist'=>'all','page'=>null])) ?>">全部询盘 <span class="n"><?= (int)$blacklistCounts['all'] ?></span></a>
+  </div>
+  <div class="inquiry-tabs-mini">
     <a class="<?= $statusFilter===''?'is-active':'' ?>" href="<?= web_e(inquiry_make_url(['status'=>null,'page'=>null])) ?>">全部状态 <span class="n"><?= (int)array_sum($statusCounts) ?></span></a>
     <?php foreach(['new','assigned','replied','closed'] as $s):?><a class="<?= $statusFilter===$s?'is-active':'' ?>" href="<?= web_e(inquiry_make_url(['status'=>$s,'page'=>null])) ?>"><?= web_e(admin_status_label($s)) ?><span class="n"><?= (int)($statusCounts[$s]??0) ?></span></a><?php endforeach;?>
   </div>
@@ -421,6 +439,7 @@ admin_notice();
       <label>跟进提醒<select name="auto_dispatch"><option value="">全部</option><option value="1"<?= $autoDispatchFilter==='1'?' selected':'' ?>>需要跟进</option><option value="0"<?= $autoDispatchFilter==='0'?' selected':'' ?>>不生成提醒</option></select></label>
       <label>广州暂存池<select name="staging_linked"><option value="">全部</option><option value="yes"<?= $stagingLinkedFilter==='yes'?' selected':'' ?>>已进入暂存池</option><option value="no"<?= $stagingLinkedFilter==='no'?' selected':'' ?>>未进入暂存池</option></select></label>
       <label>任务中心<select name="task_linked"><option value="">全部</option><option value="yes"<?= $taskLinkedFilter==='yes'?' selected':'' ?>>已有任务</option><option value="no"<?= $taskLinkedFilter==='no'?' selected':'' ?>>无任务</option></select></label>
+      <label>黑名单分类<select name="blacklist"><option value="normal"<?= $blacklistFilter==='normal'?' selected':'' ?>>正常询盘</option><option value="blocked"<?= $blacklistFilter==='blocked'?' selected':'' ?>>已拉黑询盘</option><option value="all"<?= $blacklistFilter==='all'?' selected':'' ?>>全部询盘</option></select></label>
       <label>排序<select name="sort"><option value="newest"<?= $sort==='newest'?' selected':'' ?>>最新优先</option><option value="oldest"<?= $sort==='oldest'?' selected':'' ?>>最早优先</option><option value="failed_first"<?= $sort==='failed_first'?' selected':'' ?>>失败优先</option><option value="status"<?= $sort==='status'?' selected':'' ?>>按状态</option></select></label>
       <label>每页<select name="per_page"><?php foreach([20,50,100,200,300] as $n):?><option value="<?= $n ?>"<?= $perPage===$n?' selected':'' ?>><?= $n ?> 条</option><?php endforeach;?></select></label>
     </div>
