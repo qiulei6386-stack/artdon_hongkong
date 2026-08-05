@@ -12,6 +12,7 @@ function artdon_resource_faq_categories(): array
         'orders-delivery' => 'Orders & Delivery',
         'oem-customization' => 'OEM & Customization',
         'warranty-support' => 'Warranty & Support',
+        'about-artdon' => 'About Artdon',
     ];
 }
 
@@ -29,6 +30,11 @@ function artdon_resource_faq_default_items(): array
         ['question'=>'Do your lights support dimming? What dimming options are available?','answer'=>'Many products support dimming. Common options include 0-10V, DALI, TRIAC and smart control systems depending on the driver and product configuration.','category'=>'technical','sort_order'=>90],
         ['question'=>'Can your products be used in outdoor environments?','answer'=>'Outdoor use requires suitable IP rating, material, finish and installation conditions. Please choose products designed for outdoor or damp locations.','category'=>'product','sort_order'=>100],
         ['question'=>'How do I install your track lighting system?','answer'=>'Installation methods depend on track type and ceiling condition. We can provide installation guides and technical support for the selected system.','category'=>'installation','sort_order'=>110],
+        ['question'=>'Who is Artdon Lighting Limited?','answer'=>'Artdon Lighting Limited is a professional architectural lighting manufacturer based in Zhongshan, China. We focus on LED downlights, track lights, magnetic systems, linear lighting and project-oriented lighting solutions for retail, hospitality, museum, office and commercial spaces.','category'=>'about-artdon','sort_order'=>10],
+        ['question'=>'Where is Artdon located?','answer'=>'Artdon is located in Zhongshan, Guangdong, China, one of the major lighting manufacturing regions. Our team supports international projects with product selection, technical documents, customization and export coordination.','category'=>'about-artdon','sort_order'=>20],
+        ['question'=>'What types of projects does Artdon support?','answer'=>'Artdon supports retail stores, hotels, museums, galleries, offices, residential spaces and commercial projects. Our product range is designed for architectural lighting applications where visual comfort, beam control and reliable performance are important.','category'=>'about-artdon','sort_order'=>30],
+        ['question'=>'Does Artdon provide OEM or ODM services?','answer'=>'Yes. Artdon provides OEM and ODM support for architectural lighting products, including product customization, finish options, optical configuration, branding, packaging and project-specific requirements.','category'=>'about-artdon','sort_order'=>40],
+        ['question'=>'How can I contact Artdon for a project?','answer'=>'You can contact Artdon through the inquiry form, email or WhatsApp. Share your project requirements, product interests or technical questions, and our team will route the inquiry to the appropriate sales or technical contact.','category'=>'about-artdon','sort_order'=>50],
     ];
 }
 
