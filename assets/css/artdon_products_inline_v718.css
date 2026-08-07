@@ -865,6 +865,17 @@ main.catalog-v50 .catalog-card.catalog-card-v51 .catalog-card-detail-list dd{
   }
 }
 
+/* V7.1.8.192: LED profile specification rows may wrap on wide four-column
+   layouts. Let only this product family grow beyond the legacy 112px cap. */
+@media(min-width:1361px){
+  main.catalog-v50.catalog-series-mode
+  .catalog-card-link[href^="/products/led-strips-profiles/"]
+  .catalog-card-detail-list{
+    max-height:none!important;
+    overflow:visible!important;
+  }
+}
+
 /* V7.1.8.185: mobile catalogue filters become a bottom sheet.
    Desktop keeps the approved left-column filter behaviour. */
 .catalog-filter-backdrop,
