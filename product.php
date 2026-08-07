@@ -5,7 +5,7 @@ require_once __DIR__ . '/includes/public_cache.php';
 $artdonLegacyProductRequest = in_array(($_SERVER['REQUEST_METHOD'] ?? 'GET'), ['GET', 'HEAD'], true)
     && (trim((string)($_GET['slug'] ?? '')) !== '' || (int)($_GET['id'] ?? 0) > 0)
     && trim((string)($_GET['pretty_model'] ?? '')) === '';
-if (!$artdonLegacyProductRequest) web_public_cache_start('product', 600);
+if (!$artdonLegacyProductRequest) web_public_cache_start('product_v718193', 600);
 
 require_once __DIR__ . '/includes/bootstrap.php';
 require_once __DIR__ . '/includes/product_hierarchy.php';
@@ -59,7 +59,30 @@ if (!function_exists('artdon_product_variant_find_pretty_v71865')) {
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         $row = $stmt->fetch();
-        return $row ? web_product_variant_hydrate($row) : null;
+        if ($row) return web_product_variant_hydrate($row);
+
+        // V7.1.8.193: imported model codes can contain spaces and slashes while
+        // their public URL segment is normalized (for example
+        // "AT1707 / 013-M1707" -> "at1707-013-m1707"). Preserve exact lookup
+        // first, then compare normalized candidates within the same series.
+        $modelKey = artdon_pretty_segment_v71868($model, '');
+        $fallbackWhere = array_slice($where, 1);
+        $fallbackParams = array_slice($params, 3);
+        if ($modelKey === '' || !$fallbackWhere) return null;
+
+        $fallbackSql = 'SELECT v.* FROM web_product_variants v LEFT JOIN web_products s ON s.id=v.series_id'
+            . ' WHERE ' . implode(' AND ', $fallbackWhere)
+            . ' ORDER BY v.is_published DESC, v.id ASC';
+        $fallbackStmt = $pdo->prepare($fallbackSql);
+        $fallbackStmt->execute($fallbackParams);
+        foreach ($fallbackStmt->fetchAll() as $candidate) {
+            foreach (['model_code', 'slug', 'name'] as $candidateField) {
+                if (artdon_pretty_segment_v71868((string)($candidate[$candidateField] ?? ''), '') === $modelKey) {
+                    return web_product_variant_hydrate($candidate);
+                }
+            }
+        }
+        return null;
     }
 }
 // ARTDON_V71865_PRETTY_URL_END
