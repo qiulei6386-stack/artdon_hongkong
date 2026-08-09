@@ -782,8 +782,8 @@ $seriesSchema = artdon_schema_graph([
 }
 
 /* V7.1.8.189: mobile decision order.
-   On phone screens, move size selection and downloads immediately after the hero.
-   Desktop keeps the original storytelling order. */
+   Products now follow the hero in the shared markup for every viewport.
+   On phone screens, keep downloads and support beside that early size chooser. */
 @media(max-width:680px){
   .series-v717{
     display:flex!important;
@@ -952,6 +952,27 @@ $seriesSchema = artdon_schema_graph([
     </div>
   </section>
 
+  <section class="s717-shell s717-section" id="products">
+    <?php
+      $hasDimensionDrawings = false;
+      foreach ($variants as $tmpV) {
+          if (trim((string)($tmpV['dimension_image'] ?? '')) !== '') { $hasDimensionDrawings = true; break; }
+      }
+    ?>
+    <div class="s717-variants-head"><div><p class="s717-kicker">Available products</p><h2>Choose the right size</h2></div><span><?= count($variants) ?> products</span></div>
+    <div class="s717-variants-toolbar">
+      <?php if($hasDimensionDrawings): ?><button class="s717-dim-toggle" type="button" id="s717DimToggle"><i></i><span>Show dimension drawings</span></button><?php else: ?><span></span><?php endif; ?>
+      <p class="s717-dim-note">Click to view all dimension drawings. Product images return automatically after 5 seconds.</p>
+    </div>
+    <div class="s717-variants-grid">
+      <?php foreach($variants as $vIndex=>$v): $spec=sv717_variant_specs($v,$series,(int)$vIndex,count($variants)); $img=trim((string)($v['cover_image']??'')) ?: sv717_first_image($series,$content); ?>
+      <?php $dimImg = trim((string)($v['dimension_image'] ?? '')); $dimAlt = trim((string)($v['dimension_alt'] ?? '')) ?: ((string)$v['name'] . ' dimension drawing'); ?>
+      <?php $accItems = sv717_variant_accessories($v); $accPreview = array_slice($accItems,0,4); $accRemaining = max(0,count($accItems)-count($accPreview)); ?>
+      <a class="s717-card" href="<?= sv717_e(artdon_pretty_product_url_v71868($category, $series, $v)) ?>"><figure><img class="s717-card-image" src="<?= sv717_e($img) ?>" data-main-src="<?= sv717_e($img) ?>" data-main-alt="<?= sv717_e($v['name']) ?>" data-dim-src="<?= sv717_e($dimImg) ?>" data-dim-alt="<?= sv717_e($dimAlt) ?>" alt="<?= sv717_e($v['name']) ?>" title="<?= sv717_e($v['name']) ?>" loading="lazy"></figure><div class="s717-card-body"><h3><?= sv717_e($v['name']) ?></h3><div class="s717-specs"><?php if($spec['power']!==''): ?><p class="s717-spec-power">Wattage: <b><?= sv717_e($spec['power']) ?></b></p><?php endif; ?><?php if($spec['size']!==''): ?><p class="s717-spec-size">Size: <b><?= sv717_e($spec['size']) ?></b></p><?php endif; ?><?php if($spec['lumen']!==''): ?><p class="s717-spec-lumen">Lumen Output: <b><?= sv717_e($spec['lumen']) ?></b></p><?php endif; ?><?php if($spec['beam']!==''): ?><p class="s717-spec-beam">Beam Angle: <b><?= sv717_e($spec['beam']) ?></b></p><?php endif; ?></div><?php if($spec['tags']): ?><div class="s717-tags"><?php foreach(array_slice($spec['tags'],0,4) as $tag): ?><span><?= sv717_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?><?php if($accPreview): ?><div class="s717-accessories"><span class="s717-accessories-title">Accessories</span><div class="s717-accessory-list"><?php foreach($accPreview as $acc): ?><span class="s717-accessory"><img src="<?= sv717_e($acc['image']) ?>" alt="<?= sv717_e($acc['alt']) ?>" title="<?= sv717_e($acc['alt']) ?>" loading="lazy"><span><b><?= sv717_e($acc['title'] ?: 'Accessory') ?></b><?php if(trim((string)$acc['model']) !== ''): ?><em><?= sv717_e($acc['model']) ?></em><?php endif; ?></span></span><?php endforeach; ?></div><?php if($accRemaining>0): ?><span class="s717-accessory-more">+<?= (int)$accRemaining ?> more accessories</span><?php endif; ?></div><?php endif; ?><span class="s717-card-mobile-action">View details →</span></div></a>
+      <?php endforeach; ?>
+    </div>
+  </section>
+
   <?php if (trim((string)($content['why_title'] ?? '')) !== '' || trim((string)($content['why_text'] ?? '')) !== ''): ?>
   <section class="s717-shell s717-why" id="why">
     <?php if (trim((string)$content['why_title']) !== ''): ?><h2><?= sv717_e($content['why_title']) ?></h2><?php endif; ?>
@@ -981,27 +1002,6 @@ $seriesSchema = artdon_schema_graph([
     </div>
   </section>
   <?php endif; ?>
-
-  <section class="s717-shell s717-section" id="products">
-    <?php
-      $hasDimensionDrawings = false;
-      foreach ($variants as $tmpV) {
-          if (trim((string)($tmpV['dimension_image'] ?? '')) !== '') { $hasDimensionDrawings = true; break; }
-      }
-    ?>
-    <div class="s717-variants-head"><div><p class="s717-kicker">Available products</p><h2>Choose the right size</h2></div><span><?= count($variants) ?> products</span></div>
-    <div class="s717-variants-toolbar">
-      <?php if($hasDimensionDrawings): ?><button class="s717-dim-toggle" type="button" id="s717DimToggle"><i></i><span>Show dimension drawings</span></button><?php else: ?><span></span><?php endif; ?>
-      <p class="s717-dim-note">Click to view all dimension drawings. Product images return automatically after 5 seconds.</p>
-    </div>
-    <div class="s717-variants-grid">
-      <?php foreach($variants as $vIndex=>$v): $spec=sv717_variant_specs($v,$series,(int)$vIndex,count($variants)); $img=trim((string)($v['cover_image']??'')) ?: sv717_first_image($series,$content); ?>
-      <?php $dimImg = trim((string)($v['dimension_image'] ?? '')); $dimAlt = trim((string)($v['dimension_alt'] ?? '')) ?: ((string)$v['name'] . ' dimension drawing'); ?>
-      <?php $accItems = sv717_variant_accessories($v); $accPreview = array_slice($accItems,0,4); $accRemaining = max(0,count($accItems)-count($accPreview)); ?>
-      <a class="s717-card" href="<?= sv717_e(artdon_pretty_product_url_v71868($category, $series, $v)) ?>"><figure><img class="s717-card-image" src="<?= sv717_e($img) ?>" data-main-src="<?= sv717_e($img) ?>" data-main-alt="<?= sv717_e($v['name']) ?>" data-dim-src="<?= sv717_e($dimImg) ?>" data-dim-alt="<?= sv717_e($dimAlt) ?>" alt="<?= sv717_e($v['name']) ?>" title="<?= sv717_e($v['name']) ?>" loading="lazy"></figure><div class="s717-card-body"><h3><?= sv717_e($v['name']) ?></h3><div class="s717-specs"><?php if($spec['power']!==''): ?><p class="s717-spec-power">Wattage: <b><?= sv717_e($spec['power']) ?></b></p><?php endif; ?><?php if($spec['size']!==''): ?><p class="s717-spec-size">Size: <b><?= sv717_e($spec['size']) ?></b></p><?php endif; ?><?php if($spec['lumen']!==''): ?><p class="s717-spec-lumen">Lumen Output: <b><?= sv717_e($spec['lumen']) ?></b></p><?php endif; ?><?php if($spec['beam']!==''): ?><p class="s717-spec-beam">Beam Angle: <b><?= sv717_e($spec['beam']) ?></b></p><?php endif; ?></div><?php if($spec['tags']): ?><div class="s717-tags"><?php foreach(array_slice($spec['tags'],0,4) as $tag): ?><span><?= sv717_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?><?php if($accPreview): ?><div class="s717-accessories"><span class="s717-accessories-title">Accessories</span><div class="s717-accessory-list"><?php foreach($accPreview as $acc): ?><span class="s717-accessory"><img src="<?= sv717_e($acc['image']) ?>" alt="<?= sv717_e($acc['alt']) ?>" title="<?= sv717_e($acc['alt']) ?>" loading="lazy"><span><b><?= sv717_e($acc['title'] ?: 'Accessory') ?></b><?php if(trim((string)$acc['model']) !== ''): ?><em><?= sv717_e($acc['model']) ?></em><?php endif; ?></span></span><?php endforeach; ?></div><?php if($accRemaining>0): ?><span class="s717-accessory-more">+<?= (int)$accRemaining ?> more accessories</span><?php endif; ?></div><?php endif; ?><span class="s717-card-mobile-action">View details →</span></div></a>
-      <?php endforeach; ?>
-    </div>
-  </section>
 
   <section class="s717-shell s717-catalog" id="downloads">
     <div><p class="s717-kicker"><?= sv717_e($content['catalog_kicker']) ?></p><h2><?= sv717_e($content['catalog_title']) ?></h2><p><?= sv717_e($content['catalog_text']) ?></p></div><a class="s717-button" href="<?= sv717_e(sv717_button_url((string)$content['catalog_button_url'],$series,'download')) ?>"><?= sv717_e($content['catalog_button_label']) ?> →</a>
