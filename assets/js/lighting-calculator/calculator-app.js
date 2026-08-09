@@ -24,6 +24,11 @@
   function $(id) { return document.getElementById(id); }
   function all(selector, root) { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
   function readNumber(id) { return Number($(id).value); }
+  function esc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
   function fmt(value, digits) {
     if (value == null || !Number.isFinite(Number(value))) return 'N/A';
     return Number(value).toLocaleString('en-US', { maximumFractionDigits: digits == null ? 1 : digits, minimumFractionDigits: 0 });
@@ -189,14 +194,134 @@
     if (state.result && state.result.points) parts.push(state.result.points.length + ' grid points');
     return parts.join(', ') + '.';
   }
+  function metadataValue(ies, keys) {
+    var metadata = ies && ies.metadata ? ies.metadata : {};
+    for (var i = 0; i < keys.length; i += 1) {
+      var value = String(metadata[keys[i]] || '').trim();
+      if (value) return value.replace(/\n+/g, ' / ');
+    }
+    return '';
+  }
+  function formatBytes(bytes) {
+    var value = Number(bytes || 0);
+    if (!(value > 0)) return '';
+    if (value < 1024) return fmt(value, 0) + ' B';
+    if (value < 1024 * 1024) return fmt(value / 1024, 1) + ' KB';
+    return fmt(value / (1024 * 1024), 2) + ' MB';
+  }
+  function degree(value) {
+    return Number.isFinite(Number(value)) ? fmt(Number(value), 3) + '°' : 'N/A';
+  }
+  function angleRange(data) {
+    if (!data || !data.count) return 'N/A';
+    if (data.count === 1) return degree(data.min);
+    return degree(data.min) + '–' + degree(data.max);
+  }
+  function angleSamples(data, noun) {
+    if (!data || !data.count) return 'N/A';
+    noun = noun || 'samples';
+    if (data.count === 1) return '1 ' + noun.replace(/s$/, '');
+    return fmt(data.count, 0) + ' ' + noun + ' · ' + (data.isRegular && data.regularStep != null ? degree(data.regularStep) + ' regular step' : 'variable steps');
+  }
+  function horizontalCoverage(ies) {
+    var symmetry = String(ies && ies.horizontalSymmetry || '');
+    if (symmetry === 'axial') return '0°–360° (axial symmetry)';
+    if (symmetry === '0-90 quadrant mirrored') return '0°–360° (0°–90° mirrored)';
+    if (symmetry === '0-180 mirrored') return '0°–360° (0°–180° mirrored)';
+    if (symmetry === 'full-360') return '0°–360° measured';
+    return angleRange(ies && ies.horizontalAngleData);
+  }
+  function dimensionsLabel(ies) {
+    var d = ies && ies.dimensions;
+    if (!d) return '';
+    var unit = ies.unitsType === 1 ? 'ft' : (ies.unitsType === 2 ? 'm' : 'units');
+    return fmt(d.width, 3) + ' × ' + fmt(d.length, 3) + ' × ' + fmt(d.height, 3) + ' ' + unit + ' (W × L × H)';
+  }
+  function infoRow(label, value) {
+    if (value == null || String(value).trim() === '') return '';
+    return '<div><dt>' + esc(label) + '</dt><dd>' + esc(value) + '</dd></div>';
+  }
+  function renderInfoDetails(ies) {
+    var details = $('lcIesDetails');
+    if (!details) return;
+    if (!ies) {
+      details.hidden = true;
+      details.innerHTML = '';
+      return;
+    }
+    var metadataRows = (ies.metadataEntries || []).map(function (entry) {
+      return infoRow('[' + entry.key + ']', entry.value || '—');
+    }).join('');
+    var headerRows = [
+      ['Lamp count', fmt(ies.lampCount, 0)],
+      ['Lumens per lamp', ies.lumensPerLamp < 0 ? 'Absolute photometry (-1)' : fmt(ies.lumensPerLamp, 1) + ' lm'],
+      ['Candela multiplier', fmt(ies.candelaMultiplier, 6)],
+      ['Photometric type code', fmt(ies.photometricType, 0)],
+      ['Units type code', fmt(ies.unitsType, 0)],
+      ['Ballast factor', fmt(ies.ballastFactor, 6)],
+      ['Header factor 2', fmt(ies.futureUse, 6)],
+      ['Input watts', ies.inputWatts ? fmt(ies.inputWatts, 3) + ' W' : 'N/A'],
+      ['Candela values', ies.candelaStats ? fmt(ies.candelaStats.count, 0) : 'N/A'],
+      ['Minimum candela', ies.candelaStats && ies.candelaStats.min != null ? fmt(ies.candelaStats.min, 3) + ' cd' : 'N/A'],
+      ['Average candela sample', ies.candelaStats && ies.candelaStats.average != null ? fmt(ies.candelaStats.average, 3) + ' cd' : 'N/A']
+    ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
+    var verticalValues = (ies.verticalAngles || []).map(degree).join(', ');
+    var horizontalValues = (ies.horizontalAngles || []).map(degree).join(', ');
+    details.hidden = false;
+    details.innerHTML = '<summary>Complete IES file data</summary>'
+      + '<div class="lc-info-details-body">'
+      + '<h4>Photometric header</h4><dl class="lc-info lc-info-compact">' + headerRows + '</dl>'
+      + (metadataRows ? '<h4>IES metadata</h4><dl class="lc-info lc-info-compact">' + metadataRows + '</dl>' : '')
+      + '<h4>Vertical angles (' + esc(fmt((ies.verticalAngles || []).length, 0)) + ')</h4><p class="lc-angle-values">' + esc(verticalValues || 'N/A') + '</p>'
+      + '<h4>Horizontal C-planes (' + esc(fmt((ies.horizontalAngles || []).length, 0)) + ')</h4><p class="lc-angle-values">' + esc(horizontalValues || 'N/A') + '</p>'
+      + '</div>';
+  }
   function renderInfo(ies) {
     var info = $('lcIesInfo');
-    var rows = ies ? [
-      ['Power', ies.inputWatts ? fmt(ies.inputWatts, 2) + ' W' : 'N/A'],
-      ['Vertical angles', ies.verticalAngles.length],
-      ['Horizontal angles', ies.horizontalAngles.length]
-    ] : [['Power', 'N/A'], ['Vertical angles', '-'], ['Horizontal angles', '-']];
-    info.innerHTML = rows.map(function (row) { return '<div><dt>' + row[0] + '</dt><dd>' + row[1] + '</dd></div>'; }).join('');
+    if (!ies) {
+      info.innerHTML = [
+        ['IES standard', 'Upload a file'],
+        ['Input power', 'N/A'],
+        ['Vertical angle range', 'N/A'],
+        ['Measured C-plane range', 'N/A']
+      ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
+      renderInfoDetails(null);
+      return;
+    }
+    var peak = ies.candelaStats || {};
+    var rows = [
+      ['File size', formatBytes(ies.sourceSizeBytes)],
+      ['IES standard', ies.version || 'LM-63'],
+      ['Manufacturer', metadataValue(ies, ['MANUFAC', 'MANUFACTURER'])],
+      ['Catalog number', metadataValue(ies, ['LUMCAT', 'CATALOG', 'CATALOGNUMBER'])],
+      ['Luminaire', metadataValue(ies, ['LUMINAIRE', 'LUMDESC'])],
+      ['Lamp catalog', metadataValue(ies, ['LAMPCAT'])],
+      ['Lamp', metadataValue(ies, ['LAMP'])],
+      ['Test ID', metadataValue(ies, ['TEST', 'TESTNO'])],
+      ['Test laboratory', metadataValue(ies, ['TESTLAB', 'LABORATORY'])],
+      ['Issue date', metadataValue(ies, ['ISSUEDATE', 'DATE'])],
+      ['Photometric type', ies.photometricTypeName || ('Type ' + ies.photometricType)],
+      ['Measurement units', ies.unitsName || 'Unknown'],
+      ['Photometry', ies.isAbsolutePhotometry ? 'Absolute' : 'Relative'],
+      ['Input power', ies.inputWatts ? fmt(ies.inputWatts, 3) + ' W' : 'N/A'],
+      ['Lamp count', fmt(ies.lampCount, 0)],
+      ['Lumens per lamp', ies.lumensPerLamp < 0 ? 'N/A (absolute photometry)' : fmt(ies.lumensPerLamp, 1) + ' lm'],
+      ['Total rated lumens', ies.totalRatedLumens ? fmt(ies.totalRatedLumens, 1) + ' lm' : 'N/A'],
+      ['Luminaire dimensions', dimensionsLabel(ies)],
+      ['Candela multiplier', fmt(ies.candelaMultiplier, 6)],
+      ['Peak intensity', peak.max != null ? fmt(peak.max, 3) + ' cd' : 'N/A'],
+      ['Peak direction', peak.peakHorizontalAngle != null && peak.peakVerticalAngle != null ? 'C ' + degree(peak.peakHorizontalAngle) + ' / γ ' + degree(peak.peakVerticalAngle) : 'N/A'],
+      ['Vertical angle range', angleRange(ies.verticalAngleData)],
+      ['Vertical samples', angleSamples(ies.verticalAngleData, 'samples')],
+      ['Measured C-plane range', angleRange(ies.horizontalAngleData)],
+      ['Measured C-planes', angleSamples(ies.horizontalAngleData, 'planes')],
+      ['Effective horizontal coverage', horizontalCoverage(ies)],
+      ['Horizontal symmetry', ies.horizontalSymmetry || 'N/A'],
+      ['TILT', ies.tilt || 'NONE'],
+      ['Ballast factor', Number.isFinite(Number(ies.ballastFactor)) ? fmt(ies.ballastFactor, 6) : 'N/A']
+    ];
+    info.innerHTML = rows.map(function (row) { return infoRow(row[0], row[1]); }).join('');
+    renderInfoDetails(ies);
   }
   function clearFile() {
     state.ies = null;
@@ -210,9 +335,9 @@
   function purgeIesAfterUse() {
     state.ies = null;
     $('lcIesFile').value = '';
-    $('lcFilebar').hidden = true;
-    $('lcFileName').textContent = '';
-    renderInfo(null);
+    var retainedName = $('lcFileName').textContent.trim();
+    $('lcFilebar').hidden = false;
+    $('lcFileName').textContent = (retainedName || 'IES file') + ' · parsed summary retained';
   }
   function parseFile(file) {
     if (!file) return;
@@ -221,7 +346,7 @@
     var reader = new FileReader();
     reader.onload = function () {
       try {
-        state.ies = window.ArtdonIesParser.parse(String(reader.result || ''), { fileName: file.name });
+        state.ies = window.ArtdonIesParser.parse(String(reader.result || ''), { fileName: file.name, fileSizeBytes: file.size });
         $('lcFileName').textContent = file.name;
         $('lcFilebar').hidden = false;
         renderInfo(state.ies);
@@ -251,7 +376,7 @@
   }
   function ensureWorker() {
     if (state.worker) return state.worker;
-    state.worker = new Worker('/assets/js/lighting-calculator/lux-worker.js?v=3.1.0');
+    state.worker = new Worker('/assets/js/lighting-calculator/lux-worker.js?v=3.2.0');
     state.worker.onmessage = onWorkerMessage;
     state.worker.onerror = function (event) {
       event.preventDefault();

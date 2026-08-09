@@ -39,7 +39,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
-  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.1.0">
+  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.2.1">
 </head>
 <body>
 <?php include __DIR__ . '/partials/header.php'; ?>
@@ -76,10 +76,12 @@ $ogImage = function_exists('artdon_v710_absolute_url')
             <span id="lcFileName"></span>
           </div>
           <dl class="lc-info" id="lcIesInfo" aria-label="IES file information">
-            <div><dt>Power</dt><dd>N/A</dd></div>
-            <div><dt>Vertical angles</dt><dd>-</dd></div>
-            <div><dt>Horizontal angles</dt><dd>-</dd></div>
+            <div><dt>IES standard</dt><dd>Upload a file</dd></div>
+            <div><dt>Input power</dt><dd>N/A</dd></div>
+            <div><dt>Vertical angle range</dt><dd>N/A</dd></div>
+            <div><dt>Measured C-plane range</dt><dd>N/A</dd></div>
           </dl>
+          <details class="lc-info-details" id="lcIesDetails" hidden></details>
           <div class="lc-row-actions">
             <button type="button" id="lcReplaceFile">Replace</button>
             <button type="button" id="lcClearFile">Remove</button>
@@ -229,10 +231,10 @@ $ogImage = function_exists('artdon_v710_absolute_url')
 </main>
 <?php include __DIR__ . '/partials/footer.php'; ?>
 <script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
-<script src="assets/js/lighting-calculator/ies-parser.js?v=3.1.0" defer></script>
+<script src="assets/js/lighting-calculator/ies-parser.js?v=3.2.0" defer></script>
 <script src="assets/js/lighting-calculator/lux-engine.js?v=3.1.0" defer></script>
 <script src="assets/js/lighting-calculator/room-layout.js?v=3.1.0" defer></script>
 <script src="assets/js/lighting-calculator/heatmap-renderer.js?v=3.0.1" defer></script>
-<script src="assets/js/lighting-calculator/calculator-app.js?v=3.1.0" defer></script>
+<script src="assets/js/lighting-calculator/calculator-app.js?v=3.2.0" defer></script>
 </body>
 </html>

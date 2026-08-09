@@ -44,9 +44,17 @@
     }
 
     var metadata = {};
+    var metadataEntries = [];
     for (var i = 0; i < tiltIndex; i += 1) {
       var m = lines[i].match(/^\[([^\]]+)\]\s*(.*)$/);
-      if (m) metadata[m[1].trim().toUpperCase()] = m[2].trim();
+      if (m) {
+        var metadataKey = m[1].trim().toUpperCase();
+        var metadataValue = m[2].trim();
+        metadataEntries.push({ key: metadataKey, value: metadataValue });
+        metadata[metadataKey] = metadata[metadataKey]
+          ? metadata[metadataKey] + '\n' + metadataValue
+          : metadataValue;
+      }
     }
 
     var nums = parseNumbers(lines.slice(tiltIndex + 1));
@@ -94,23 +102,98 @@
       fail('The IES angle arrays must be strictly increasing.');
     }
 
+    var verticalAngleData = describeAngleSeries(verticalAngles);
+    var horizontalAngleData = describeAngleSeries(horizontalAngles);
+    var candelaStats = describeCandela(candela, horizontalAngles, verticalAngles);
+    var totalRatedLumens = lampCount > 0 && lumensPerLamp > 0 ? lampCount * lumensPerLamp : null;
+
     return {
       version: version,
       sourceName: sourceName,
+      sourceSizeBytes: Number(options.fileSizeBytes || 0) || null,
+      tilt: tilt.slice(5),
       metadata: metadata,
+      metadataEntries: metadataEntries,
       lampCount: lampCount,
       lumensPerLamp: lumensPerLamp,
+      totalRatedLumens: totalRatedLumens,
+      isAbsolutePhotometry: lumensPerLamp < 0,
       candelaMultiplier: candelaMultiplier,
       photometricType: photometricType,
+      photometricTypeName: photometricTypeName(photometricType),
       unitsType: unitsType,
+      unitsName: unitsName(unitsType),
       dimensions: { width: width, length: length, height: height },
       ballastFactor: ballastFactor,
       futureUse: futureUse,
       inputWatts: inputWatts > 0 ? inputWatts : null,
       verticalAngles: verticalAngles,
       horizontalAngles: horizontalAngles,
+      verticalAngleData: verticalAngleData,
+      horizontalAngleData: horizontalAngleData,
       candela: candela,
+      candelaStats: candelaStats,
       horizontalSymmetry: describeHorizontalSymmetry(horizontalAngles)
+    };
+  }
+
+  function photometricTypeName(value) {
+    return ({ 1: 'Type C', 2: 'Type B', 3: 'Type A' })[Number(value)] || 'Unknown';
+  }
+
+  function unitsName(value) {
+    return Number(value) === 1 ? 'Feet' : (Number(value) === 2 ? 'Meters' : 'Unknown');
+  }
+
+  function describeAngleSeries(values) {
+    var clean = Array.isArray(values) ? values.map(Number).filter(Number.isFinite) : [];
+    if (!clean.length) return { count: 0, min: null, max: null, regularStep: null, isRegular: false };
+    if (clean.length === 1) return { count: 1, min: clean[0], max: clean[0], regularStep: null, isRegular: true };
+    var firstStep = clean[1] - clean[0];
+    var regular = true;
+    for (var i = 2; i < clean.length; i += 1) {
+      if (Math.abs((clean[i] - clean[i - 1]) - firstStep) > 1e-6) {
+        regular = false;
+        break;
+      }
+    }
+    return {
+      count: clean.length,
+      min: clean[0],
+      max: clean[clean.length - 1],
+      regularStep: regular ? firstStep : null,
+      isRegular: regular
+    };
+  }
+
+  function describeCandela(matrix, horizontalAngles, verticalAngles) {
+    var min = Infinity;
+    var max = -Infinity;
+    var sum = 0;
+    var count = 0;
+    var peakHorizontalAngle = null;
+    var peakVerticalAngle = null;
+    for (var h = 0; h < matrix.length; h += 1) {
+      for (var v = 0; v < matrix[h].length; v += 1) {
+        var value = Number(matrix[h][v]);
+        if (!Number.isFinite(value)) continue;
+        min = Math.min(min, value);
+        sum += value;
+        count += 1;
+        if (value > max) {
+          max = value;
+          peakHorizontalAngle = Number(horizontalAngles[h]);
+          peakVerticalAngle = Number(verticalAngles[v]);
+        }
+      }
+    }
+    return {
+      count: count,
+      min: Number.isFinite(min) ? min : null,
+      max: Number.isFinite(max) ? max : null,
+      average: count ? sum / count : null,
+      peakHorizontalAngle: peakHorizontalAngle,
+      peakVerticalAngle: peakVerticalAngle
     };
   }
 
