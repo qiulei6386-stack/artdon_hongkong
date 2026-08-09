@@ -18,12 +18,22 @@
     pendingInput: null,
     placingManual: false,
     hoverPoint: null,
-    snapSpacing: 0.25
+    snapSpacing: 0.25,
+    isBusy: false,
+    lastEstimate: null,
+    blockedReason: ''
   };
 
   function $(id) { return document.getElementById(id); }
   function all(selector, root) { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
   function readNumber(id) { return Number($(id).value); }
+  function engineLimits() {
+    return window.ArtdonLuxEngine && window.ArtdonLuxEngine.limits ? window.ArtdonLuxEngine.limits : { maxLuminaires: 400, maxGridPoints: 4000, maxCalculationWorkItems: 1000000 };
+  }
+  function assertLuminaireLimit(count) {
+    var max = Number(engineLimits().maxLuminaires || 400);
+    if (count > max) throw new Error('This layout would create ' + fmt(count, 0) + ' luminaires; the supported maximum is ' + fmt(max, 0) + '. Increase spacing or reduce rows and columns.');
+  }
   function esc(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
@@ -43,15 +53,32 @@
     var el = $(id);
     if (el) el.textContent = text || '';
   }
-  function setStatus(label, type) {
+  function setStatus(label, type, detail) {
     var el = $('lcTargetStatus');
     el.textContent = label;
     el.className = 'lc-status ' + (type || 'is-neutral');
+    var detailEl = $('lcStatusDetail');
+    if (detailEl) detailEl.textContent = detail || '';
+  }
+  function hasValidTarget() {
+    var target = readNumber('lcTargetLux');
+    return Number.isFinite(target) && target >= 1 && target <= 5000;
+  }
+  function syncCalculateAvailability() {
+    var button = $('lcCalculate');
+    if (button) button.disabled = state.isBusy || !state.ies || !state.lastEstimate || !hasValidTarget();
   }
   function markRecalculation() {
+    var hadResult = !!state.result;
     state.result = null;
-    setStatus('NEEDS RECALCULATION', 'is-neutral');
+    clearResults();
     updateLayout();
+    if (!state.ies) setStatus('UPLOAD IES TO START', 'is-neutral', 'Upload a valid IES file before calculating.');
+    else if (!hasValidTarget()) setStatus('CHECK TARGET VALUE', 'is-low', 'Enter a valid target average illuminance between 1 and 5,000 lux.');
+    else if (!state.lastEstimate) setStatus('CALCULATION BLOCKED', 'is-low', state.blockedReason || 'Correct the highlighted settings before calculating.');
+    else if (hadResult) setStatus('NEEDS RECALCULATION', 'is-neutral', 'Settings changed. Run the calculation again before using the results.');
+    else setStatus('READY TO CALCULATE', 'is-neutral', 'Settings are valid. Calculate to compare average illuminance with the target.');
+    syncCalculateAvailability();
   }
   function roomInput() {
     return {
@@ -102,6 +129,7 @@
     var cols = Math.floor(usableX / xSpacing) + 1;
     var rows = Math.floor(usableY / ySpacing) + 1;
     if (cols < 1 || rows < 1) throw new Error('The layout must contain at least one luminaire.');
+    assertLuminaireLimit(cols * rows);
     var luminaires = [];
     for (var r = 0; r < rows; r += 1) {
       for (var c = 0; c < cols; c += 1) {
@@ -118,6 +146,7 @@
   function generateByQuantity(room, offsets) {
     var cols = readInteger('lcCols', 'Columns');
     var rows = readInteger('lcRows', 'Rows');
+    assertLuminaireLimit(cols * rows);
     var usableX = room.length - offsets.leftOffset - offsets.rightOffset;
     var usableY = room.width - offsets.frontOffset - offsets.backOffset;
     var xSpacing = cols > 1 ? usableX / (cols - 1) : 0;
@@ -179,12 +208,37 @@
       window.ArtdonRoomLayout.render($('lcLayoutPreview'), layout, { view: state.view, result: state.result, selectedId: state.selectedId, placementPoint: state.hoverPoint });
       updateSelectionButtons();
       $('lcLayoutMeta').textContent = metaText(layout);
+      updateCalculationEstimate(layout);
       attachCanvasEvents();
     } catch (error) {
-      setFieldError('lcLayoutError', error.message || 'Layout is invalid.');
+      state.blockedReason = error.message || 'Layout is invalid.';
+      setFieldError('lcLayoutError', state.blockedReason);
+      setFieldError('lcComplexityError', '');
+      state.lastEstimate = null;
+      if ($('lcCalculationEstimate')) $('lcCalculationEstimate').textContent = 'Calculation unavailable';
       $('lcLayoutMeta').textContent = '';
       updateLayoutSummary(null);
+      syncCalculateAvailability();
     }
+  }
+  function estimateCalculation(layout) {
+    if (!window.ArtdonLuxEngine || typeof window.ArtdonLuxEngine.estimate !== 'function') throw new Error('The calculation engine is not ready.');
+    return window.ArtdonLuxEngine.estimate(payload(layout));
+  }
+  function updateCalculationEstimate(layout) {
+    try {
+      var estimate = estimateCalculation(layout);
+      state.lastEstimate = estimate;
+      state.blockedReason = '';
+      setFieldError('lcComplexityError', '');
+      if ($('lcCalculationEstimate')) $('lcCalculationEstimate').textContent = fmt(estimate.luminaireCount, 0) + ' luminaires × ' + fmt(estimate.gridPointCount, 0) + ' grid points · ' + fmt(estimate.workItems, 0) + ' evaluations';
+    } catch (error) {
+      state.lastEstimate = null;
+      state.blockedReason = error.message || 'The calculation is too large.';
+      setFieldError('lcComplexityError', state.blockedReason);
+      if ($('lcCalculationEstimate')) $('lcCalculationEstimate').textContent = 'Reduce calculation size';
+    }
+    syncCalculateAvailability();
   }
   function metaText(layout) {
     var meta = layout.meta || {};
@@ -357,15 +411,9 @@
     setMessage('', '');
     markRecalculation();
   }
-  function purgeIesAfterUse() {
-    state.ies = null;
-    $('lcIesFile').value = '';
-    var retainedName = $('lcFileName').textContent.trim();
-    $('lcFilebar').hidden = false;
-    $('lcFileName').textContent = (retainedName || 'IES file') + ' · parsed summary retained';
-  }
   function parseFile(file) {
     if (!file) return;
+    if (state.isBusy) { setMessage('Cancel the active calculation before replacing the IES file.', 'error'); return; }
     if (!/\.ies$/i.test(file.name)) { setMessage('Only .ies files are supported.', 'error'); return; }
     if (file.size > MAX_FILE_SIZE) { setMessage('The IES file is too large. Maximum size is 2 MB.', 'error'); return; }
     var reader = new FileReader();
@@ -401,49 +449,78 @@
   }
   function ensureWorker() {
     if (state.worker) return state.worker;
-    state.worker = new Worker('/assets/js/lighting-calculator/lux-worker.js?v=3.3.0');
+    state.worker = new Worker('/assets/js/lighting-calculator/lux-worker.js?v=3.4.0');
     state.worker.onmessage = onWorkerMessage;
     state.worker.onerror = function (event) {
       event.preventDefault();
-      runFallbackCalculation('The background calculator could not start. Running a local fallback calculation.');
+      failCalculation('The background calculator stopped unexpectedly. Check the settings and try again.');
     };
     state.worker.onmessageerror = function () {
-      runFallbackCalculation('The background calculator response could not be read. Running a local fallback calculation.');
+      failCalculation('The background calculator returned an unreadable response. Please try again.');
     };
     return state.worker;
   }
   function setBusy(busy) {
-    $('lcCalculate').disabled = busy;
+    state.isBusy = !!busy;
+    syncCalculateAvailability();
     $('lcCancel').disabled = !busy;
     $('lcLoading').hidden = !busy;
     $('lcCalculate').textContent = busy ? 'CALCULATING' : 'CALCULATE';
+    all('#lcIesFile,#lcReplaceFile,#lcClearFile,#lcReset,[data-recalc],[data-target-input],[data-layout-mode],[data-grid],[data-snap],#lcAddLuminaire,#lcClearManual,#lcRestoreAuto').forEach(function (control) {
+      control.disabled = !!busy;
+    });
+    updateSelectionButtons();
   }
   function calculate() {
+    if (state.isBusy) return;
     if (!state.ies) { setMessage('Upload a valid IES file before calculating.', 'error'); return; }
+    if (!hasValidTarget()) {
+      updateTargetAssessment();
+      setMessage('Enter a valid target average illuminance between 1 and 5,000 lux.', 'error');
+      return;
+    }
     var layout;
     try { layout = currentLayout(); } catch (error) { setMessage(error.message || 'Layout is invalid.', 'error'); return; }
     if (!layout.luminaires.length) { setMessage('Add at least one luminaire before calculating.', 'error'); return; }
-    if (state.activeJobId && state.worker) state.worker.postMessage({ type: 'cancel', jobId: state.activeJobId });
+    var input;
+    var estimate;
+    try {
+      input = payload(layout);
+      estimate = window.ArtdonLuxEngine.estimate(input);
+      setFieldError('lcComplexityError', '');
+    } catch (error) {
+      var blockedMessage = error && error.message ? error.message : 'The calculation is too large.';
+      setFieldError('lcComplexityError', blockedMessage);
+      setStatus('CALCULATION BLOCKED', 'is-low', blockedMessage);
+      setMessage(blockedMessage, 'error');
+      return;
+    }
+    state.result = null;
+    clearResults();
     setBusy(true);
-    setMessage('Calculation started.', '');
     state.activeJobId = 'job-' + (++state.jobId);
-    state.pendingInput = payload(layout);
+    state.pendingInput = input;
+    setStatus('CALCULATING', 'is-running', fmt(estimate.luminaireCount, 0) + ' luminaires × ' + fmt(estimate.gridPointCount, 0) + ' grid points · ' + fmt(estimate.workItems, 0) + ' evaluations.');
+    setMessage('Calculation started.', '');
     clearWatchdog();
     state.watchdog = window.setTimeout(function () {
-      runFallbackCalculation('The background calculation did not respond. Running a local fallback calculation.');
+      failCalculation('The calculation exceeded 12 seconds and was stopped. Increase grid spacing or reduce the luminaire count.', 'CALCULATION TIMED OUT');
     }, 12000);
     try {
       ensureWorker().postMessage({ type: 'calculate', jobId: state.activeJobId, ies: state.ies, input: state.pendingInput });
     } catch (error) {
-      runFallbackCalculation(error && error.message ? error.message : 'The background calculator could not be started.');
+      failCalculation(error && error.message ? error.message : 'The background calculator could not be started.');
     }
   }
   function cancel() {
-    if (state.worker && state.activeJobId) state.worker.postMessage({ type: 'cancel', jobId: state.activeJobId });
+    if (!state.activeJobId) return;
+    resetWorker();
     state.activeJobId = null;
+    state.pendingInput = null;
     clearWatchdog();
     setBusy(false);
     setMessage('Calculation cancelled.', '');
+    setStatus('CALCULATION CANCELLED', 'is-neutral', 'The Worker was terminated and no partial result was used. You can adjust settings and calculate again.');
   }
   function clearWatchdog() {
     if (state.watchdog) window.clearTimeout(state.watchdog);
@@ -455,39 +532,41 @@
     }
     state.worker = null;
   }
-  function runFallbackCalculation(reason) {
-    if (!state.activeJobId || !state.pendingInput) return;
+  function failCalculation(message, label) {
     clearWatchdog();
     resetWorker();
-    var jobId = state.activeJobId;
-    setMessage(reason, 'error');
-    window.setTimeout(function () {
-      if (state.activeJobId !== jobId) return;
-      try {
-        var startedAt = Date.now();
-        var result = window.ArtdonLuxEngine.calculate(state.ies, state.pendingInput);
-        result.metrics = result.metrics || {};
-        result.metrics.calculationTimeMs = Date.now() - startedAt;
-        state.activeJobId = null;
-        state.result = result;
-        setBusy(false);
-        state.view = 'heatmap';
-        syncTabs();
-        renderResults(result);
-        updateLayout();
-        purgeIesAfterUse();
-        setMessage('Calculation completed. The IES file has been removed from this page memory.', 'ok');
-      } catch (error) {
-        state.activeJobId = null;
-        setBusy(false);
-        setMessage(error && error.message ? error.message : 'Calculation failed.', 'error');
-      }
-    }, 30);
+    state.activeJobId = null;
+    state.pendingInput = null;
+    state.result = null;
+    clearResults();
+    setBusy(false);
+    setMessage(message || 'Calculation failed.', 'error');
+    setStatus(label || 'CALCULATION FAILED', 'is-low', message || 'No result was produced.');
+  }
+  function targetAssessment(result) {
+    var target = readNumber('lcTargetLux');
+    if (!Number.isFinite(target) || target < 1 || target > 5000) return null;
+    var average = Number(result && result.metrics && result.metrics.eavg);
+    if (!Number.isFinite(average)) return null;
+    var difference = average - target;
+    return { target: target, average: average, difference: difference, ratio: target > 0 ? average / target : 0, achieved: average >= target };
+  }
+  function resultLabels() {
+    return ['Average Illuminance','Target Average Illuminance','Average vs Target','Minimum Illuminance','Maximum Illuminance','Uniformity','Total Luminaires','Total Power','Grid Points','Calculation Time'];
+  }
+  function clearResults() {
+    var results = $('lcResults');
+    if (!results) return;
+    results.innerHTML = resultLabels().map(function (label) { return '<div><dt>' + label + '</dt><dd>-</dd></div>'; }).join('');
   }
   function resultRows(result) {
     var m = result.metrics || {};
+    var assessment = targetAssessment(result);
+    var difference = assessment ? (assessment.difference >= 0 ? '+' : '') + fmt(assessment.difference, 0) + ' lx · ' + fmt(assessment.ratio * 100, 0) + '%' : 'N/A';
     return [
       ['Average Illuminance', fmt(m.eavg, 0) + ' lx'],
+      ['Target Average Illuminance', assessment ? fmt(assessment.target, 0) + ' lx' : 'N/A'],
+      ['Average vs Target', difference],
       ['Minimum Illuminance', fmt(m.emin, 0) + ' lx'],
       ['Maximum Illuminance', fmt(m.emax, 0) + ' lx'],
       ['Uniformity', fmt(m.uniformity, 2)],
@@ -501,40 +580,71 @@
     $('lcResults').innerHTML = resultRows(result).map(function (row) {
       return '<div><dt>' + row[0] + '</dt><dd>' + row[1] + '</dd></div>';
     }).join('');
+    var assessment = targetAssessment(result);
+    if (!assessment) {
+      setFieldError('lcTargetError', 'Target average illuminance must be between 1 and 5,000 lux.');
+      setStatus('CHECK TARGET VALUE', 'is-low', 'Enter a valid target between 1 and 5,000 lux. The calculated illuminance result remains available.');
+      return;
+    }
+    setFieldError('lcTargetError', '');
+    if (assessment.achieved) {
+      setStatus('TARGET ACHIEVED', 'is-ok', 'Average illuminance ' + fmt(assessment.average, 0) + ' lx meets the ' + fmt(assessment.target, 0) + ' lx target by ' + fmt(assessment.difference, 0) + ' lx.');
+    } else if (assessment.ratio >= 0.9) {
+      setStatus('NEAR TARGET', 'is-close', 'Average illuminance ' + fmt(assessment.average, 0) + ' lx is ' + fmt(Math.abs(assessment.difference), 0) + ' lx below the ' + fmt(assessment.target, 0) + ' lx target.');
+    } else {
+      setStatus('BELOW TARGET', 'is-low', 'Average illuminance ' + fmt(assessment.average, 0) + ' lx is ' + fmt(Math.abs(assessment.difference), 0) + ' lx below the ' + fmt(assessment.target, 0) + ' lx target.');
+    }
+  }
+  function updateTargetAssessment() {
     var target = readNumber('lcTargetLux');
-    if (result.metrics.eavg >= target) setStatus('TARGET ACHIEVED', 'is-ok');
-    else setStatus('BELOW TARGET', 'is-low');
+    if (!Number.isFinite(target) || target < 1 || target > 5000) {
+      setFieldError('lcTargetError', 'Target average illuminance must be between 1 and 5,000 lux.');
+      if (state.result) renderResults(state.result);
+      else setStatus('CHECK TARGET VALUE', 'is-low', 'Enter a valid target average illuminance between 1 and 5,000 lux.');
+      syncCalculateAvailability();
+      return;
+    }
+    setFieldError('lcTargetError', '');
+    if (state.result) renderResults(state.result);
+    else if (state.ies && !state.lastEstimate) setStatus('CALCULATION BLOCKED', 'is-low', state.blockedReason || 'Correct the highlighted settings before calculating.');
+    else if (state.ies) setStatus('READY TO CALCULATE', 'is-neutral', 'Settings are valid. Calculate to compare average illuminance with the target.');
+    else setStatus('UPLOAD IES TO START', 'is-neutral', 'Upload a valid IES file before calculating.');
+    syncCalculateAvailability();
   }
   function onWorkerMessage(event) {
     var data = event.data || {};
-    if (data.jobId && state.activeJobId && data.jobId !== state.activeJobId) return;
-    if (data.type === 'progress') { setMessage('Calculating ' + data.done + ' of ' + data.total + ' grid points...', ''); return; }
+    if (!state.activeJobId || data.jobId !== state.activeJobId) return;
+    if (data.type === 'progress') {
+      setMessage('Calculating ' + data.done + ' of ' + data.total + ' grid points...', '');
+      setStatus('CALCULATING', 'is-running', fmt(data.done, 0) + ' of ' + fmt(data.total, 0) + ' grid points completed.');
+      return;
+    }
     if (data.type === 'result') {
       clearWatchdog();
       state.activeJobId = null;
+      state.pendingInput = null;
       state.result = data.result;
       setBusy(false);
       state.view = 'heatmap';
       syncTabs();
       renderResults(data.result);
       updateLayout();
-      purgeIesAfterUse();
-      setMessage('Calculation completed. The IES file has been removed from this page memory.', 'ok');
+      setMessage('Calculation completed. The parsed IES data remains loaded for recalculation.', 'ok');
       return;
     }
-    if (data.type === 'cancelled') { clearWatchdog(); state.activeJobId = null; setBusy(false); return; }
-    if (data.type === 'error') { clearWatchdog(); state.activeJobId = null; setBusy(false); setMessage(data.message || 'Calculation failed.', 'error'); }
+    if (data.type === 'cancelled') { cancel(); return; }
+    if (data.type === 'error') failCalculation(data.message || 'Calculation failed.');
   }
   function updateSelectionButtons() {
     var hasSelection = !!state.selectedId;
-    $('lcCopyLuminaire').disabled = !hasSelection;
-    $('lcDeleteLuminaire').disabled = !hasSelection || state.luminaires.length <= 1;
+    $('lcCopyLuminaire').disabled = state.isBusy || !hasSelection;
+    $('lcDeleteLuminaire').disabled = state.isBusy || !hasSelection || state.luminaires.length <= 1;
     var xInput = $('lcSelectedX');
     var yInput = $('lcSelectedY');
     if (!xInput || !yInput) return;
     var lum = state.luminaires.find(function (item) { return String(item.id) === String(state.selectedId); });
-    xInput.disabled = !lum;
-    yInput.disabled = !lum;
+    xInput.disabled = state.isBusy || !lum;
+    yInput.disabled = state.isBusy || !lum;
     if (lum) {
       xInput.value = Number(lum.x).toFixed(2);
       yInput.value = Number(lum.y).toFixed(2);
@@ -550,6 +660,7 @@
   function copySelected() {
     var lum = state.luminaires.find(function (item) { return String(item.id) === String(state.selectedId); });
     if (!lum) return;
+    try { assertLuminaireLimit(state.luminaires.length + 1); } catch (error) { setMessage(error.message, 'error'); return; }
     var room = validateRoom(roomInput());
     var copy = makeCopy(lum, room);
     state.customLayout = true;
@@ -596,6 +707,7 @@
     return 'L' + (max + 1);
   }
   function startManualPlacement() {
+    try { assertLuminaireLimit(state.luminaires.length + 1); } catch (error) { setMessage(error.message, 'error'); return; }
     state.mode = 'manual';
     state.customLayout = true;
     state.placingManual = true;
@@ -615,6 +727,7 @@
     markRecalculation();
   }
   function placeManualLuminaire(point) {
+    try { assertLuminaireLimit(state.luminaires.length + 1); } catch (error) { setMessage(error.message, 'error'); return; }
     var p = snapPoint(point);
     var lum = makeLuminaire(nextLuminaireId(), p.x, p.y);
     state.luminaires.push(lum);
@@ -643,6 +756,7 @@
     if (!svg) return;
     all('[data-lum-id]', svg).forEach(function (node) {
       node.addEventListener('pointerdown', function (event) {
+        if (state.isBusy) return;
         event.preventDefault();
         state.dragId = node.getAttribute('data-lum-id');
         state.selectedId = state.dragId;
@@ -651,6 +765,7 @@
       });
     });
     svg.onpointermove = function (event) {
+      if (state.isBusy) return;
       var p = window.ArtdonRoomLayout.svgToRoom(svg, event.clientX, event.clientY);
       if (state.placingManual) p = snapPoint(p);
       var lux = nearestLux(p);
@@ -670,7 +785,7 @@
       lum.x = p.x;
       lum.y = p.y;
       state.customLayout = true;
-      setStatus('NEEDS RECALCULATION', 'is-neutral');
+      setStatus('NEEDS RECALCULATION', 'is-neutral', 'Luminaire positions changed. Release the pointer, then calculate again.');
       window.ArtdonRoomLayout.render(preview, currentLayout(), { view: state.view, result: state.result, selectedId: state.selectedId, placementPoint: p });
       attachCanvasEvents();
     };
@@ -682,6 +797,7 @@
       }
     };
     svg.onclick = function (event) {
+      if (state.isBusy) return;
       var target = event.target.closest && event.target.closest('[data-lum-id]');
       if (target) {
         selectLuminaire(target.getAttribute('data-lum-id'));
@@ -789,6 +905,7 @@
         markRecalculation();
       });
     });
+    $('lcTargetLux').addEventListener('input', updateTargetAssessment);
     ['dragenter', 'dragover'].forEach(function (type) {
       dropzone.addEventListener(type, function (event) { event.preventDefault(); dropzone.classList.add('is-dragover'); });
     });
@@ -798,7 +915,7 @@
     dropzone.addEventListener('drop', function (event) { parseFile(event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]); });
     renderInfo(null);
     syncMode();
-    updateLayout();
+    markRecalculation();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
   else bind();

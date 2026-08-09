@@ -1,7 +1,7 @@
 (function (root) {
   'use strict';
 
-  importScripts('/assets/js/lighting-calculator/ies-parser.js?v=3.3.0', '/assets/js/lighting-calculator/lux-engine.js?v=3.1.0');
+  importScripts('/assets/js/lighting-calculator/ies-parser.js?v=3.3.0', '/assets/js/lighting-calculator/lux-engine.js?v=3.4.0');
 
   var activeJobId = null;
 

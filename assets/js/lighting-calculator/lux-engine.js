@@ -3,6 +3,7 @@
 
   var MAX_GRID_POINTS = 4000;
   var MAX_LUMINAIRES = 400;
+  var MAX_CALCULATION_WORK_ITEMS = 1000000;
   var DEG = Math.PI / 180;
 
   function validateNumber(value, label, min, max) {
@@ -14,7 +15,7 @@
   function buildLuminaireArray(room, layout) {
     if (Array.isArray(layout.luminaires)) {
       if (layout.luminaires.length < 1) throw new Error('At least one luminaire is required.');
-      if (layout.luminaires.length > MAX_LUMINAIRES) throw new Error('Too many luminaires. Reduce the luminaire count.');
+      if (layout.luminaires.length > MAX_LUMINAIRES) throw new Error('This layout contains ' + layout.luminaires.length + ' luminaires; the supported maximum is ' + MAX_LUMINAIRES + '. Reduce the luminaire count.');
       return layout.luminaires.map(function (item, index) {
         var x = validateNumber(item.x, 'Luminaire X position', 0, room.length);
         var y = validateNumber(item.y, 'Luminaire Y position', 0, room.width);
@@ -31,7 +32,7 @@
     var rows = Math.round(validateNumber(layout.rows, 'Luminaire rows', 1, 20));
     var cols = Math.round(validateNumber(layout.cols, 'Luminaire columns', 1, 20));
     var count = rows * cols;
-    if (count > MAX_LUMINAIRES) throw new Error('Too many luminaires. Reduce rows or columns.');
+    if (count > MAX_LUMINAIRES) throw new Error('This layout contains ' + count + ' luminaires; the supported maximum is ' + MAX_LUMINAIRES + '. Reduce rows or columns.');
     var rotation = validateNumber(layout.rotation || 0, 'Luminaire rotation', -360, 360);
     var marginX = room.length / (cols + 1);
     var marginY = room.width / (rows + 1);
@@ -49,20 +50,26 @@
     return luminaires;
   }
 
-  function buildGrid(room, spacing) {
+  function gridDimensions(room, spacing) {
     spacing = validateNumber(spacing, 'Grid spacing', 0.25, 5);
     var xCount = Math.max(2, Math.floor(room.length / spacing) + 1);
     var yCount = Math.max(2, Math.floor(room.width / spacing) + 1);
+    var pointCount = xCount * yCount;
+    if (pointCount > MAX_GRID_POINTS) throw new Error('This grid contains ' + pointCount + ' points; the supported maximum is ' + MAX_GRID_POINTS + '. Increase grid spacing or reduce room size.');
+    return { xCount: xCount, yCount: yCount, pointCount: pointCount, spacing: spacing };
+  }
+
+  function buildGrid(room, spacing) {
+    var dimensions = gridDimensions(room, spacing);
     var points = [];
-    for (var yi = 0; yi < yCount; yi += 1) {
-      var y = yCount === 1 ? room.width / 2 : room.width * yi / (yCount - 1);
-      for (var xi = 0; xi < xCount; xi += 1) {
-        var x = xCount === 1 ? room.length / 2 : room.length * xi / (xCount - 1);
+    for (var yi = 0; yi < dimensions.yCount; yi += 1) {
+      var y = dimensions.yCount === 1 ? room.width / 2 : room.width * yi / (dimensions.yCount - 1);
+      for (var xi = 0; xi < dimensions.xCount; xi += 1) {
+        var x = dimensions.xCount === 1 ? room.length / 2 : room.length * xi / (dimensions.xCount - 1);
         points.push({ x: x, y: y, z: room.workplaneHeight });
       }
     }
-    if (points.length > MAX_GRID_POINTS) throw new Error('Too many grid points. Increase grid spacing or reduce room size.');
-    return { points: points, xCount: xCount, yCount: yCount, spacing: spacing };
+    return { points: points, xCount: dimensions.xCount, yCount: dimensions.yCount, spacing: dimensions.spacing };
   }
 
   function buildRoom(input) {
@@ -106,11 +113,35 @@
     return lux;
   }
 
+  function assertWorkload(pointCount, luminaireCount) {
+    var workItems = pointCount * luminaireCount;
+    if (workItems > MAX_CALCULATION_WORK_ITEMS) {
+      throw new Error('This calculation requires ' + workItems.toLocaleString('en-US') + ' intensity evaluations; the supported maximum is ' + MAX_CALCULATION_WORK_ITEMS.toLocaleString('en-US') + '. Increase grid spacing or reduce the luminaire count.');
+    }
+    return workItems;
+  }
+
+  function estimate(input) {
+    input = input || {};
+    var room = buildRoom(input.room || {});
+    var luminaires = buildLuminaireArray(room, input.layout || {});
+    var grid = gridDimensions(room, input.gridSpacing || 0.5);
+    return {
+      luminaireCount: luminaires.length,
+      gridPointCount: grid.pointCount,
+      workItems: assertWorkload(grid.pointCount, luminaires.length),
+      xCount: grid.xCount,
+      yCount: grid.yCount,
+      gridSpacing: grid.spacing
+    };
+  }
+
   function calculate(ies, input, progress) {
     if (!ies) throw new Error('Upload a valid IES file before calculating.');
     var room = buildRoom(input.room || {});
     var luminaires = buildLuminaireArray(room, input.layout || {});
     var grid = buildGrid(room, input.gridSpacing || 0.5);
+    var workItems = assertWorkload(grid.points.length, luminaires.length);
     var maintenanceFactor = validateNumber(input.maintenanceFactor == null ? 1 : input.maintenanceFactor, 'Maintenance factor', 0.1, 1);
     var points = [];
     var sum = 0;
@@ -146,6 +177,8 @@
         uniformity: avg > 0 && Number.isFinite(min) ? min / avg : 0,
         luminaireCount: luminaires.length,
         totalPower: ies.inputWatts ? ies.inputWatts * luminaires.length : null,
+        gridPointCount: grid.points.length,
+        calculationWorkItems: workItems,
         minPoint: minPoint,
         maxPoint: maxPoint
       }
@@ -158,7 +191,9 @@
     buildRoom: buildRoom,
     buildGrid: buildGrid,
     buildLuminaireArray: buildLuminaireArray,
+    estimate: estimate,
+    gridDimensions: gridDimensions,
     localAngles: localAngles,
-    limits: { maxGridPoints: MAX_GRID_POINTS, maxLuminaires: MAX_LUMINAIRES }
+    limits: { maxGridPoints: MAX_GRID_POINTS, maxLuminaires: MAX_LUMINAIRES, maxCalculationWorkItems: MAX_CALCULATION_WORK_ITEMS }
   };
 })(typeof self !== 'undefined' ? self : window);

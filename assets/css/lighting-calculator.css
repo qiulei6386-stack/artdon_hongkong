@@ -21,7 +21,7 @@
 .lc-row-actions,.lc-actions,.lc-layout-tools,.lc-canvas-toolbar,.lc-tabs,.lc-segmented,.lc-quick-grid{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .lc-row-actions button,.lc-actions button,.lc-layout-tools button,.lc-tabs button,.lc-segmented button,.lc-quick-grid button{min-height:38px;border:1px solid #111;background:#fff;color:#111;padding:0 12px;font:inherit;font-size:11px;font-weight:740;letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
 .lc-row-actions button:hover,.lc-actions button:hover,.lc-layout-tools button:hover,.lc-tabs button:hover,.lc-segmented button:hover,.lc-quick-grid button:hover{color:#fff;background:#111}
-.lc-actions button:disabled,.lc-layout-tools button:disabled{cursor:not-allowed;border-color:#d8d8d8;color:#aaa;background:#f8f8f8}
+.lc-actions button:disabled,.lc-layout-tools button:disabled,.lc-row-actions button:disabled,.lc-segmented button:disabled,.lc-quick-grid button:disabled{cursor:not-allowed;border-color:#d8d8d8;color:#aaa;background:#f8f8f8}
 .lc-actions .lc-primary{background:#111;color:#fff;min-width:132px}
 .lc-actions .lc-primary:hover{background:var(--ap-red,#d71920);border-color:var(--ap-red,#d71920)}
 .lc-message{min-height:18px}
@@ -79,8 +79,11 @@
 .lc-loading span{width:18px;height:18px;border:2px solid #ddd;border-top-color:var(--ap-red,#d71920);border-radius:50%;animation:lcSpin .8s linear infinite}
 .lc-status{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 12px;border:1px solid #111;color:#111;background:#fff;font-size:12px;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
 .lc-status.is-ok{background:#111;color:#fff}
+.lc-status.is-close{background:#fff8df;color:#765500;border-color:#d7b34c}
+.lc-status.is-running{background:#111;color:#fff;border-color:#111}
 .lc-status.is-low{background:#fff;color:#a3152b;border-color:#a3152b}
 .lc-status.is-neutral{background:#fafafa;color:#555;border-color:var(--ap-line,#dedede)}
+.lc-status-detail{margin:-4px 0 0;color:#555;font-size:12px;line-height:1.55}
 .lc-note{margin:auto 0 0;padding-top:16px;border-top:1px solid var(--ap-line,#dedede)}
 .lc-check{display:flex;align-items:center;gap:8px;color:#555;font-size:11px;font-weight:720;letter-spacing:.06em;text-transform:uppercase}
 .lc-check input{width:14px;height:14px}

@@ -39,7 +39,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
-  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.3.0">
+  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.4.0">
 </head>
 <body>
 <?php include __DIR__ . '/partials/header.php'; ?>
@@ -122,8 +122,8 @@ $ogImage = function_exists('artdon_v710_absolute_url')
           </div>
           <div class="lc-mode-panel" id="lcQuantityPanel" hidden>
             <div class="lc-form-grid">
-              <label>Columns<input id="lcCols" data-recalc type="number" min="1" max="50" step="1" value="5"></label>
-              <label>Rows<input id="lcRows" data-recalc type="number" min="1" max="50" step="1" value="3"></label>
+              <label>Columns<input id="lcCols" data-recalc type="number" min="1" max="20" step="1" value="5"></label>
+              <label>Rows<input id="lcRows" data-recalc type="number" min="1" max="20" step="1" value="3"></label>
             </div>
           </div>
           <div class="lc-mode-panel" id="lcManualPanel" hidden>
@@ -163,8 +163,11 @@ $ogImage = function_exists('artdon_v710_absolute_url')
           <div class="lc-form-grid">
             <label>Grid Spacing (m)<input id="lcGridSpacing" data-recalc type="number" min="0.25" max="5" step="0.05" value="0.5"></label>
             <label>Maintenance Factor<input id="lcMaintenance" data-recalc type="number" min="0.1" max="1" step="0.01" value="0.8"></label>
-            <label>Target Illuminance (lux)<input id="lcTargetLux" data-recalc type="number" min="1" max="5000" step="10" value="500"></label>
+            <label>Target Average Illuminance (lux)<input id="lcTargetLux" data-target-input type="number" min="1" max="5000" step="10" value="500"></label>
           </div>
+          <div class="lc-effective"><span id="lcCalculationEstimate">15 luminaires × 273 grid points</span></div>
+          <p class="lc-field-error" id="lcComplexityError"></p>
+          <p class="lc-field-error" id="lcTargetError"></p>
         </section>
 
         <div class="lc-actions">
@@ -209,6 +212,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
       </header>
       <div class="lighting-calculator-body">
         <div class="lc-status is-neutral" id="lcTargetStatus">NEEDS RECALCULATION</div>
+        <p class="lc-status-detail" id="lcStatusDetail">Upload an IES file and calculate to compare the average illuminance with your target.</p>
         <div class="lc-loading" id="lcLoading" hidden>
           <span></span>
           <strong>Calculating illuminance...</strong>
@@ -231,9 +235,9 @@ $ogImage = function_exists('artdon_v710_absolute_url')
 <?php include __DIR__ . '/partials/footer.php'; ?>
 <script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 <script src="assets/js/lighting-calculator/ies-parser.js?v=3.3.0" defer></script>
-<script src="assets/js/lighting-calculator/lux-engine.js?v=3.1.0" defer></script>
+<script src="assets/js/lighting-calculator/lux-engine.js?v=3.4.0" defer></script>
 <script src="assets/js/lighting-calculator/room-layout.js?v=3.1.0" defer></script>
 <script src="assets/js/lighting-calculator/heatmap-renderer.js?v=3.0.1" defer></script>
-<script src="assets/js/lighting-calculator/calculator-app.js?v=3.3.0" defer></script>
+<script src="assets/js/lighting-calculator/calculator-app.js?v=3.4.1" defer></script>
 </body>
 </html>
