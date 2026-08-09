@@ -237,6 +237,20 @@
     var unit = ies.unitsType === 1 ? 'ft' : (ies.unitsType === 2 ? 'm' : 'units');
     return fmt(d.width, 3) + ' × ' + fmt(d.length, 3) + ' × ' + fmt(d.height, 3) + ' ' + unit + ' (W × L × H)';
   }
+  function beamPlaneLabel(axis) {
+    var start = ((Number(axis) % 360) + 360) % 360;
+    var opposite = (start + 180) % 360;
+    return 'C ' + fmt(start, 1) + '°–' + fmt(opposite, 1) + '°';
+  }
+  function beamAngleLabel(ies) {
+    var beam = ies && ies.beamAngleData;
+    if (!beam || !beam.planes || !beam.planes.length) return 'N/A';
+    if (beam.primaryAngle != null) return degree(beam.primaryAngle);
+    var plane0 = beam.planes.find(function (plane) { return Math.abs(Number(plane.axis)) < 0.01; });
+    var plane90 = beam.planes.find(function (plane) { return Math.abs(Number(plane.axis) - 90) < 0.01; });
+    if (plane0 && plane90) return degree(plane0.angle) + ' × ' + degree(plane90.angle);
+    return degree(beam.minAngle) + '–' + degree(beam.maxAngle);
+  }
   function infoRow(label, value) {
     if (value == null || String(value).trim() === '') return '';
     return '<div><dt>' + esc(label) + '</dt><dd>' + esc(value) + '</dd></div>';
@@ -249,47 +263,9 @@
       details.innerHTML = '';
       return;
     }
-    var metadataRows = (ies.metadataEntries || []).map(function (entry) {
-      return infoRow('[' + entry.key + ']', entry.value || '—');
-    }).join('');
-    var headerRows = [
-      ['Lamp count', fmt(ies.lampCount, 0)],
-      ['Lumens per lamp', ies.lumensPerLamp < 0 ? 'Absolute photometry (-1)' : fmt(ies.lumensPerLamp, 1) + ' lm'],
-      ['Candela multiplier', fmt(ies.candelaMultiplier, 6)],
-      ['Photometric type code', fmt(ies.photometricType, 0)],
-      ['Units type code', fmt(ies.unitsType, 0)],
-      ['Ballast factor', fmt(ies.ballastFactor, 6)],
-      ['Header factor 2', fmt(ies.futureUse, 6)],
-      ['Input watts', ies.inputWatts ? fmt(ies.inputWatts, 3) + ' W' : 'N/A'],
-      ['Candela values', ies.candelaStats ? fmt(ies.candelaStats.count, 0) : 'N/A'],
-      ['Minimum candela', ies.candelaStats && ies.candelaStats.min != null ? fmt(ies.candelaStats.min, 3) + ' cd' : 'N/A'],
-      ['Average candela sample', ies.candelaStats && ies.candelaStats.average != null ? fmt(ies.candelaStats.average, 3) + ' cd' : 'N/A']
-    ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
-    var verticalValues = (ies.verticalAngles || []).map(degree).join(', ');
-    var horizontalValues = (ies.horizontalAngles || []).map(degree).join(', ');
-    details.hidden = false;
-    details.innerHTML = '<summary>Complete IES file data</summary>'
-      + '<div class="lc-info-details-body">'
-      + '<h4>Photometric header</h4><dl class="lc-info lc-info-compact">' + headerRows + '</dl>'
-      + (metadataRows ? '<h4>IES metadata</h4><dl class="lc-info lc-info-compact">' + metadataRows + '</dl>' : '')
-      + '<h4>Vertical angles (' + esc(fmt((ies.verticalAngles || []).length, 0)) + ')</h4><p class="lc-angle-values">' + esc(verticalValues || 'N/A') + '</p>'
-      + '<h4>Horizontal C-planes (' + esc(fmt((ies.horizontalAngles || []).length, 0)) + ')</h4><p class="lc-angle-values">' + esc(horizontalValues || 'N/A') + '</p>'
-      + '</div>';
-  }
-  function renderInfo(ies) {
-    var info = $('lcIesInfo');
-    if (!ies) {
-      info.innerHTML = [
-        ['IES standard', 'Upload a file'],
-        ['Input power', 'N/A'],
-        ['Vertical angle range', 'N/A'],
-        ['Measured C-plane range', 'N/A']
-      ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
-      renderInfoDetails(null);
-      return;
-    }
+    details.open = false;
     var peak = ies.candelaStats || {};
-    var rows = [
+    var parsedRows = [
       ['File size', formatBytes(ies.sourceSizeBytes)],
       ['IES standard', ies.version || 'LM-63'],
       ['Manufacturer', metadataValue(ies, ['MANUFAC', 'MANUFACTURER'])],
@@ -311,6 +287,7 @@
       ['Candela multiplier', fmt(ies.candelaMultiplier, 6)],
       ['Peak intensity', peak.max != null ? fmt(peak.max, 3) + ' cd' : 'N/A'],
       ['Peak direction', peak.peakHorizontalAngle != null && peak.peakVerticalAngle != null ? 'C ' + degree(peak.peakHorizontalAngle) + ' / γ ' + degree(peak.peakVerticalAngle) : 'N/A'],
+      ['Beam angle', beamAngleLabel(ies)],
       ['Vertical angle range', angleRange(ies.verticalAngleData)],
       ['Vertical samples', angleSamples(ies.verticalAngleData, 'samples')],
       ['Measured C-plane range', angleRange(ies.horizontalAngleData)],
@@ -319,6 +296,54 @@
       ['Horizontal symmetry', ies.horizontalSymmetry || 'N/A'],
       ['TILT', ies.tilt || 'NONE'],
       ['Ballast factor', Number.isFinite(Number(ies.ballastFactor)) ? fmt(ies.ballastFactor, 6) : 'N/A']
+    ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
+    var beamRows = ((ies.beamAngleData && ies.beamAngleData.planes) || []).map(function (plane) {
+      return infoRow(beamPlaneLabel(plane.axis), degree(plane.angle) + ' at 50% peak intensity');
+    }).join('');
+    var metadataRows = (ies.metadataEntries || []).map(function (entry) {
+      return infoRow('[' + entry.key + ']', entry.value || '—');
+    }).join('');
+    var headerRows = [
+      ['Lamp count', fmt(ies.lampCount, 0)],
+      ['Lumens per lamp', ies.lumensPerLamp < 0 ? 'Absolute photometry (-1)' : fmt(ies.lumensPerLamp, 1) + ' lm'],
+      ['Candela multiplier', fmt(ies.candelaMultiplier, 6)],
+      ['Photometric type code', fmt(ies.photometricType, 0)],
+      ['Units type code', fmt(ies.unitsType, 0)],
+      ['Ballast factor', fmt(ies.ballastFactor, 6)],
+      ['Header factor 2', fmt(ies.futureUse, 6)],
+      ['Input watts', ies.inputWatts ? fmt(ies.inputWatts, 3) + ' W' : 'N/A'],
+      ['Candela values', ies.candelaStats ? fmt(ies.candelaStats.count, 0) : 'N/A'],
+      ['Minimum candela', ies.candelaStats && ies.candelaStats.min != null ? fmt(ies.candelaStats.min, 3) + ' cd' : 'N/A'],
+      ['Average candela sample', ies.candelaStats && ies.candelaStats.average != null ? fmt(ies.candelaStats.average, 3) + ' cd' : 'N/A']
+    ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
+    var verticalValues = (ies.verticalAngles || []).map(degree).join(', ');
+    var horizontalValues = (ies.horizontalAngles || []).map(degree).join(', ');
+    details.hidden = false;
+    details.innerHTML = '<summary>Complete IES file data</summary>'
+      + '<div class="lc-info-details-body">'
+      + '<h4>Parsed photometry</h4><dl class="lc-info lc-info-compact">' + parsedRows + '</dl>'
+      + (beamRows ? '<h4>Beam angle (FWHM)</h4><dl class="lc-info lc-info-compact">' + beamRows + '</dl>' : '<p class="lc-angle-values">A complete 50% intensity crossing was not available in this file, so a beam angle could not be calculated.</p>')
+      + '<h4>Photometric header</h4><dl class="lc-info lc-info-compact">' + headerRows + '</dl>'
+      + (metadataRows ? '<h4>IES metadata</h4><dl class="lc-info lc-info-compact">' + metadataRows + '</dl>' : '')
+      + '<h4>Vertical angles (' + esc(fmt((ies.verticalAngles || []).length, 0)) + ')</h4><p class="lc-angle-values">' + esc(verticalValues || 'N/A') + '</p>'
+      + '<h4>Horizontal C-planes (' + esc(fmt((ies.horizontalAngles || []).length, 0)) + ')</h4><p class="lc-angle-values">' + esc(horizontalValues || 'N/A') + '</p>'
+      + '</div>';
+  }
+  function renderInfo(ies) {
+    var info = $('lcIesInfo');
+    if (!ies) {
+      info.innerHTML = [
+        ['Input power', 'N/A'],
+        ['Total rated lumens', 'N/A'],
+        ['Beam angle', 'N/A']
+      ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
+      renderInfoDetails(null);
+      return;
+    }
+    var rows = [
+      ['Input power', ies.inputWatts ? fmt(ies.inputWatts, 3) + ' W' : 'N/A'],
+      ['Total rated lumens', ies.totalRatedLumens ? fmt(ies.totalRatedLumens, 1) + ' lm' : 'N/A'],
+      ['Beam angle', beamAngleLabel(ies)]
     ];
     info.innerHTML = rows.map(function (row) { return infoRow(row[0], row[1]); }).join('');
     renderInfoDetails(ies);
@@ -376,7 +401,7 @@
   }
   function ensureWorker() {
     if (state.worker) return state.worker;
-    state.worker = new Worker('/assets/js/lighting-calculator/lux-worker.js?v=3.2.0');
+    state.worker = new Worker('/assets/js/lighting-calculator/lux-worker.js?v=3.3.0');
     state.worker.onmessage = onWorkerMessage;
     state.worker.onerror = function (event) {
       event.preventDefault();

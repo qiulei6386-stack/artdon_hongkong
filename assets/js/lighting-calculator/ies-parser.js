@@ -105,6 +105,11 @@
     var verticalAngleData = describeAngleSeries(verticalAngles);
     var horizontalAngleData = describeAngleSeries(horizontalAngles);
     var candelaStats = describeCandela(candela, horizontalAngles, verticalAngles);
+    var beamAngleData = describeBeamAngles({
+      verticalAngles: verticalAngles,
+      horizontalAngles: horizontalAngles,
+      candela: candela
+    });
     var totalRatedLumens = lampCount > 0 && lumensPerLamp > 0 ? lampCount * lumensPerLamp : null;
 
     return {
@@ -133,6 +138,7 @@
       horizontalAngleData: horizontalAngleData,
       candela: candela,
       candelaStats: candelaStats,
+      beamAngleData: beamAngleData,
       horizontalSymmetry: describeHorizontalSymmetry(horizontalAngles)
     };
   }
@@ -194,6 +200,100 @@
       average: count ? sum / count : null,
       peakHorizontalAngle: peakHorizontalAngle,
       peakVerticalAngle: peakVerticalAngle
+    };
+  }
+
+  function uniqueBeamAxes(horizontalAngles) {
+    var axes = [];
+    (horizontalAngles || []).forEach(function (angle) {
+      var axis = normalizeDegrees(angle) % 180;
+      if (Math.abs(axis - 180) < 1e-6 || Math.abs(axis) < 1e-6) axis = 0;
+      if (!axes.some(function (known) { return Math.abs(known - axis) < 1e-6; })) axes.push(axis);
+    });
+    if (!axes.length) axes.push(0);
+    return axes.sort(function (a, b) { return a - b; });
+  }
+
+  function crossingAngle(pointA, pointB, target) {
+    var delta = pointB.intensity - pointA.intensity;
+    if (Math.abs(delta) < EPSILON) return (pointA.angle + pointB.angle) / 2;
+    var ratio = (target - pointA.intensity) / delta;
+    ratio = Math.max(0, Math.min(1, ratio));
+    return pointA.angle + (pointB.angle - pointA.angle) * ratio;
+  }
+
+  function beamProfileForAxis(ies, axis) {
+    var angles = (ies.verticalAngles || []).map(Number).filter(function (value) {
+      return Number.isFinite(value) && value >= -EPSILON && value <= 90 + EPSILON;
+    });
+    if (!angles.length) return [];
+    var profile = [];
+    for (var i = angles.length - 1; i >= 0; i -= 1) {
+      if (Math.abs(angles[i]) <= EPSILON) continue;
+      profile.push({ angle: -angles[i], intensity: interpolate(ies, axis + 180, angles[i]) });
+    }
+    var zeroIntensity = (interpolate(ies, axis, 0) + interpolate(ies, axis + 180, 0)) / 2;
+    profile.push({ angle: 0, intensity: zeroIntensity });
+    angles.forEach(function (angle) {
+      if (Math.abs(angle) <= EPSILON) return;
+      profile.push({ angle: angle, intensity: interpolate(ies, axis, angle) });
+    });
+    return profile;
+  }
+
+  function beamAngleForAxis(ies, axis) {
+    var profile = beamProfileForAxis(ies, axis);
+    if (profile.length < 3) return null;
+    var peakIndex = 0;
+    for (var i = 1; i < profile.length; i += 1) {
+      if (profile[i].intensity > profile[peakIndex].intensity) peakIndex = i;
+    }
+    var peakIntensity = Number(profile[peakIndex].intensity);
+    if (!(peakIntensity > 0)) return null;
+    var halfPeak = peakIntensity * 0.5;
+    var left = null;
+    var right = null;
+    for (var leftIndex = peakIndex; leftIndex > 0; leftIndex -= 1) {
+      if (profile[leftIndex - 1].intensity <= halfPeak && profile[leftIndex].intensity >= halfPeak) {
+        left = crossingAngle(profile[leftIndex - 1], profile[leftIndex], halfPeak);
+        break;
+      }
+    }
+    for (var rightIndex = peakIndex; rightIndex < profile.length - 1; rightIndex += 1) {
+      if (profile[rightIndex].intensity >= halfPeak && profile[rightIndex + 1].intensity <= halfPeak) {
+        right = crossingAngle(profile[rightIndex], profile[rightIndex + 1], halfPeak);
+        break;
+      }
+    }
+    if (!Number.isFinite(left) || !Number.isFinite(right) || right <= left) return null;
+    return {
+      axis: axis,
+      angle: right - left,
+      leftHalfAngle: left,
+      rightHalfAngle: right,
+      peakAngle: profile[peakIndex].angle,
+      peakIntensity: peakIntensity,
+      halfPeakIntensity: halfPeak
+    };
+  }
+
+  function describeBeamAngles(ies) {
+    var planes = uniqueBeamAxes(ies.horizontalAngles).map(function (axis) {
+      return beamAngleForAxis(ies, axis);
+    }).filter(Boolean);
+    if (!planes.length) {
+      return { method: 'FWHM', thresholdRatio: 0.5, planes: [], primaryAngle: null, minAngle: null, maxAngle: null };
+    }
+    var values = planes.map(function (plane) { return plane.angle; });
+    var minAngle = Math.min.apply(Math, values);
+    var maxAngle = Math.max.apply(Math, values);
+    return {
+      method: 'FWHM',
+      thresholdRatio: 0.5,
+      planes: planes,
+      primaryAngle: planes.length === 1 || maxAngle - minAngle <= 0.5 ? values.reduce(function (sum, value) { return sum + value; }, 0) / values.length : null,
+      minAngle: minAngle,
+      maxAngle: maxAngle
     };
   }
 

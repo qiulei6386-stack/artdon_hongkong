@@ -31,6 +31,8 @@
 .lc-info div,.lc-results div{display:grid;grid-template-columns:minmax(105px,.8fr) minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--ap-line,#dedede)}
 .lc-info dt,.lc-results dt{color:#555;font-size:10px;font-weight:750;letter-spacing:.1em;text-transform:uppercase}
 .lc-info dd,.lc-results dd{margin:0;min-width:0;color:#111;font-size:13px;overflow-wrap:anywhere}
+.lc-info-primary dd{font-size:14px;font-weight:680;color:#111}
+.lc-info-primary div:last-child dd{color:var(--ap-red,#d71920)}
 .lc-info-details{width:100%;max-width:100%;min-width:0;border-bottom:1px solid var(--ap-line,#dedede)}
 .lc-info-details[hidden]{display:none}
 .lc-info-details summary{padding:12px 0;color:#111;font-size:11px;font-weight:780;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
