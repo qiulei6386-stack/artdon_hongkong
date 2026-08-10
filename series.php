@@ -271,6 +271,14 @@ function sv717_variant_safe_series_value(mixed $raw, int $index, int $total): st
 
 function sv717_variant_specs(array $variant, array $series, int $index = 0, int $total = 0): array {
     $card = function_exists('web_product_card_data') ? web_product_card_data($series) : [];
+    $outputLabel = sv717_text($card['output_label'] ?? '') ?: 'Lumen Output';
+    $beamLabel = sv717_text($card['beam_label'] ?? '') ?: 'Beam Angle';
+    $customOutputValue = sv717_label_key($outputLabel) !== 'lumenoutput'
+        ? sv717_spec_row_value($variant, [$outputLabel])
+        : '';
+    $customBeamValue = sv717_label_key($beamLabel) !== 'beamangle'
+        ? sv717_spec_row_value($variant, [$beamLabel])
+        : '';
 
     // 1) 优先读取“具体产品/尺寸”自己的字段或规格行。
     // 2) 只有在找不到具体产品值时，才按系列总卡片做兜底。
@@ -294,7 +302,8 @@ function sv717_variant_specs(array $variant, array $series, int $index = 0, int 
 
     $seriesLumenRaw = $card['output_value'] ?? ($series['lumen_text'] ?? '');
     $seriesLumenText = sv717_text($seriesLumenRaw);
-    $lumen = sv717_variant_field_value($variant, ['lumen_text','lumen_output','output_text','luminous_flux','lumen'])
+    $lumen = $customOutputValue
+        ?: sv717_variant_field_value($variant, ['lumen_text','lumen_output','output_text','luminous_flux','lumen'])
         ?: sv717_spec_row_value($variant, ['lumenoutput','luminousflux','lumen','output','lm','流明','光通量']);
     // 如果具体产品里被旧数据批量写入了系列总范围（例如 655-4802lm），不要继续每张卡重复显示这一串。
     if ($lumen !== '' && $total > 1 && $seriesLumenText !== '' && sv717_same_spec_text($lumen, $seriesLumenText) && sv717_pick_series_value($seriesLumenRaw, $index, $total) === '') {
@@ -305,14 +314,23 @@ function sv717_variant_specs(array $variant, array $series, int $index = 0, int 
         $lumen = sv717_variant_safe_series_value($seriesLumenRaw, $index, $total);
     }
 
-    $beam = sv717_variant_field_value($variant, ['beam_angle','beam_angle_json','beam_text','beam'])
+    $beam = $customBeamValue
+        ?: sv717_variant_field_value($variant, ['beam_angle','beam_angle_json','beam_text','beam'])
         ?: sv717_spec_row_value($variant, ['beamangle','beam','angle','光束角','角度']);
     if ($beam === '') {
         $beam = sv717_text($card['beam_value'] ?? '') ?: sv717_text($series['beam_angle'] ?? '');
     }
 
     $tags = sv717_lines($variant['tags'] ?? ($variant['tags_json'] ?? '')) ?: sv717_lines($series['tags'] ?? []);
-    return ['power'=>$power,'size'=>$size,'lumen'=>$lumen,'beam'=>$beam,'tags'=>$tags];
+    return [
+        'power'=>$power,
+        'size'=>$size,
+        'lumen'=>$lumen,
+        'beam'=>$beam,
+        'output_label'=>$outputLabel,
+        'beam_label'=>$beamLabel,
+        'tags'=>$tags,
+    ];
 }
 function sv717_variant_accessories(array $variant): array {
     $items = [];
@@ -968,7 +986,7 @@ $seriesSchema = artdon_schema_graph([
       <?php foreach($variants as $vIndex=>$v): $spec=sv717_variant_specs($v,$series,(int)$vIndex,count($variants)); $img=trim((string)($v['cover_image']??'')) ?: sv717_first_image($series,$content); ?>
       <?php $dimImg = trim((string)($v['dimension_image'] ?? '')); $dimAlt = trim((string)($v['dimension_alt'] ?? '')) ?: ((string)$v['name'] . ' dimension drawing'); ?>
       <?php $accItems = sv717_variant_accessories($v); $accPreview = array_slice($accItems,0,4); $accRemaining = max(0,count($accItems)-count($accPreview)); ?>
-      <a class="s717-card" href="<?= sv717_e(artdon_pretty_product_url_v71868($category, $series, $v)) ?>"><figure><img class="s717-card-image" src="<?= sv717_e($img) ?>" data-main-src="<?= sv717_e($img) ?>" data-main-alt="<?= sv717_e($v['name']) ?>" data-dim-src="<?= sv717_e($dimImg) ?>" data-dim-alt="<?= sv717_e($dimAlt) ?>" alt="<?= sv717_e($v['name']) ?>" title="<?= sv717_e($v['name']) ?>" loading="lazy"></figure><div class="s717-card-body"><h3><?= sv717_e($v['name']) ?></h3><div class="s717-specs"><?php if($spec['power']!==''): ?><p class="s717-spec-power">Wattage: <b><?= sv717_e($spec['power']) ?></b></p><?php endif; ?><?php if($spec['size']!==''): ?><p class="s717-spec-size">Size: <b><?= sv717_e($spec['size']) ?></b></p><?php endif; ?><?php if($spec['lumen']!==''): ?><p class="s717-spec-lumen">Lumen Output: <b><?= sv717_e($spec['lumen']) ?></b></p><?php endif; ?><?php if($spec['beam']!==''): ?><p class="s717-spec-beam">Beam Angle: <b><?= sv717_e($spec['beam']) ?></b></p><?php endif; ?></div><?php if($spec['tags']): ?><div class="s717-tags"><?php foreach(array_slice($spec['tags'],0,4) as $tag): ?><span><?= sv717_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?><?php if($accPreview): ?><div class="s717-accessories"><span class="s717-accessories-title">Accessories</span><div class="s717-accessory-list"><?php foreach($accPreview as $acc): ?><span class="s717-accessory"><img src="<?= sv717_e($acc['image']) ?>" alt="<?= sv717_e($acc['alt']) ?>" title="<?= sv717_e($acc['alt']) ?>" loading="lazy"><span><b><?= sv717_e($acc['title'] ?: 'Accessory') ?></b><?php if(trim((string)$acc['model']) !== ''): ?><em><?= sv717_e($acc['model']) ?></em><?php endif; ?></span></span><?php endforeach; ?></div><?php if($accRemaining>0): ?><span class="s717-accessory-more">+<?= (int)$accRemaining ?> more accessories</span><?php endif; ?></div><?php endif; ?><span class="s717-card-mobile-action">View details →</span></div></a>
+      <a class="s717-card" href="<?= sv717_e(artdon_pretty_product_url_v71868($category, $series, $v)) ?>"><figure><img class="s717-card-image" src="<?= sv717_e($img) ?>" data-main-src="<?= sv717_e($img) ?>" data-main-alt="<?= sv717_e($v['name']) ?>" data-dim-src="<?= sv717_e($dimImg) ?>" data-dim-alt="<?= sv717_e($dimAlt) ?>" alt="<?= sv717_e($v['name']) ?>" title="<?= sv717_e($v['name']) ?>" loading="lazy"></figure><div class="s717-card-body"><h3><?= sv717_e($v['name']) ?></h3><div class="s717-specs"><?php if($spec['power']!==''): ?><p class="s717-spec-power">Wattage: <b><?= sv717_e($spec['power']) ?></b></p><?php endif; ?><?php if($spec['size']!==''): ?><p class="s717-spec-size">Size: <b><?= sv717_e($spec['size']) ?></b></p><?php endif; ?><?php if($spec['lumen']!==''): ?><p class="s717-spec-lumen"><?= sv717_e($spec['output_label']) ?>: <b><?= sv717_e($spec['lumen']) ?></b></p><?php endif; ?><?php if($spec['beam']!==''): ?><p class="s717-spec-beam"><?= sv717_e($spec['beam_label']) ?>: <b><?= sv717_e($spec['beam']) ?></b></p><?php endif; ?></div><?php if($spec['tags']): ?><div class="s717-tags"><?php foreach(array_slice($spec['tags'],0,4) as $tag): ?><span><?= sv717_e($tag) ?></span><?php endforeach; ?></div><?php endif; ?><?php if($accPreview): ?><div class="s717-accessories"><span class="s717-accessories-title">Accessories</span><div class="s717-accessory-list"><?php foreach($accPreview as $acc): ?><span class="s717-accessory"><img src="<?= sv717_e($acc['image']) ?>" alt="<?= sv717_e($acc['alt']) ?>" title="<?= sv717_e($acc['alt']) ?>" loading="lazy"><span><b><?= sv717_e($acc['title'] ?: 'Accessory') ?></b><?php if(trim((string)$acc['model']) !== ''): ?><em><?= sv717_e($acc['model']) ?></em><?php endif; ?></span></span><?php endforeach; ?></div><?php if($accRemaining>0): ?><span class="s717-accessory-more">+<?= (int)$accRemaining ?> more accessories</span><?php endif; ?></div><?php endif; ?><span class="s717-card-mobile-action">View details →</span></div></a>
       <?php endforeach; ?>
     </div>
   </section>
