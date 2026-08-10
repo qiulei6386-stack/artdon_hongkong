@@ -323,6 +323,7 @@ $projectDetailSchema = artdon_schema_graph([
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base href="/">
   <title><?= project_detail_e($detailTitle) ?></title>
   <meta name="description" content="<?= project_detail_e($detailDescription) ?>">
   <link rel="canonical" href="<?= project_detail_e($detailCanonical) ?>">
