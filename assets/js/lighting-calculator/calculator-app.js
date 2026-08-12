@@ -25,7 +25,8 @@
     blockedReason: '',
     accessAuthorized: false,
     pendingAccessFile: null,
-    pendingAccessAction: ''
+    pendingAccessAction: '',
+    pendingOfficialSelection: null
   };
 
   function $(id) { return document.getElementById(id); }
@@ -68,6 +69,7 @@
     if (state.accessAuthorized) {
       if (file) parseFile(file);
       else if (action === 'picker') $('lcIesFile').click();
+      else if (action === 'official' && state.pendingOfficialSelection) loadOfficialIes(state.pendingOfficialSelection);
       return;
     }
     state.pendingAccessAction = action || '';
@@ -83,6 +85,7 @@
     setMessage('Authorization confirmed. IES upload is unlocked for this browser.', 'ok');
     if (file) parseFile(file);
     else if (action === 'picker') window.setTimeout(function () { $('lcIesFile').click(); }, 30);
+    else if (action === 'official' && state.pendingOfficialSelection) loadOfficialIes(state.pendingOfficialSelection);
   }
   function checkAccessStatus() {
     fetch('/api/lighting-calculator-access.php', { credentials:'same-origin', headers:{'Accept':'application/json'} })
@@ -468,8 +471,8 @@
         ['Beam angle', 'N/A']
       ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
       if ($('lcSummaryFile')) $('lcSummaryFile').textContent = 'No IES file loaded';
-      if ($('lcSummaryMeta')) $('lcSummaryMeta').textContent = 'Upload an LM-63 .ies file to begin';
-      if ($('lcSummaryReplace')) $('lcSummaryReplace').textContent = 'UPLOAD IES';
+      if ($('lcSummaryMeta')) $('lcSummaryMeta').textContent = 'Select an official product or upload an LM-63 .ies file';
+      if ($('lcSummaryReplace')) $('lcSummaryReplace').textContent = 'SELECT OFFICIAL PRODUCT';
       renderInfoDetails(null);
       return;
     }
@@ -479,19 +482,35 @@
       ['Beam angle', beamAngleLabel(ies)]
     ];
     info.innerHTML = rows.map(function (row) { return infoRow(row[0], row[1]); }).join('');
-    if ($('lcSummaryFile')) $('lcSummaryFile').textContent = ies.sourceName || 'IES photometric file';
+    var official = ies.officialProduct || null;
+    if ($('lcSummaryFile')) $('lcSummaryFile').textContent = official ? (official.variant_name || official.model_code || ies.sourceName) : (ies.sourceName || 'IES photometric file');
     if ($('lcSummaryMeta')) $('lcSummaryMeta').textContent = (ies.inputWatts ? fmt(ies.inputWatts, 1) + ' W' : 'Power N/A') + ' · ' + (ies.totalRatedLumens ? fmt(ies.totalRatedLumens, 0) + ' lm' : 'Lumens N/A') + ' · ' + beamAngleLabel(ies) + ' Beam';
-    if ($('lcSummaryReplace')) $('lcSummaryReplace').textContent = 'REPLACE IES';
+    if ($('lcSummaryReplace')) $('lcSummaryReplace').textContent = official ? 'CHANGE PRODUCT' : 'SELECT OFFICIAL PRODUCT';
     renderInfoDetails(ies);
   }
   function clearFile() {
     state.ies = null;
+    state.pendingOfficialSelection = null;
     $('lcIesFile').value = '';
     $('lcFilebar').hidden = true;
     $('lcFileName').textContent = '';
     renderInfo(null);
     setMessage('', '');
     markRecalculation();
+  }
+  function parseIesText(text, name, size, official) {
+    try {
+      state.ies = window.ArtdonIesParser.parse(String(text || ''), { fileName:name, fileSizeBytes:size });
+      state.ies.officialProduct = official || null;
+      $('lcFileName').textContent = official ? ((official.variant_name || official.model_code || name) + ' · ' + beamAngleLabel(state.ies)) : name;
+      $('lcFilebar').hidden = false;
+      renderInfo(state.ies);
+      setMessage(official ? 'Official Artdon product IES loaded successfully.' : 'IES file loaded successfully.', 'ok');
+      markRecalculation();
+    } catch (error) {
+      clearFile();
+      setMessage(error && error.message ? error.message : 'The IES file could not be parsed.', 'error');
+    }
   }
   function parseFile(file) {
     if (!file) return;
@@ -500,20 +519,35 @@
     if (file.size > MAX_FILE_SIZE) { setMessage('The IES file is too large. Maximum size is 2 MB.', 'error'); return; }
     var reader = new FileReader();
     reader.onload = function () {
-      try {
-        state.ies = window.ArtdonIesParser.parse(String(reader.result || ''), { fileName: file.name, fileSizeBytes: file.size });
-        $('lcFileName').textContent = file.name;
-        $('lcFilebar').hidden = false;
-        renderInfo(state.ies);
-        setMessage('IES file loaded successfully.', 'ok');
-        markRecalculation();
-      } catch (error) {
-        clearFile();
-        setMessage(error && error.message ? error.message : 'The IES file could not be parsed.', 'error');
-      }
+      parseIesText(String(reader.result || ''), file.name, file.size, null);
     };
     reader.onerror = function () { setMessage('The IES file could not be read.', 'error'); };
     reader.readAsText(file);
+  }
+  function requestOfficialSelection(selection) {
+    if (!selection || !selection.variantId || !selection.memberId) return;
+    state.pendingOfficialSelection = selection;
+    if (!state.accessAuthorized) { requestAccess('official'); return; }
+    loadOfficialIes(selection);
+  }
+  function loadOfficialIes(selection) {
+    if (!selection || state.isBusy) return;
+    setMessage('Loading verified Artdon photometric data…', '');
+    var url = '/api/lighting-calculator-products.php?action=file&variant_id=' + encodeURIComponent(selection.variantId) + '&member_id=' + encodeURIComponent(selection.memberId);
+    fetch(url, { credentials:'same-origin', headers:{Accept:'application/json'} })
+      .then(function (response) { return response.json().catch(function () { return {}; }).then(function (data) { return {response:response,data:data}; }); })
+      .then(function (result) {
+        if (result.response.status === 401) {
+          state.accessAuthorized = false;
+          requestAccess('official');
+          return;
+        }
+        if (!result.response.ok || !result.data.ok || !result.data.file) throw new Error(result.data.message || 'The official IES file could not be loaded.');
+        state.pendingOfficialSelection = null;
+        parseIesText(result.data.file.text, result.data.file.name, result.data.file.size, result.data.file.official || null);
+      }).catch(function (error) {
+        setMessage(error && error.message ? error.message : 'The official IES file could not be loaded.', 'error');
+      });
   }
   function payload(layout) {
     return {
@@ -956,13 +990,13 @@
     var assessment = targetAssessment(state.result);
     return {
       generatedAt: new Date().toISOString(),
-      fileName: state.ies.sourceName || $('lcFileName').textContent || 'photometric-file.ies',
+      fileName: state.ies.officialProduct ? ((state.ies.officialProduct.variant_name || state.ies.officialProduct.model_code || state.ies.sourceName) + '.ies') : (state.ies.sourceName || $('lcFileName').textContent || 'photometric-file.ies'),
       logoUrl: (document.querySelector('.site-header img, header img') || {}).src || '/assets/img/logo-artdon.png',
       showBranding: !$('lcReportBranding') || $('lcReportBranding').checked,
       ies: {
         version: state.ies.version || 'IES LM-63',
-        manufacturer: metadataValue(state.ies, ['MANUFAC', 'MANUFACTURER']) || 'N/A',
-        catalogNumber: metadataValue(state.ies, ['LUMCAT', 'CATALOG', 'CATALOGNUMBER']) || 'N/A',
+        manufacturer: metadataValue(state.ies, ['MANUFAC', 'MANUFACTURER']) || (state.ies.officialProduct ? 'Artdon Lighting' : 'N/A'),
+        catalogNumber: metadataValue(state.ies, ['LUMCAT', 'CATALOG', 'CATALOGNUMBER']) || (state.ies.officialProduct && state.ies.officialProduct.model_code) || 'N/A',
         testId: metadataValue(state.ies, ['TEST', 'TESTNO']) || 'N/A',
         inputWatts: Number(state.ies.inputWatts) || 0,
         totalRatedLumens: Number(state.ies.totalRatedLumens) || 0,
@@ -1033,7 +1067,8 @@
     $('lcCancel').addEventListener('click', cancel);
     $('lcReset').addEventListener('click', resetAll);
     $('lcRestoreAuto').addEventListener('click', restoreAuto);
-    $('lcSummaryReplace').addEventListener('click', function () { requestAccess('picker'); });
+    $('lcSummaryReplace').addEventListener('click', function () { window.ArtdonOfficialIesSelector.open(); });
+    window.ArtdonOfficialIesSelector.init({ onSelect:requestOfficialSelection });
     $('lcCopyLuminaire').addEventListener('click', copySelected);
     $('lcDeleteLuminaire').addEventListener('click', deleteSelected);
     all('[data-layout-mode]').forEach(function (button) {
@@ -1103,6 +1138,7 @@
       button.addEventListener('click', function () {
         state.pendingAccessFile = null;
         state.pendingAccessAction = '';
+        state.pendingOfficialSelection = null;
         accessModal(false);
       });
     });
@@ -1110,6 +1146,7 @@
       if (event.key === 'Escape' && !$('lcAccessModal').hidden) {
         state.pendingAccessFile = null;
         state.pendingAccessAction = '';
+        state.pendingOfficialSelection = null;
         accessModal(false);
       }
     });

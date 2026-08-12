@@ -11,7 +11,7 @@ $footerBlock = is_array($content['footer'] ?? null) ? $content['footer'] : (func
 $siteUrl = function_exists('artdon_v710_site_url') ? artdon_v710_site_url($site) : rtrim((string)($site['site_url'] ?? 'https://artdonlighting.com'), '/');
 $company = trim((string)($site['company'] ?? 'Artdon Lighting Limited')) ?: 'Artdon Lighting Limited';
 $pageTitle = 'IES Lighting Calculator | Artdon Lighting';
-$pageDescription = 'Upload an IES file, configure your room and luminaire layout, and calculate the illuminance distribution.';
+$pageDescription = 'Select an official Artdon product or upload an IES file, configure your room and luminaire layout, and calculate the illuminance distribution.';
 $canonical = $siteUrl . '/lighting-calculator.php';
 $ogImage = function_exists('artdon_v710_absolute_url')
     ? artdon_v710_absolute_url($siteUrl, (string)($content['seo']['og_image'] ?? $site['header_logo'] ?? 'assets/img/logo-artdon.png'))
@@ -39,7 +39,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
-  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=4.0.0">
+  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=4.1.1">
 </head>
 <body>
 <?php include __DIR__ . '/partials/header.php'; ?>
@@ -49,7 +49,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
       <p class="ap-kicker">Technical resources</p>
       <h1 id="lighting-calculator-title">IES Lighting Calculator</h1>
     </div>
-    <p>Upload an IES file, configure the room and luminaire layout, and calculate the illuminance distribution.</p>
+    <p>Select an official Artdon product or upload your own IES file, then configure the room and calculate the illuminance distribution.</p>
   </section>
 
   <section class="lc-summary-strip" aria-label="Current photometric calculation summary">
@@ -58,9 +58,9 @@ $ogImage = function_exists('artdon_v710_absolute_url')
       <div class="lc-summary-file-copy">
         <strong id="lcSummaryFile">No IES file loaded</strong>
         <span>IES Photometric File</span>
-        <small id="lcSummaryMeta">Upload an LM-63 .ies file to begin</small>
+        <small id="lcSummaryMeta">Select an official product or upload an LM-63 .ies file</small>
       </div>
-      <button type="button" id="lcSummaryReplace">UPLOAD IES</button>
+      <button type="button" id="lcSummaryReplace">SELECT OFFICIAL PRODUCT</button>
     </div>
     <div class="lc-summary-metrics">
       <div class="lc-summary-metric"><span class="lc-summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M8 7V4h8v3M12 7v11M8.5 18h7M6 12h3M15 12h3"></path></svg></span><div><strong id="lcSummaryFixtures">15</strong><small>Fixtures</small></div></div>
@@ -265,18 +265,34 @@ $ogImage = function_exists('artdon_v710_absolute_url')
     </section>
   </section>
 </main>
+<div class="lc-official-modal" id="lcOfficialModal" hidden>
+  <div class="lc-official-backdrop" data-lc-official-close></div>
+  <section class="lc-official-dialog" role="dialog" aria-modal="true" aria-labelledby="lcOfficialTitle">
+    <header class="lc-official-header">
+      <div><p>ARTDON PHOTOMETRIC LIBRARY</p><h2 id="lcOfficialTitle">Select an official product IES</h2></div>
+      <button type="button" data-lc-official-close aria-label="Close product selector">×</button>
+    </header>
+    <div class="lc-official-tools">
+      <label><span class="sr-only">Search official products</span><input id="lcOfficialSearch" type="search" placeholder="Search series, model or product…" autocomplete="off"></label>
+      <div class="lc-official-categories" id="lcOfficialCategories" aria-label="Product categories"></div>
+    </div>
+    <div class="lc-official-status" id="lcOfficialStatus" role="status" aria-live="polite">Loading official photometric library…</div>
+    <div class="lc-official-results" id="lcOfficialResults"></div>
+    <footer><span id="lcOfficialStats"></span><small>Beam angles are calculated from the IES intensity data at 50% peak intensity (FWHM).</small></footer>
+  </section>
+</div>
 <div class="lc-access-modal" id="lcAccessModal" hidden>
   <div class="lc-access-backdrop" data-lc-access-close></div>
   <section class="lc-access-dialog" role="dialog" aria-modal="true" aria-labelledby="lcAccessTitle" aria-describedby="lcAccessDescription">
     <button class="lc-access-close" type="button" data-lc-access-close aria-label="Close authorization dialog">×</button>
     <p class="lc-access-kicker">Professional calculation access</p>
     <h2 id="lcAccessTitle">Enter authorization code</h2>
-    <p id="lcAccessDescription">An authorization code is required before selecting or dropping an IES file. Your photometric file remains in this browser and is not uploaded to our server.</p>
+    <p id="lcAccessDescription">An authorization code is required before loading an official product IES or your own file. Customer files remain in this browser and are not uploaded to our server.</p>
     <form id="lcAccessForm">
       <label for="lcAccessCode">Authorization code</label>
       <input id="lcAccessCode" name="code" type="text" maxlength="96" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="ARTDON-XXXX-XXXX-XXXX" required>
       <p class="lc-access-message" id="lcAccessMessage" role="status" aria-live="polite"></p>
-      <button class="lc-primary" type="submit" id="lcAccessSubmit">UNLOCK IES UPLOAD</button>
+      <button class="lc-primary" type="submit" id="lcAccessSubmit">UNLOCK IES ACCESS</button>
     </form>
     <p class="lc-access-help">Need access? Contact your Artdon Lighting representative.</p>
   </section>
@@ -288,6 +304,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
 <script src="assets/js/lighting-calculator/room-layout.js?v=4.0.0" defer></script>
 <script src="assets/js/lighting-calculator/heatmap-renderer.js?v=4.0.0" defer></script>
 <script src="assets/js/lighting-calculator/report-exporter.js?v=1.1.0" defer></script>
-<script src="assets/js/lighting-calculator/calculator-app.js?v=4.2.0" defer></script>
+<script src="assets/js/lighting-calculator/official-ies-selector.js?v=1.0.0" defer></script>
+<script src="assets/js/lighting-calculator/calculator-app.js?v=4.3.0" defer></script>
 </body>
 </html>
