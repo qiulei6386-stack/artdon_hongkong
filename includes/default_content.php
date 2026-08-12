@@ -47,7 +47,6 @@ function web_default_content(): array
             'quote_modal_submit_label' => 'Submit inquiry',
             'nav_schema_version' => 49,
             'nav' => [
-                ['label'=>'Home','href'=>'index.php','items'=>[]],
                 ['label'=>'Products','href'=>'products.php','items'=>[
                     ['label'=>'All Products','href'=>'products.php'],
                     ['label'=>'Downlights','href'=>'products.php?type=downlight'],
@@ -73,18 +72,19 @@ function web_default_content(): array
                     ['label'=>'Museum & Gallery','href'=>'project.php?type=museum'],
                     ['label'=>'Commercial','href'=>'project.php?type=commercial'],
                 ]],
-                ['label'=>'About Us','href'=>'index.php#about','items'=>[
-                    ['label'=>'Why Artdon','href'=>'index.php#about'],
-                    ['label'=>'Manufacturing','href'=>'index.php#why-choose-artdon'],
-                    ['label'=>'Quality & Testing','href'=>'index.php#why-choose-artdon'],
-                    ['label'=>'OEM / ODM','href'=>'index.php#why-choose-artdon'],
-                ]],
+                ['label'=>'Lighting Calculator','href'=>'/lighting-calculator.php','items'=>[]],
                 ['label'=>'Resources','href'=>'downloads.php','items'=>[
                     ['label'=>'Catalogue','href'=>'downloads.php?type=catalogues'],
                     ['label'=>'Blog & Insights','href'=>'index.php#knowledge'],
                     ['label'=>'FAQ','href'=>'contact.php#faq'],
                     ['label'=>'Downloads','href'=>'downloads.php'],
                     ['label'=>'Video','href'=>'videos.php'],
+                ]],
+                ['label'=>'About','href'=>'index.php#about','items'=>[
+                    ['label'=>'Why Artdon','href'=>'index.php#about'],
+                    ['label'=>'Manufacturing','href'=>'index.php#why-choose-artdon'],
+                    ['label'=>'Quality & Testing','href'=>'index.php#why-choose-artdon'],
+                    ['label'=>'OEM / ODM','href'=>'index.php#why-choose-artdon'],
                 ]],
                 ['label'=>'Contact','href'=>'contact.php','items'=>[]],
             ],

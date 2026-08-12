@@ -75,7 +75,7 @@ foreach ($__menus as &$__menuForSolutions) {
 }
 unset($__menuForSolutions);
 foreach ($__menus as &$__menuForAbout) {
-    if (strtolower(trim((string)($__menuForAbout['label'] ?? ''))) !== 'about us') continue;
+    if (!in_array(strtolower(trim((string)($__menuForAbout['label'] ?? ''))), ['about us','about'], true)) continue;
     $__items = is_array($__menuForAbout['items'] ?? null) ? $__menuForAbout['items'] : [];
     $__items[0] = ['label'=>'Why Artdon', 'href'=>'/about-why-artdon.php'];
     $__items[1] = ['label'=>'Manufacturing', 'href'=>'/about-manufacturing.php'];
@@ -115,13 +115,16 @@ $__quoteUrl = artdon_normalize_front_url_v71868(trim((string)($__site['header_qu
         $__href = '/solutions.php';
       } elseif ($__label === 'projects') {
         $__href = '/project.php';
+      } elseif (in_array($__label, ['lighting calculator','ies calculator'], true)) {
+        $__href = '/lighting-calculator.php';
       }
       $__isActive=(($__current==='index.php'&&$__label==='home')
         || (in_array($__current,['products.php','product.php'],true)&&$__label==='products')
         || (preg_match('/^solutions(?:-[a-z0-9-]+)?\.php$/', $__current) && $__label==='solutions')
         || ($__current==='project.php'&&$__label==='projects')
-        || (preg_match('/^about(?:-[a-z0-9-]+)?\.php$/', $__current) && $__label==='about us')
+        || (preg_match('/^about(?:-[a-z0-9-]+)?\.php$/', $__current) && in_array($__label,['about us','about'],true))
         || ((preg_match('/^resources(?:-[a-z0-9-]+)?\.php$/', $__current) || in_array($__current,['downloads.php','videos.php'],true)) && $__label==='resources')
+        || ($__current==='lighting-calculator.php' && in_array($__label,['lighting calculator','ies calculator'],true))
         || ($__current==='contact.php'&&$__label==='contact'));
       $__active=$__isActive?' is-active':'';
       $__items=is_array($__menu['items']??null)?$__menu['items']:[];

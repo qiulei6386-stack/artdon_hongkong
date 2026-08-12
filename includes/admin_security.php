@@ -609,6 +609,7 @@ function web_admin_route_permission(?string $script = null, ?string $method = nu
         'media.php' => $write ? ($delete ? 'media.delete' : (!empty($_FILES) ? 'media.upload' : 'media.edit')) : 'media.view',
         'media_crop.php' => 'media.edit',
         'storage.php' => $write ? 'storage.edit' : 'storage.view',
+        'lighting_calculator_codes.php' => $write ? 'settings.edit' : 'settings.view',
         'settings.php' => $write ? 'settings.edit' : 'settings.view',
         'sync.php' => $write ? ((str_contains($action, 'setting') || str_contains($action, 'token') || str_contains($action, 'config')) ? 'sync.configure' : 'sync.run') : 'sync.view',
         'users.php' => 'users.view',

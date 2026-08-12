@@ -21,7 +21,10 @@
     snapSpacing: 0.25,
     isBusy: false,
     lastEstimate: null,
-    blockedReason: ''
+    blockedReason: '',
+    accessAuthorized: false,
+    pendingAccessFile: null,
+    pendingAccessAction: ''
   };
 
   function $(id) { return document.getElementById(id); }
@@ -48,6 +51,69 @@
     if (!el) return;
     el.textContent = text || '';
     el.className = 'lc-message' + (type ? ' is-' + type : '');
+  }
+  function accessModal(open) {
+    var modal = $('lcAccessModal');
+    if (!modal) return;
+    modal.hidden = !open;
+    modal.classList.toggle('is-open', open);
+    document.body.classList.toggle('lc-access-open', open);
+    if (open) {
+      $('lcAccessMessage').textContent = '';
+      window.setTimeout(function () { $('lcAccessCode').focus(); }, 30);
+    }
+  }
+  function requestAccess(action, file) {
+    if (state.accessAuthorized) {
+      if (file) parseFile(file);
+      else if (action === 'picker') $('lcIesFile').click();
+      return;
+    }
+    state.pendingAccessAction = action || '';
+    state.pendingAccessFile = file || null;
+    accessModal(true);
+  }
+  function finishAccess() {
+    var file = state.pendingAccessFile;
+    var action = state.pendingAccessAction;
+    state.pendingAccessFile = null;
+    state.pendingAccessAction = '';
+    accessModal(false);
+    setMessage('Authorization confirmed. IES upload is unlocked for this browser.', 'ok');
+    if (file) parseFile(file);
+    else if (action === 'picker') window.setTimeout(function () { $('lcIesFile').click(); }, 30);
+  }
+  function checkAccessStatus() {
+    fetch('/api/lighting-calculator-access.php', { credentials:'same-origin', headers:{'Accept':'application/json'} })
+      .then(function (response) { return response.json(); })
+      .then(function (data) {
+        state.accessAuthorized = !!(data && data.authorized);
+        if (state.accessAuthorized && !$('lcAccessModal').hidden) finishAccess();
+      })
+      .catch(function () { state.accessAuthorized = false; });
+  }
+  function submitAccess(event) {
+    event.preventDefault();
+    var code = String($('lcAccessCode').value || '').trim();
+    var message = $('lcAccessMessage');
+    var button = $('lcAccessSubmit');
+    if (!code) { message.textContent = 'Enter your authorization code.'; return; }
+    button.disabled = true;
+    message.textContent = 'Checking authorization…';
+    fetch('/api/lighting-calculator-access.php', {
+      method:'POST', credentials:'same-origin',
+      headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body:JSON.stringify({ code:code })
+    }).then(function (response) {
+      return response.json().catch(function () { return {}; }).then(function (data) { return { response:response, data:data }; });
+    }).then(function (result) {
+      if (!result.response.ok || !result.data.authorized) throw new Error(result.data.message || 'Authorization failed.');
+      state.accessAuthorized = true;
+      $('lcAccessCode').value = '';
+      finishAccess();
+    }).catch(function (error) {
+      message.textContent = error && error.message ? error.message : 'Authorization service is temporarily unavailable.';
+    }).finally(function () { button.disabled = false; });
   }
   function setFieldError(id, text) {
     var el = $(id);
@@ -852,8 +918,16 @@
   }
   function bind() {
     var dropzone = $('lcDropzone');
-    $('lcIesFile').addEventListener('change', function (event) { parseFile(event.target.files && event.target.files[0]); });
-    $('lcReplaceFile').addEventListener('click', function () { $('lcIesFile').click(); });
+    $('lcIesFile').disabled = false;
+    $('lcIesFile').addEventListener('click', function (event) {
+      if (!state.accessAuthorized) { event.preventDefault(); requestAccess('picker'); }
+    });
+    $('lcIesFile').addEventListener('change', function (event) {
+      var file = event.target.files && event.target.files[0];
+      if (!state.accessAuthorized) { event.target.value = ''; requestAccess('', file); return; }
+      parseFile(file);
+    });
+    $('lcReplaceFile').addEventListener('click', function () { requestAccess('picker'); });
     $('lcClearFile').addEventListener('click', clearFile);
     $('lcCalculate').addEventListener('click', calculate);
     $('lcCancel').addEventListener('click', cancel);
@@ -912,7 +986,27 @@
     ['dragleave', 'drop'].forEach(function (type) {
       dropzone.addEventListener(type, function (event) { event.preventDefault(); dropzone.classList.remove('is-dragover'); });
     });
-    dropzone.addEventListener('drop', function (event) { parseFile(event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]); });
+    dropzone.addEventListener('drop', function (event) {
+      var file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+      if (!state.accessAuthorized) { requestAccess('', file); return; }
+      parseFile(file);
+    });
+    $('lcAccessForm').addEventListener('submit', submitAccess);
+    all('[data-lc-access-close]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        state.pendingAccessFile = null;
+        state.pendingAccessAction = '';
+        accessModal(false);
+      });
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !$('lcAccessModal').hidden) {
+        state.pendingAccessFile = null;
+        state.pendingAccessAction = '';
+        accessModal(false);
+      }
+    });
+    checkAccessStatus();
     renderInfo(null);
     syncMode();
     markRecalculation();

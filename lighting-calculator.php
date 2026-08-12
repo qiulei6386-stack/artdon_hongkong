@@ -39,7 +39,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
-  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.4.0">
+  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.5.0">
 </head>
 <body>
 <?php include __DIR__ . '/partials/header.php'; ?>
@@ -66,7 +66,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
         <section class="lc-group">
           <h3>IES FILE</h3>
           <div class="lc-upload" id="lcDropzone">
-            <input id="lcIesFile" type="file" accept=".ies">
+            <input id="lcIesFile" type="file" accept=".ies" disabled>
             <label for="lcIesFile">
               <strong>Upload IES</strong>
               <span>Drag & drop an LM-63 .ies file here. Maximum 2 MB.</span>
@@ -232,12 +232,28 @@ $ogImage = function_exists('artdon_v710_absolute_url')
     </section>
   </section>
 </main>
+<div class="lc-access-modal" id="lcAccessModal" hidden>
+  <div class="lc-access-backdrop" data-lc-access-close></div>
+  <section class="lc-access-dialog" role="dialog" aria-modal="true" aria-labelledby="lcAccessTitle" aria-describedby="lcAccessDescription">
+    <button class="lc-access-close" type="button" data-lc-access-close aria-label="Close authorization dialog">×</button>
+    <p class="lc-access-kicker">Professional calculation access</p>
+    <h2 id="lcAccessTitle">Enter authorization code</h2>
+    <p id="lcAccessDescription">An authorization code is required before selecting or dropping an IES file. Your photometric file remains in this browser and is not uploaded to our server.</p>
+    <form id="lcAccessForm">
+      <label for="lcAccessCode">Authorization code</label>
+      <input id="lcAccessCode" name="code" type="text" maxlength="96" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" placeholder="ARTDON-XXXX-XXXX-XXXX" required>
+      <p class="lc-access-message" id="lcAccessMessage" role="status" aria-live="polite"></p>
+      <button class="lc-primary" type="submit" id="lcAccessSubmit">UNLOCK IES UPLOAD</button>
+    </form>
+    <p class="lc-access-help">Need access? Contact your Artdon Lighting representative.</p>
+  </section>
+</div>
 <?php include __DIR__ . '/partials/footer.php'; ?>
 <script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 <script src="assets/js/lighting-calculator/ies-parser.js?v=3.3.0" defer></script>
 <script src="assets/js/lighting-calculator/lux-engine.js?v=3.4.0" defer></script>
 <script src="assets/js/lighting-calculator/room-layout.js?v=3.1.0" defer></script>
 <script src="assets/js/lighting-calculator/heatmap-renderer.js?v=3.0.1" defer></script>
-<script src="assets/js/lighting-calculator/calculator-app.js?v=3.4.1" defer></script>
+<script src="assets/js/lighting-calculator/calculator-app.js?v=3.5.0" defer></script>
 </body>
 </html>
