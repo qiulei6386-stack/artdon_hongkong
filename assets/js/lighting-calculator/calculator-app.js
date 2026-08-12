@@ -646,6 +646,8 @@
     if ($('lcSummaryPower')) $('lcSummaryPower').textContent = '—';
     if ($('lcMiniHeatmapCard')) $('lcMiniHeatmapCard').hidden = true;
     if ($('lcMiniHeatmap')) $('lcMiniHeatmap').innerHTML = '';
+    if ($('lcDownloadPdf')) $('lcDownloadPdf').disabled = true;
+    if ($('lcExportPng')) $('lcExportPng').disabled = true;
   }
   function resultRows(result) {
     var m = result.metrics || {};
@@ -668,6 +670,8 @@
     if ($('lcSummaryAverage')) $('lcSummaryAverage').textContent = fmt(metrics.eavg, 0) + ' lx';
     if ($('lcSummaryUniformity')) $('lcSummaryUniformity').textContent = fmt(metrics.uniformity, 2);
     if ($('lcSummaryPower')) $('lcSummaryPower').textContent = metrics.totalPower ? fmt(metrics.totalPower, 1) + ' W' : 'N/A';
+    if ($('lcDownloadPdf')) $('lcDownloadPdf').disabled = false;
+    if ($('lcExportPng')) $('lcExportPng').disabled = false;
     $('lcResults').innerHTML = resultRows(result).map(function (row) {
       return '<div><dt>' + row[0] + '</dt><dd>' + row[1] + '</dd></div>';
     }).join('');
@@ -945,6 +949,72 @@
     $('lcModeQuantity').classList.toggle('is-active', state.mode === 'quantity');
     $('lcModeManual').classList.toggle('is-active', state.mode === 'manual');
   }
+
+  function reportSnapshot() {
+    if (!state.ies || !state.result) return null;
+    var layout = currentLayout();
+    var assessment = targetAssessment(state.result);
+    return {
+      generatedAt: new Date().toISOString(),
+      fileName: state.ies.sourceName || $('lcFileName').textContent || 'photometric-file.ies',
+      logoUrl: (document.querySelector('.site-header img, header img') || {}).src || '/assets/img/logo-artdon.png',
+      ies: {
+        version: state.ies.version || 'IES LM-63',
+        manufacturer: metadataValue(state.ies, ['MANUFAC', 'MANUFACTURER']) || 'N/A',
+        catalogNumber: metadataValue(state.ies, ['LUMCAT', 'CATALOG', 'CATALOGNUMBER']) || 'N/A',
+        testId: metadataValue(state.ies, ['TEST', 'TESTNO']) || 'N/A',
+        inputWatts: Number(state.ies.inputWatts) || 0,
+        totalRatedLumens: Number(state.ies.totalRatedLumens) || 0,
+        beamAngle: beamAngleLabel(state.ies),
+        photometricType: state.ies.photometricTypeName || ('Type ' + state.ies.photometricType),
+        units: state.ies.unitsName || 'Unknown',
+        peakIntensity: state.ies.candelaStats && Number(state.ies.candelaStats.max) || 0
+      },
+      room: {
+        length: layout.room.length,
+        width: layout.room.width,
+        height: readNumber('lcRoomHeight'),
+        mountingHeight: layout.room.mountingHeight,
+        workplaneHeight: layout.room.workplaneHeight
+      },
+      layout: layout,
+      settings: {
+        gridSpacing: readNumber('lcGridSpacing'),
+        maintenanceFactor: readNumber('lcMaintenance'),
+        targetLux: readNumber('lcTargetLux')
+      },
+      result: state.result,
+      assessment: assessment,
+      status: $('lcTargetStatus').textContent || 'CALCULATED'
+    };
+  }
+
+  function runReportExport(format) {
+    var snapshot = reportSnapshot();
+    var exporter = window.ArtdonReportExporter;
+    if (!snapshot || !exporter) {
+      setMessage('Calculate a valid result before exporting the report.', 'error');
+      return;
+    }
+    var pdfButton = $('lcDownloadPdf');
+    var pngButton = $('lcExportPng');
+    var activeButton = format === 'pdf' ? pdfButton : pngButton;
+    var originalLabel = activeButton.textContent;
+    pdfButton.disabled = true;
+    pngButton.disabled = true;
+    activeButton.textContent = format === 'pdf' ? 'GENERATING PDF...' : 'GENERATING IMAGE...';
+    setMessage('Preparing the report in this browser. The IES file is not uploaded.', '');
+    var task = format === 'pdf' ? exporter.downloadPdf(snapshot) : exporter.downloadPng(snapshot);
+    Promise.resolve(task).then(function () {
+      setMessage(format === 'pdf' ? 'PDF report downloaded.' : 'Result image downloaded.', 'ok');
+    }).catch(function (error) {
+      setMessage(error && error.message ? error.message : 'The report could not be generated.', 'error');
+    }).finally(function () {
+      activeButton.textContent = originalLabel;
+      pdfButton.disabled = !state.result;
+      pngButton.disabled = !state.result;
+    });
+  }
   function bind() {
     var dropzone = $('lcDropzone');
     $('lcIesFile').disabled = false;
@@ -1000,6 +1070,8 @@
       state.showHeatLabels = this.checked;
       updateLayout();
     });
+    $('lcDownloadPdf').addEventListener('click', function () { runReportExport('pdf'); });
+    $('lcExportPng').addEventListener('click', function () { runReportExport('png'); });
     all('[data-grid]').forEach(function (button) {
       button.addEventListener('click', function () {
         $('lcGridSpacing').value = button.dataset.grid;
@@ -1051,6 +1123,7 @@
   window.ArtdonCalculatorApp = {
     generateBySpacing: generateBySpacing,
     generateByQuantity: generateByQuantity,
-    validateRoom: validateRoom
+    validateRoom: validateRoom,
+    reportSnapshot: reportSnapshot
   };
 })();

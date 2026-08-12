@@ -251,6 +251,10 @@ $ogImage = function_exists('artdon_v710_absolute_url')
           <header><strong>Illuminance Heatmap</strong><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg></span></header>
           <div id="lcMiniHeatmap" aria-label="Illuminance heatmap preview"></div>
         </section>
+        <div class="lc-report-actions" aria-label="Report exports">
+          <button type="button" id="lcDownloadPdf" disabled>DOWNLOAD PDF REPORT</button>
+          <button type="button" id="lcExportPng" disabled>EXPORT RESULT IMAGE</button>
+        </div>
         <a class="lc-quote-button" href="index.php#contact">REQUEST QUOTATION</a>
         <p class="lc-note">This calculator provides a direct illuminance estimate based on IES photometric data. Room interreflection, obstructions and complex geometry are not included in this version.</p>
       </div>
@@ -279,6 +283,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
 <script src="assets/js/lighting-calculator/lux-engine.js?v=3.4.0" defer></script>
 <script src="assets/js/lighting-calculator/room-layout.js?v=4.0.0" defer></script>
 <script src="assets/js/lighting-calculator/heatmap-renderer.js?v=4.0.0" defer></script>
-<script src="assets/js/lighting-calculator/calculator-app.js?v=4.0.0" defer></script>
+<script src="assets/js/lighting-calculator/report-exporter.js?v=1.0.1" defer></script>
+<script src="assets/js/lighting-calculator/calculator-app.js?v=4.1.0" defer></script>
 </body>
 </html>

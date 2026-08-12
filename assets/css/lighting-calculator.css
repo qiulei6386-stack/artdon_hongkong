@@ -227,6 +227,10 @@ body.lc-access-open{overflow:hidden}.lc-access-modal[hidden]{display:none!import
 .lc-mini-heatmap-svg{display:block;width:100%;height:auto;border-radius:5px}
 .lc-mini-heatmap-svg .lc-room-border{fill:none;stroke:rgba(17,17,17,.3);stroke-width:1}
 .lc-mini-heatmap-svg .lc-room-luminaire{pointer-events:none}
+.lc-report-actions{display:grid;grid-template-columns:1fr;gap:7px}
+.lc-report-actions button{min-height:38px;border:1px solid #111;border-radius:4px;background:#fff;color:#111;font:inherit;font-size:9px;font-weight:800;letter-spacing:.045em;cursor:pointer}
+.lc-report-actions button:hover{background:#111;color:#fff}
+.lc-report-actions button:disabled{cursor:not-allowed;border-color:#ddd;background:#f7f7f7;color:#aaa}
 .lc-quote-button{display:flex;min-height:40px;align-items:center;justify-content:center;border-radius:4px;background:#111;color:#fff!important;font-size:10px;font-weight:800;letter-spacing:.06em;text-decoration:none}
 .lc-quote-button:hover{background:var(--ap-red,#d71920)}
 .lc-note{font-size:9px;line-height:1.5}
