@@ -9,6 +9,7 @@
     activeJobId: null,
     mode: 'spacing',
     view: 'layout',
+    showHeatLabels: false,
     customLayout: false,
     luminaires: [],
     selectedId: null,
@@ -267,11 +268,12 @@
   }
   function updateLayout() {
     updateEffectiveHeight();
+    syncTabs();
     try {
       var layout = currentLayout();
       setFieldError('lcLayoutError', '');
       updateLayoutSummary(layout);
-      window.ArtdonRoomLayout.render($('lcLayoutPreview'), layout, { view: state.view, result: state.result, selectedId: state.selectedId, placementPoint: state.hoverPoint });
+      window.ArtdonRoomLayout.render($('lcLayoutPreview'), layout, { view: state.view, result: state.result, selectedId: state.selectedId, placementPoint: state.hoverPoint, showHeatLabels: state.showHeatLabels });
       updateSelectionButtons();
       $('lcLayoutMeta').textContent = metaText(layout);
       updateCalculationEstimate(layout);
@@ -891,6 +893,8 @@
   }
   function syncTabs() {
     all('.lc-tabs [data-view]').forEach(function (button) { button.classList.toggle('is-active', button.dataset.view === state.view); });
+    var heatLabelOption = $('lcHeatLabelOption');
+    if (heatLabelOption) heatLabelOption.hidden = state.view !== 'heatmap' || !state.result;
   }
   function resetAll() {
     ['lcRoomLength','lcRoomWidth','lcRoomHeight','lcMountHeight','lcWorkHeight','lcXSpacing','lcYSpacing','lcLeftOffset','lcRightOffset','lcFrontOffset','lcBackOffset','lcGridSpacing','lcMaintenance','lcTargetLux'].forEach(function (id) {
@@ -905,6 +909,8 @@
     state.placingManual = false;
     state.hoverPoint = null;
     state.result = null;
+    state.showHeatLabels = false;
+    if ($('lcShowHeatLabels')) $('lcShowHeatLabels').checked = false;
     syncMode();
     markRecalculation();
   }
@@ -965,6 +971,10 @@
     });
     all('.lc-tabs [data-view]').forEach(function (button) {
       button.addEventListener('click', function () { state.view = button.dataset.view; syncTabs(); updateLayout(); });
+    });
+    $('lcShowHeatLabels').addEventListener('change', function () {
+      state.showHeatLabels = this.checked;
+      updateLayout();
     });
     all('[data-grid]').forEach(function (button) {
       button.addEventListener('click', function () {

@@ -32,12 +32,12 @@
     return '#d71920';
   }
 
-  function dimensions(layout) {
+  function dimensions(layout, compact) {
     var room = layout.room;
-    var pad = 54;
+    var pad = compact ? 12 : 54;
     var width = 760;
     var innerW = width - pad * 2;
-    var innerH = Math.max(300, Math.round(innerW * room.width / room.length));
+    var innerH = Math.max(compact ? 260 : 300, Math.round(innerW * room.width / room.length));
     var height = innerH + pad * 2;
     return { pad: pad, width: width, height: height, innerW: innerW, innerH: innerH, sx: innerW / room.length, sy: innerH / room.width };
   }
@@ -93,11 +93,12 @@
     return html;
   }
 
-  function renderLuminaires(layout, d, selectedId) {
+  function renderLuminaires(layout, d, selectedId, compact) {
     return (layout.luminaires || []).map(function (lum) {
       var p = roomToSvg(d, lum.x, lum.y);
       var cls = 'lc-room-luminaire' + (String(lum.id) === String(selectedId) ? ' is-selected' : '');
-      return '<rect class="' + cls + '" data-lum-id="' + esc(lum.id) + '" x="' + n(p.x - 4, 1) + '" y="' + n(p.y - 4, 1) + '" width="8" height="8" rx="1"></rect>';
+      var size = compact ? 5 : 8;
+      return '<rect class="' + cls + '" data-lum-id="' + esc(lum.id) + '" x="' + n(p.x - size / 2, 1) + '" y="' + n(p.y - size / 2, 1) + '" width="' + size + '" height="' + size + '" rx="1"></rect>';
     }).join('');
   }
 
@@ -144,6 +145,43 @@
     return html;
   }
 
+  function nearestPoint(points, targetX, targetY) {
+    var best = points[0];
+    var bestDistance = Infinity;
+    for (var i = 0; i < points.length; i += 1) {
+      var distance = Math.pow(Number(points[i].x) - targetX, 2) + Math.pow(Number(points[i].y) - targetY, 2);
+      if (distance < bestDistance) {
+        best = points[i];
+        bestDistance = distance;
+      }
+    }
+    return best;
+  }
+
+  function renderHeatLabels(result, layout, d) {
+    if (!result || !result.points || !result.points.length) return '';
+    var positions = [[0.22, 0.28], [0.5, 0.28], [0.78, 0.28], [0.22, 0.72], [0.5, 0.72], [0.78, 0.72]];
+    return positions.map(function (position) {
+      var point = nearestPoint(result.points, layout.room.length * position[0], layout.room.width * position[1]);
+      var p = roomToSvg(d, Number(point.x), Number(point.y));
+      var label = Math.round(Number(point.lux) || 0) + ' lx';
+      var width = Math.max(36, label.length * 5.2 + 10);
+      return '<g class="lc-heat-lux-label" pointer-events="none"><rect x="' + n(p.x - width / 2, 1) + '" y="' + n(p.y - 9, 1) + '" width="' + n(width, 1) + '" height="18" rx="9"></rect><text x="' + n(p.x, 1) + '" y="' + n(p.y + 0.5, 1) + '">' + label + '</text></g>';
+    }).join('');
+  }
+
+  function formatLegendValue(value) {
+    if (Math.abs(value) >= 1000) return Math.round(value).toLocaleString('en-US');
+    return Math.round(value * 10) / 10;
+  }
+
+  function renderHeatLegend(result) {
+    var renderer = window.ArtdonHeatmapRenderer;
+    var scale = renderer && typeof renderer.scaleFor === 'function' ? renderer.scaleFor(result) : { ticks: [result.metrics.emax, result.metrics.emin] };
+    var ticks = scale.ticks || [];
+    return '<aside class="lc-heat-legend" aria-label="Illuminance colour scale"><strong>lx</strong><div class="lc-heat-legend-scale"><i class="lc-heat-legend-bar"></i><div class="lc-heat-legend-ticks">' + ticks.map(function (tick) { return '<span>' + formatLegendValue(tick) + '</span>'; }).join('') + '</div></div></aside>';
+  }
+
   function render(container, layout, options) {
     options = options || {};
     if (!container) return;
@@ -151,21 +189,22 @@
       container.innerHTML = '<span>Set room dimensions and upload an IES file to calculate illuminance.</span>';
       return;
     }
-    var d = dimensions(layout);
     var view = options.view || 'layout';
+    var d = dimensions(layout, view === 'heatmap');
     var result = options.result || null;
     var svgClass = 'lc-room-svg' + (view === 'heatmap' ? ' is-heatmap' : '');
     var html = '<svg class="' + svgClass + '" viewBox="0 0 ' + d.width + ' ' + d.height + '" data-pad="' + d.pad + '" data-inner-w="' + d.innerW + '" data-inner-h="' + d.innerH + '" data-room-length="' + layout.room.length + '" data-room-width="' + layout.room.width + '" role="img" aria-label="Room layout">';
-    html += renderGridLines(d);
+    if (view !== 'heatmap') html += renderGridLines(d);
     if (view === 'heatmap' && result) html += renderHeat(result, d);
-    html += '<rect class="lc-room-border" x="' + d.pad + '" y="' + d.pad + '" width="' + d.innerW + '" height="' + d.innerH + '"></rect>';
-    html += renderDimensions(layout, d);
+    html += '<rect class="lc-room-border" x="' + d.pad + '" y="' + d.pad + '" width="' + d.innerW + '" height="' + d.innerH + '"' + (view === 'heatmap' ? ' rx="11"' : '') + '></rect>';
+    if (view !== 'heatmap') html += renderDimensions(layout, d);
     if (view === 'luxgrid' && result) html += renderLuxGrid(result, d);
-    html += renderLuminaires(layout, d, options.selectedId);
+    html += renderLuminaires(layout, d, options.selectedId, view === 'heatmap');
+    if (view === 'heatmap' && result && options.showHeatLabels) html += renderHeatLabels(result, layout, d);
     html += renderPlacementGuide(layout, d, options.placementPoint || null);
     html += '</svg>';
     if (view === 'heatmap' && result) {
-      html += '<div class="lc-legend"><span>' + Math.round(result.metrics.emin) + ' lx</span><i class="lc-legend-bar"></i><span>' + Math.round(result.metrics.emax) + ' lx</span></div>';
+      html = '<section class="lc-heatmap-card"><header><strong>Illuminance Heatmap</strong><span class="lc-heatmap-eye" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg></span></header><div class="lc-heatmap-visual">' + html + renderHeatLegend(result) + '</div></section>';
     }
     container.innerHTML = html;
   }

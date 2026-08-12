@@ -2,13 +2,13 @@
   'use strict';
 
   var STOPS = [
-    [0.00, 23, 58, 143],
-    [0.18, 31, 126, 208],
-    [0.38, 53, 197, 193],
-    [0.58, 121, 211, 91],
-    [0.76, 243, 223, 67],
-    [0.90, 243, 154, 50],
-    [1.00, 215, 25, 32]
+    [0.00, 37, 92, 181],
+    [0.18, 32, 151, 193],
+    [0.36, 87, 190, 103],
+    [0.56, 213, 220, 67],
+    [0.72, 255, 210, 60],
+    [0.88, 247, 137, 42],
+    [1.00, 219, 39, 38]
   ];
 
   function clamp(value, min, max) {
@@ -18,9 +18,34 @@
   function normalize(value, min, max) {
     if (!Number.isFinite(value)) return 0;
     if (!(max > min)) return 0.5;
-    var linear = clamp((value - min) / (max - min), 0, 1);
-    // Keep mid-level illuminance visible without changing or clipping lux data.
-    return Math.pow(linear, 0.45);
+    return clamp((value - min) / (max - min), 0, 1);
+  }
+
+  function niceStep(value) {
+    if (!(value > 0)) return 1;
+    var magnitude = Math.pow(10, Math.floor(Math.log(value) / Math.LN10));
+    var fraction = value / magnitude;
+    var niceFraction = fraction <= 1 ? 1 : (fraction <= 2 ? 2 : (fraction <= 2.5 ? 2.5 : (fraction <= 5 ? 5 : 10)));
+    return niceFraction * magnitude;
+  }
+
+  function scaleFor(result) {
+    var measuredMin = Number(result && result.metrics && result.metrics.emin);
+    var measuredMax = Number(result && result.metrics && result.metrics.emax);
+    if (!Number.isFinite(measuredMin)) measuredMin = 0;
+    if (!Number.isFinite(measuredMax)) measuredMax = measuredMin;
+    if (measuredMax < measuredMin) {
+      var swap = measuredMax;
+      measuredMax = measuredMin;
+      measuredMin = swap;
+    }
+    var step = niceStep(Math.max(1, measuredMax - measuredMin) / 5);
+    var min = Math.max(0, Math.floor(measuredMin / step) * step);
+    var max = Math.ceil(measuredMax / step) * step;
+    if (!(max > min)) max = min + step * 5;
+    var ticks = [];
+    for (var tick = max; tick >= min - step * 0.001; tick -= step) ticks.push(Math.max(0, Math.round(tick * 100) / 100));
+    return { min: min, max: max, step: step, ticks: ticks, measuredMin: measuredMin, measuredMax: measuredMax };
   }
 
   function rgbFor(t) {
@@ -73,17 +98,14 @@
 
     var image = context.createImageData(rasterWidth, rasterHeight);
     var pixels = image.data;
-    var min = Number(result.metrics && result.metrics.emin);
-    var max = Number(result.metrics && result.metrics.emax);
-    if (!Number.isFinite(min)) min = 0;
-    if (!Number.isFinite(max)) max = min;
+    var scale = scaleFor(result);
 
     for (var py = 0; py < rasterHeight; py += 1) {
       var gy = rasterHeight > 1 ? py / (rasterHeight - 1) * (yCount - 1) : 0;
       for (var px = 0; px < rasterWidth; px += 1) {
         var gx = rasterWidth > 1 ? px / (rasterWidth - 1) * (xCount - 1) : 0;
         var lux = bilinear(result.points, xCount, yCount, gx, gy);
-        var rgb = rgbFor(normalize(lux, min, max));
+        var rgb = rgbFor(normalize(lux, scale.min, scale.max));
         var offset = (py * rasterWidth + px) * 4;
         pixels[offset] = rgb[0];
         pixels[offset + 1] = rgb[1];
@@ -93,13 +115,16 @@
     }
     context.putImageData(image, 0, 0);
     var url = canvas.toDataURL('image/png');
-    return '<image class="lc-heat-image" x="' + dimensions.pad + '" y="' + dimensions.pad + '" width="' + dimensions.innerW + '" height="' + dimensions.innerH + '" preserveAspectRatio="none" href="' + url + '"></image>';
+    var radius = 11;
+    return '<defs><clipPath id="lcHeatmapClip"><rect x="' + dimensions.pad + '" y="' + dimensions.pad + '" width="' + dimensions.innerW + '" height="' + dimensions.innerH + '" rx="' + radius + '"></rect></clipPath></defs>' +
+      '<image class="lc-heat-image" x="' + dimensions.pad + '" y="' + dimensions.pad + '" width="' + dimensions.innerW + '" height="' + dimensions.innerH + '" preserveAspectRatio="none" clip-path="url(#lcHeatmapClip)" href="' + url + '"></image>';
   }
 
   window.ArtdonHeatmapRenderer = {
     render: render,
     normalize: normalize,
     rgbFor: rgbFor,
-    bilinear: bilinear
+    bilinear: bilinear,
+    scaleFor: scaleFor
   };
 })(window);

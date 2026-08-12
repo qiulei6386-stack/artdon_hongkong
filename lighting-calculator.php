@@ -39,7 +39,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
   <link rel="stylesheet" href="assets/css/artdon_home.css?v=6.12.18">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
   <link rel="stylesheet" href="assets/css/artdon_pages_v710.css?v=7.1.0">
-  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.5.1">
+  <link rel="stylesheet" href="assets/css/lighting-calculator.css?v=3.6.1">
 </head>
 <body>
 <?php include __DIR__ . '/partials/header.php'; ?>
@@ -190,6 +190,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
             <button type="button" data-view="heatmap">HEATMAP</button>
             <button type="button" data-view="luxgrid">LUX GRID</button>
           </div>
+          <label class="lc-check lc-heat-label-option" id="lcHeatLabelOption" hidden><input id="lcShowHeatLabels" type="checkbox"> Sample lux values</label>
           <div class="lc-layout-state" id="lcLayoutState">AUTO LAYOUT</div>
         </div>
         <div class="lc-layout-tools">
@@ -252,8 +253,8 @@ $ogImage = function_exists('artdon_v710_absolute_url')
 <script src="assets/js/artdon_home.js?v=6.12.19" defer></script>
 <script src="assets/js/lighting-calculator/ies-parser.js?v=3.3.0" defer></script>
 <script src="assets/js/lighting-calculator/lux-engine.js?v=3.4.0" defer></script>
-<script src="assets/js/lighting-calculator/room-layout.js?v=3.2.0" defer></script>
-<script src="assets/js/lighting-calculator/heatmap-renderer.js?v=3.1.0" defer></script>
-<script src="assets/js/lighting-calculator/calculator-app.js?v=3.5.0" defer></script>
+<script src="assets/js/lighting-calculator/room-layout.js?v=3.3.0" defer></script>
+<script src="assets/js/lighting-calculator/heatmap-renderer.js?v=3.2.0" defer></script>
+<script src="assets/js/lighting-calculator/calculator-app.js?v=3.6.0" defer></script>
 </body>
 </html>
