@@ -118,6 +118,10 @@
 
   function renderHeat(result, d) {
     if (!result || !result.points || !result.points.length) return '';
+    if (window.ArtdonHeatmapRenderer && typeof window.ArtdonHeatmapRenderer.render === 'function') {
+      var smoothHeatmap = window.ArtdonHeatmapRenderer.render(result, d);
+      if (smoothHeatmap) return smoothHeatmap;
+    }
     var min = result.metrics.emin;
     var max = result.metrics.emax;
     var cellW = d.innerW / Math.max(1, result.grid.xCount - 1);

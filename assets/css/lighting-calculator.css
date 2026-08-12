@@ -70,9 +70,10 @@
 .lc-place-sub{fill:#555;font-size:9px;font-weight:600}
 .lc-room-point{fill:#c9c9c9}
 .lc-heat-cell{stroke:rgba(255,255,255,.45);stroke-width:.25}
+.lc-heat-image{image-rendering:auto}
 .lc-lux-text{fill:#111;font-size:8.5px;text-anchor:middle;dominant-baseline:middle}
 .lc-legend{display:flex;align-items:center;gap:10px;margin-top:8px;color:#555;font-size:11px}
-.lc-legend-bar{height:10px;flex:1;border:1px solid #bbb;background:linear-gradient(90deg,#2f6fbb,#74b9ff,#f6e58d,#f0932b,#d71920)}
+.lc-legend-bar{height:10px;flex:1;border:1px solid #bbb;background:linear-gradient(90deg,#173a8f 0%,#1f7ed0 18%,#35c5c1 38%,#79d35b 58%,#f3df43 76%,#f39a32 90%,#d71920 100%)}
 .lc-hover-readout{min-height:18px;color:#111}
 .lc-loading{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--ap-line,#dedede);background:#fafafa;color:#111;font-size:13px}
 .lc-loading[hidden]{display:none!important}
