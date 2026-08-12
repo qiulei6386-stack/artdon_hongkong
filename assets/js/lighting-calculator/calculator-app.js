@@ -958,6 +958,7 @@
       generatedAt: new Date().toISOString(),
       fileName: state.ies.sourceName || $('lcFileName').textContent || 'photometric-file.ies',
       logoUrl: (document.querySelector('.site-header img, header img') || {}).src || '/assets/img/logo-artdon.png',
+      showBranding: !$('lcReportBranding') || $('lcReportBranding').checked,
       ies: {
         version: state.ies.version || 'IES LM-63',
         manufacturer: metadataValue(state.ies, ['MANUFAC', 'MANUFACTURER']) || 'N/A',

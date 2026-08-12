@@ -228,6 +228,8 @@ body.lc-access-open{overflow:hidden}.lc-access-modal[hidden]{display:none!import
 .lc-mini-heatmap-svg .lc-room-border{fill:none;stroke:rgba(17,17,17,.3);stroke-width:1}
 .lc-mini-heatmap-svg .lc-room-luminaire{pointer-events:none}
 .lc-report-actions{display:grid;grid-template-columns:1fr;gap:7px}
+.lc-report-branding{display:flex;min-height:34px;align-items:center;gap:8px;border:1px solid #ddd;border-radius:4px;padding:0 10px;background:#fafafa;color:#444;font-size:8px;font-weight:800;letter-spacing:.045em;cursor:pointer}
+.lc-report-branding input{width:14px;height:14px;margin:0;accent-color:var(--ap-red,#d71920)}
 .lc-report-actions button{min-height:38px;border:1px solid #111;border-radius:4px;background:#fff;color:#111;font:inherit;font-size:9px;font-weight:800;letter-spacing:.045em;cursor:pointer}
 .lc-report-actions button:hover{background:#111;color:#fff}
 .lc-report-actions button:disabled{cursor:not-allowed;border-color:#ddd;background:#f7f7f7;color:#aaa}

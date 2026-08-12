@@ -160,6 +160,7 @@
   }
 
   async function drawLogo(context, snapshot) {
+    if (snapshot.showBranding === false) return;
     try {
       var logo = await loadImage(snapshot.logoUrl);
       drawImageContain(context, logo, 70, 38, 200, 72);
@@ -171,20 +172,23 @@
   }
 
   function drawHeaderText(context, pageTitle, snapshot) {
-    drawText(context, pageTitle, 1170, 65, 20, 760, BLACK, 'right');
-    drawText(context, 'IES LIGHTING CALCULATION REPORT', 1170, 91, 10, 700, MUTED, 'right');
+    var unbranded = snapshot.showBranding === false;
+    var titleX = unbranded ? 70 : 1170;
+    var titleAlign = unbranded ? 'left' : 'right';
+    drawText(context, pageTitle, titleX, 65, 20, 760, BLACK, titleAlign);
+    drawText(context, 'IES LIGHTING CALCULATION REPORT', titleX, 91, 10, 700, MUTED, titleAlign);
     context.fillStyle = RED;
     context.fillRect(70, 126, 1100, 3);
-    drawText(context, 'Generated ' + new Date(snapshot.generatedAt).toLocaleString('en-GB'), 1170, 114, 9, 500, MUTED, 'right');
+    drawText(context, 'Generated ' + new Date(snapshot.generatedAt).toLocaleString('en-GB'), 1170, unbranded ? 91 : 114, 9, 500, MUTED, 'right');
   }
 
-  function drawFooter(context, pageNumber, pageTotal) {
+  function drawFooter(context, snapshot, pageNumber, pageTotal) {
     context.strokeStyle = LINE;
     context.beginPath();
     context.moveTo(70, 1685);
     context.lineTo(1170, 1685);
     context.stroke();
-    drawText(context, 'Artdon Lighting Limited | artdonlighting.com', 70, 1715, 10, 600, MUTED);
+    if (snapshot.showBranding !== false) drawText(context, 'Artdon Lighting Limited | artdonlighting.com', 70, 1715, 10, 600, MUTED);
     drawText(context, pageTotal ? 'Page ' + pageNumber + ' of ' + pageTotal : 'RESULT SUMMARY', 1170, 1715, 10, 600, MUTED, 'right');
   }
 
@@ -322,7 +326,7 @@
     ]);
 
     drawText(context, 'Results are a design reference based on uploaded IES photometric data. Room interreflection, obstructions and complex geometry are not included.', 70, 1625, 10, 500, MUTED);
-    drawFooter(context, 1, pageTotal);
+    drawFooter(context, snapshot, 1, pageTotal);
     return page.canvas;
   }
 
@@ -357,7 +361,7 @@
     ]);
 
     drawText(context, 'Calculation method: direct illuminance estimate from the uploaded IES candela distribution on the defined work plane.', 70, 1625, 10, 500, MUTED);
-    drawFooter(context, 2, 2);
+    drawFooter(context, snapshot, 2, 2);
     return page.canvas;
   }
 
@@ -447,13 +451,13 @@
   async function downloadPdf(snapshot) {
     var pages = [await firstPage(snapshot, 2), await secondPage(snapshot)];
     var pdf = await buildPdf(pages);
-    triggerDownload(pdf, 'Artdon-IES-Report-' + safeBaseName(snapshot.fileName) + '.pdf');
+    triggerDownload(pdf, (snapshot.showBranding === false ? 'IES-Report-' : 'Artdon-IES-Report-') + safeBaseName(snapshot.fileName) + '.pdf');
   }
 
   async function downloadPng(snapshot) {
     var page = await firstPage(snapshot, 0);
     var png = await canvasBlob(page, 'image/png');
-    triggerDownload(png, 'Artdon-IES-Summary-' + safeBaseName(snapshot.fileName) + '.png');
+    triggerDownload(png, (snapshot.showBranding === false ? 'IES-Summary-' : 'Artdon-IES-Summary-') + safeBaseName(snapshot.fileName) + '.png');
   }
 
   window.ArtdonReportExporter = {

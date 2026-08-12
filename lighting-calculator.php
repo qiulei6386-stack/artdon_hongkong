@@ -252,6 +252,10 @@ $ogImage = function_exists('artdon_v710_absolute_url')
           <div id="lcMiniHeatmap" aria-label="Illuminance heatmap preview"></div>
         </section>
         <div class="lc-report-actions" aria-label="Report exports">
+          <label class="lc-report-branding" for="lcReportBranding">
+            <input type="checkbox" id="lcReportBranding" checked>
+            <span>INCLUDE ARTDON LOGO</span>
+          </label>
           <button type="button" id="lcDownloadPdf" disabled>DOWNLOAD PDF REPORT</button>
           <button type="button" id="lcExportPng" disabled>EXPORT RESULT IMAGE</button>
         </div>
@@ -283,7 +287,7 @@ $ogImage = function_exists('artdon_v710_absolute_url')
 <script src="assets/js/lighting-calculator/lux-engine.js?v=3.4.0" defer></script>
 <script src="assets/js/lighting-calculator/room-layout.js?v=4.0.0" defer></script>
 <script src="assets/js/lighting-calculator/heatmap-renderer.js?v=4.0.0" defer></script>
-<script src="assets/js/lighting-calculator/report-exporter.js?v=1.0.1" defer></script>
-<script src="assets/js/lighting-calculator/calculator-app.js?v=4.1.0" defer></script>
+<script src="assets/js/lighting-calculator/report-exporter.js?v=1.1.0" defer></script>
+<script src="assets/js/lighting-calculator/calculator-app.js?v=4.2.0" defer></script>
 </body>
 </html>
