@@ -209,8 +209,24 @@
     container.innerHTML = html;
   }
 
+  function renderMini(container, layout, result) {
+    if (!container) return;
+    if (!layout || !layout.room || !result || !result.points || !result.points.length) {
+      container.innerHTML = '';
+      return;
+    }
+    var d = dimensions(layout, true);
+    var html = '<svg class="lc-mini-heatmap-svg" viewBox="0 0 ' + d.width + ' ' + d.height + '" role="img" aria-label="Illuminance heatmap preview">';
+    html += renderHeat(result, d);
+    html += '<rect class="lc-room-border" x="' + d.pad + '" y="' + d.pad + '" width="' + d.innerW + '" height="' + d.innerH + '" rx="11"></rect>';
+    html += renderLuminaires(layout, d, null, true);
+    html += '</svg>';
+    container.innerHTML = html;
+  }
+
   window.ArtdonRoomLayout = {
     render: render,
+    renderMini: renderMini,
     svgToRoom: svgToRoom,
     colorFor: colorFor
   };

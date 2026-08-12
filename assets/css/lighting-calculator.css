@@ -133,3 +133,142 @@ body.lc-access-open{overflow:hidden}.lc-access-modal[hidden]{display:none!import
   .lc-info-compact div{grid-template-columns:1fr;gap:4px}
   .lc-access-dialog{padding:28px 22px}.lc-access-dialog h2{font-size:25px}
 }
+
+/* Professional lighting workbench — visual layer only. */
+.lighting-calculator-page{padding-top:0}
+.lc-workbench-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding:26px 0 20px;border-bottom:1px solid #e3e3e3}
+.lc-workbench-intro .ap-kicker{margin:0 0 7px;color:var(--ap-red,#d71920);font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.lc-workbench-intro h1{margin:0;color:#111;font-size:clamp(24px,2.4vw,38px);line-height:1.04;letter-spacing:-.045em}
+.lc-workbench-intro>p{max-width:500px;margin:0;color:#666;font-size:12px;line-height:1.6}
+.lc-summary-strip{display:grid;grid-template-columns:minmax(350px,1.15fr) minmax(640px,2fr);margin-top:18px;border:1px solid #dedede;border-radius:8px;background:#fff;overflow:hidden}
+.lc-summary-file{min-width:0;display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;gap:13px;padding:13px 15px;border-right:1px solid #e1e1e1}
+.lc-summary-file-copy{min-width:0;display:grid;gap:2px}
+.lc-summary-file-copy strong{overflow:hidden;color:#111;font-size:14px;font-weight:760;text-overflow:ellipsis;white-space:nowrap}
+.lc-summary-file-copy span{color:#555;font-size:10px}
+.lc-summary-file-copy small{overflow:hidden;color:#888;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.lc-summary-file button{min-height:34px;padding:0 12px;border:1px solid #bbb;border-radius:4px;background:#fff;color:#111;font:inherit;font-size:9px;font-weight:800;letter-spacing:.06em;cursor:pointer}
+.lc-summary-file button:hover{border-color:#111;background:#111;color:#fff}
+.lc-summary-icon{display:grid;width:38px;height:38px;place-items:center;border:1px solid #e0e0e0;border-radius:50%;background:#fafafa;color:#111}
+.lc-summary-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+.lc-summary-file-icon{width:42px;height:52px;border:0;border-radius:0;background:transparent}
+.lc-summary-file-icon svg{width:38px;height:48px;stroke-width:1.2}
+.lc-summary-metrics{min-width:0;display:grid;grid-template-columns:repeat(5,minmax(108px,1fr));align-items:center}
+.lc-summary-metric{min-width:0;display:flex;align-items:center;gap:10px;padding:12px 14px;border-right:1px solid #e5e5e5}
+.lc-summary-metric:last-child{border-right:0}
+.lc-summary-metric>div{min-width:0;display:grid;gap:1px}
+.lc-summary-metric strong{overflow:hidden;color:#111;font-size:18px;line-height:1.05;font-weight:760;letter-spacing:-.025em;text-overflow:ellipsis;white-space:nowrap}
+.lc-summary-metric small{color:#666;font-size:9px;white-space:nowrap}
+.lc-summary-assessment strong{color:#555;font-size:12px;letter-spacing:0}
+.lc-summary-assessment.is-ok .lc-summary-icon,.lc-summary-assessment.is-ok strong{color:#18863a}
+.lc-summary-assessment.is-close .lc-summary-icon,.lc-summary-assessment.is-close strong{color:#8a6700}
+.lc-summary-assessment.is-low .lc-summary-icon,.lc-summary-assessment.is-low strong{color:#a3152b}
+.lighting-calculator-shell{grid-template-columns:minmax(300px,330px) minmax(500px,1fr) minmax(270px,300px);gap:10px;margin-top:12px;border:0;background:transparent}
+.lighting-calculator-panel{border:1px solid #dedede;border-radius:8px;background:#fff;overflow:hidden}
+.lighting-calculator-panel>.lc-panel-heading{min-height:55px;display:flex;align-items:center;gap:10px;padding:14px 15px;border-bottom:1px solid #e3e3e3}
+.lighting-calculator-panel>.lc-panel-heading h2{font-size:12px;letter-spacing:.055em}
+.lc-step-badge{display:inline-grid;flex:0 0 22px;width:22px;height:22px;place-items:center;border-radius:50%;background:var(--ap-red,#d71920);color:#fff;font-size:10px;font-weight:800}
+.lighting-calculator-body{padding:12px;gap:10px}
+.lc-canvas-body{padding:12px;gap:10px}
+.lc-group-card{gap:10px;padding:12px;border:1px solid #e2e2e2;border-radius:6px;background:#fff}
+.lc-group-card:last-of-type{border-bottom:1px solid #e2e2e2}
+.lc-group h3{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.035em;text-transform:none}
+.lc-group-icon{display:inline-grid;width:21px;height:21px;place-items:center;color:#111}
+.lc-group-icon svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+.lc-upload{border-radius:4px}
+.lc-upload label{min-height:86px;padding:14px}
+.lc-upload strong{font-size:14px}
+.lc-upload span{font-size:10px}
+.lc-filebar{border-radius:4px}
+.lc-info-primary{grid-template-columns:repeat(3,minmax(0,1fr));border-top:0;gap:7px}
+.lc-info-primary div{display:grid;grid-template-columns:1fr;gap:3px;padding:7px;border:1px solid #e4e4e4;border-radius:4px}
+.lc-info-primary dt{font-size:8px;letter-spacing:.06em}
+.lc-info-primary dd{font-size:11px}
+.lc-row-actions button,.lc-actions button,.lc-layout-tools button,.lc-tabs button,.lc-segmented button,.lc-quick-grid button{min-height:34px;border-color:#bbb;border-radius:4px;padding:0 10px;font-size:9px;letter-spacing:.035em}
+.lc-form-grid{gap:8px}
+.lc-group-room .lc-form-grid,.lc-group-grid .lc-form-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.lc-form-grid label{gap:4px;font-size:8px;letter-spacing:.045em}
+.lc-form-grid input{height:34px;padding:0 8px;border-radius:4px;font-size:11px}
+.lc-effective{padding:7px 0;font-size:9px;letter-spacing:.04em}
+.lc-effective strong,.lc-effective span{font-size:11px}
+.lc-actions{display:grid;grid-template-columns:minmax(0,1fr) auto auto;margin-top:2px}
+.lc-actions .lc-primary{min-width:0}
+.lc-canvas-toolbar{min-height:40px;padding:0 4px}
+.lc-tabs{gap:0}
+.lc-tabs button{min-width:76px;border-radius:0;border-right:0}
+.lc-tabs button:first-child{border-radius:4px 0 0 4px}
+.lc-tabs button:last-child{border-right:1px solid #bbb;border-radius:0 4px 4px 0}
+.lc-layout-state{order:-1;min-height:34px;display:inline-flex;align-items:center;padding:0 10px;border-radius:4px;font-size:9px;letter-spacing:.05em}
+.lc-layout-state:before{content:'✓';display:inline-grid;width:16px;height:16px;margin-right:6px;place-items:center;border:1px solid #199143;border-radius:50%;color:#199143;font-size:9px}
+.lc-layout-state.is-custom:before{border-color:#fff;color:#fff}
+.lc-layout-tools{padding:8px;border:1px solid #e5e5e5;border-radius:5px;background:#fafafa}
+.lc-layout-preview{min-height:520px;border-radius:6px;background:#fff}
+.lc-room-svg{min-height:520px}
+.lc-heatmap-card{min-height:518px}
+.lc-hover-readout{font-size:10px}
+.lc-layout-meta{padding-top:7px;border-top:1px solid #eee;font-size:10px}
+.lc-result-hero{display:grid;grid-template-columns:1fr auto;align-items:end;gap:6px;padding:13px;border:1px solid #e3e3e3;border-radius:6px}
+.lc-result-hero>span{grid-column:1/-1;color:#333;font-size:10px;font-weight:750}
+.lc-result-hero>strong{color:#111;font-size:34px;line-height:1;font-weight:780;letter-spacing:-.045em}
+.lc-result-hero .lc-status{min-height:29px;padding:0 8px;border:0;border-radius:4px;background:#f3f3f3;font-size:8px;letter-spacing:.04em}
+.lc-result-hero .lc-status.is-ok{background:#e9f7ec;color:#18863a}
+.lc-result-hero .lc-status.is-close{background:#fff8df;color:#765500}
+.lc-result-hero .lc-status.is-low{background:#fff0f1;color:#a3152b}
+.lc-status-detail{margin:0;padding:0 2px;font-size:10px}
+.lc-results{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;border-top:0}
+.lc-results div{display:grid;grid-template-columns:1fr;gap:5px;padding:9px;border:1px solid #e3e3e3;border-radius:5px}
+.lc-results dt{font-size:8px;letter-spacing:.04em}
+.lc-results dd{font-size:12px;font-weight:720}
+.lc-result-mini{display:grid;gap:8px;padding:10px;border:1px solid #e3e3e3;border-radius:6px}
+.lc-result-mini[hidden]{display:none}
+.lighting-calculator-panel .lc-result-mini>header{min-height:0;display:flex;align-items:center;justify-content:space-between;padding:0;border:0}
+.lc-result-mini header strong{font-size:10px}
+.lc-result-mini header span,.lc-result-mini header svg{display:block;width:17px;height:17px}
+.lc-result-mini header svg{fill:none;stroke:#555;stroke-width:1.6}
+.lc-mini-heatmap-svg{display:block;width:100%;height:auto;border-radius:5px}
+.lc-mini-heatmap-svg .lc-room-border{fill:none;stroke:rgba(17,17,17,.3);stroke-width:1}
+.lc-mini-heatmap-svg .lc-room-luminaire{pointer-events:none}
+.lc-quote-button{display:flex;min-height:40px;align-items:center;justify-content:center;border-radius:4px;background:#111;color:#fff!important;font-size:10px;font-weight:800;letter-spacing:.06em;text-decoration:none}
+.lc-quote-button:hover{background:var(--ap-red,#d71920)}
+.lc-note{font-size:9px;line-height:1.5}
+
+@media(max-width:1320px){
+  .lc-summary-strip{grid-template-columns:minmax(320px,.9fr) minmax(0,1.6fr)}
+  .lc-summary-metric{gap:7px;padding:10px 8px}
+  .lc-summary-icon{width:32px;height:32px}
+  .lc-summary-icon svg{width:18px;height:18px}
+  .lc-summary-metric strong{font-size:15px}
+  .lighting-calculator-shell{grid-template-columns:minmax(285px,310px) minmax(440px,1fr) minmax(250px,280px)}
+}
+@media(max-width:1180px){
+  .lc-summary-strip{grid-template-columns:1fr}
+  .lc-summary-file{border-right:0;border-bottom:1px solid #e1e1e1}
+  .lighting-calculator-shell{grid-template-columns:minmax(280px,.85fr) minmax(0,1.15fr)}
+  .lighting-calculator-panel:last-child{grid-column:1/-1}
+  .lighting-calculator-panel:last-child .lighting-calculator-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lighting-calculator-panel:last-child .lc-result-hero,.lighting-calculator-panel:last-child .lc-status-detail,.lighting-calculator-panel:last-child .lc-loading,.lighting-calculator-panel:last-child .lc-note{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .lc-workbench-intro{align-items:flex-start;flex-direction:column;gap:10px;padding:20px 0 16px}
+  .lc-workbench-intro>p{font-size:11px}
+  .lc-summary-file{grid-template-columns:42px minmax(0,1fr)}
+  .lc-summary-file button{grid-column:1/-1;width:100%}
+  .lc-summary-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lc-summary-metric{border-bottom:1px solid #e5e5e5}
+  .lc-summary-metric:nth-child(2n){border-right:0}
+  .lc-summary-assessment{grid-column:1/-1;border-bottom:0}
+  .lighting-calculator-shell{grid-template-columns:1fr}
+  .lighting-calculator-panel,.lighting-calculator-panel:last-child{grid-column:auto}
+  .lighting-calculator-panel:last-child .lighting-calculator-body{display:flex}
+  .lc-group-room .lc-form-grid,.lc-group-grid .lc-form-grid{grid-template-columns:1fr}
+  .lc-info-primary{grid-template-columns:1fr}
+  .lc-canvas-toolbar{align-items:stretch;flex-direction:column}
+  .lc-layout-state{order:0;justify-content:center}
+  .lc-tabs{display:grid;grid-template-columns:repeat(3,1fr)}
+  .lc-tabs button{width:auto;min-width:0;border-right:0}
+  .lc-tabs button:last-child{border-right:1px solid #bbb}
+  .lc-layout-tools{grid-template-columns:1fr}
+  .lc-layout-preview,.lc-room-svg{min-height:360px}
+  .lc-heatmap-card{min-height:358px}
+  .lc-results{grid-template-columns:1fr}
+  .lc-result-hero>strong{font-size:30px}
+}

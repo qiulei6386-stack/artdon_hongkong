@@ -124,6 +124,11 @@
     var el = $('lcTargetStatus');
     el.textContent = label;
     el.className = 'lc-status ' + (type || 'is-neutral');
+    var summary = $('lcSummaryStatus');
+    if (summary) {
+      summary.textContent = label;
+      summary.closest('.lc-summary-assessment').className = 'lc-summary-metric lc-summary-assessment ' + (type || 'is-neutral');
+    }
     var detailEl = $('lcStatusDetail');
     if (detailEl) detailEl.textContent = detail || '';
   }
@@ -273,7 +278,10 @@
       var layout = currentLayout();
       setFieldError('lcLayoutError', '');
       updateLayoutSummary(layout);
+      if ($('lcSummaryFixtures')) $('lcSummaryFixtures').textContent = fmt(layout.luminaires.length, 0);
       window.ArtdonRoomLayout.render($('lcLayoutPreview'), layout, { view: state.view, result: state.result, selectedId: state.selectedId, placementPoint: state.hoverPoint, showHeatLabels: state.showHeatLabels });
+      if (window.ArtdonRoomLayout.renderMini) window.ArtdonRoomLayout.renderMini($('lcMiniHeatmap'), layout, state.result);
+      if ($('lcMiniHeatmapCard')) $('lcMiniHeatmapCard').hidden = !state.result;
       updateSelectionButtons();
       $('lcLayoutMeta').textContent = metaText(layout);
       updateCalculationEstimate(layout);
@@ -459,6 +467,9 @@
         ['Total rated lumens', 'N/A'],
         ['Beam angle', 'N/A']
       ].map(function (row) { return infoRow(row[0], row[1]); }).join('');
+      if ($('lcSummaryFile')) $('lcSummaryFile').textContent = 'No IES file loaded';
+      if ($('lcSummaryMeta')) $('lcSummaryMeta').textContent = 'Upload an LM-63 .ies file to begin';
+      if ($('lcSummaryReplace')) $('lcSummaryReplace').textContent = 'UPLOAD IES';
       renderInfoDetails(null);
       return;
     }
@@ -468,6 +479,9 @@
       ['Beam angle', beamAngleLabel(ies)]
     ];
     info.innerHTML = rows.map(function (row) { return infoRow(row[0], row[1]); }).join('');
+    if ($('lcSummaryFile')) $('lcSummaryFile').textContent = ies.sourceName || 'IES photometric file';
+    if ($('lcSummaryMeta')) $('lcSummaryMeta').textContent = (ies.inputWatts ? fmt(ies.inputWatts, 1) + ' W' : 'Power N/A') + ' · ' + (ies.totalRatedLumens ? fmt(ies.totalRatedLumens, 0) + ' lm' : 'Lumens N/A') + ' · ' + beamAngleLabel(ies) + ' Beam';
+    if ($('lcSummaryReplace')) $('lcSummaryReplace').textContent = 'REPLACE IES';
     renderInfoDetails(ies);
   }
   function clearFile() {
@@ -534,7 +548,7 @@
     $('lcCancel').disabled = !busy;
     $('lcLoading').hidden = !busy;
     $('lcCalculate').textContent = busy ? 'CALCULATING' : 'CALCULATE';
-    all('#lcIesFile,#lcReplaceFile,#lcClearFile,#lcReset,[data-recalc],[data-target-input],[data-layout-mode],[data-grid],[data-snap],#lcAddLuminaire,#lcClearManual,#lcRestoreAuto').forEach(function (control) {
+    all('#lcIesFile,#lcReplaceFile,#lcSummaryReplace,#lcClearFile,#lcReset,[data-recalc],[data-target-input],[data-layout-mode],[data-grid],[data-snap],#lcAddLuminaire,#lcClearManual,#lcRestoreAuto').forEach(function (control) {
       control.disabled = !!busy;
     });
     updateSelectionButtons();
@@ -620,23 +634,27 @@
     return { target: target, average: average, difference: difference, ratio: target > 0 ? average / target : 0, achieved: average >= target };
   }
   function resultLabels() {
-    return ['Average Illuminance','Target Average Illuminance','Average vs Target','Minimum Illuminance','Maximum Illuminance','Uniformity','Total Luminaires','Total Power','Grid Points','Calculation Time'];
+    return ['Target Average','Average vs Target','Minimum / Maximum','Uniformity','Total Luminaires','Total Power','Grid Points','Calculation Time'];
   }
   function clearResults() {
     var results = $('lcResults');
     if (!results) return;
     results.innerHTML = resultLabels().map(function (label) { return '<div><dt>' + label + '</dt><dd>-</dd></div>'; }).join('');
+    if ($('lcResultAverage')) $('lcResultAverage').textContent = '—';
+    if ($('lcSummaryAverage')) $('lcSummaryAverage').textContent = '—';
+    if ($('lcSummaryUniformity')) $('lcSummaryUniformity').textContent = '—';
+    if ($('lcSummaryPower')) $('lcSummaryPower').textContent = '—';
+    if ($('lcMiniHeatmapCard')) $('lcMiniHeatmapCard').hidden = true;
+    if ($('lcMiniHeatmap')) $('lcMiniHeatmap').innerHTML = '';
   }
   function resultRows(result) {
     var m = result.metrics || {};
     var assessment = targetAssessment(result);
     var difference = assessment ? (assessment.difference >= 0 ? '+' : '') + fmt(assessment.difference, 0) + ' lx · ' + fmt(assessment.ratio * 100, 0) + '%' : 'N/A';
     return [
-      ['Average Illuminance', fmt(m.eavg, 0) + ' lx'],
-      ['Target Average Illuminance', assessment ? fmt(assessment.target, 0) + ' lx' : 'N/A'],
+      ['Target Average', assessment ? fmt(assessment.target, 0) + ' lx' : 'N/A'],
       ['Average vs Target', difference],
-      ['Minimum Illuminance', fmt(m.emin, 0) + ' lx'],
-      ['Maximum Illuminance', fmt(m.emax, 0) + ' lx'],
+      ['Minimum / Maximum', fmt(m.emin, 0) + ' / ' + fmt(m.emax, 0) + ' lx'],
       ['Uniformity', fmt(m.uniformity, 2)],
       ['Total Luminaires', fmt(m.luminaireCount, 0)],
       ['Total Power', m.totalPower ? fmt(m.totalPower, 1) + ' W' : 'N/A'],
@@ -645,6 +663,11 @@
     ];
   }
   function renderResults(result) {
+    var metrics = result.metrics || {};
+    if ($('lcResultAverage')) $('lcResultAverage').textContent = fmt(metrics.eavg, 0) + ' lx';
+    if ($('lcSummaryAverage')) $('lcSummaryAverage').textContent = fmt(metrics.eavg, 0) + ' lx';
+    if ($('lcSummaryUniformity')) $('lcSummaryUniformity').textContent = fmt(metrics.uniformity, 2);
+    if ($('lcSummaryPower')) $('lcSummaryPower').textContent = metrics.totalPower ? fmt(metrics.totalPower, 1) + ' W' : 'N/A';
     $('lcResults').innerHTML = resultRows(result).map(function (row) {
       return '<div><dt>' + row[0] + '</dt><dd>' + row[1] + '</dd></div>';
     }).join('');
@@ -939,6 +962,7 @@
     $('lcCancel').addEventListener('click', cancel);
     $('lcReset').addEventListener('click', resetAll);
     $('lcRestoreAuto').addEventListener('click', restoreAuto);
+    $('lcSummaryReplace').addEventListener('click', function () { requestAccess('picker'); });
     $('lcCopyLuminaire').addEventListener('click', copySelected);
     $('lcDeleteLuminaire').addEventListener('click', deleteSelected);
     all('[data-layout-mode]').forEach(function (button) {

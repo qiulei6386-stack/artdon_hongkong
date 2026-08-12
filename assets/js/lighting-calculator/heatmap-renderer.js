@@ -10,6 +10,7 @@
     [0.88, 247, 137, 42],
     [1.00, 219, 39, 38]
   ];
+  var renderSequence = 0;
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -116,8 +117,9 @@
     context.putImageData(image, 0, 0);
     var url = canvas.toDataURL('image/png');
     var radius = 11;
-    return '<defs><clipPath id="lcHeatmapClip"><rect x="' + dimensions.pad + '" y="' + dimensions.pad + '" width="' + dimensions.innerW + '" height="' + dimensions.innerH + '" rx="' + radius + '"></rect></clipPath></defs>' +
-      '<image class="lc-heat-image" x="' + dimensions.pad + '" y="' + dimensions.pad + '" width="' + dimensions.innerW + '" height="' + dimensions.innerH + '" preserveAspectRatio="none" clip-path="url(#lcHeatmapClip)" href="' + url + '"></image>';
+    var clipId = 'lcHeatmapClip' + (++renderSequence);
+    return '<defs><clipPath id="' + clipId + '"><rect x="' + dimensions.pad + '" y="' + dimensions.pad + '" width="' + dimensions.innerW + '" height="' + dimensions.innerH + '" rx="' + radius + '"></rect></clipPath></defs>' +
+      '<image class="lc-heat-image" x="' + dimensions.pad + '" y="' + dimensions.pad + '" width="' + dimensions.innerW + '" height="' + dimensions.innerH + '" preserveAspectRatio="none" clip-path="url(#' + clipId + ')" href="' + url + '"></image>';
   }
 
   window.ArtdonHeatmapRenderer = {
