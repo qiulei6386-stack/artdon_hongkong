@@ -5,7 +5,8 @@
 - 官网询盘状态原来只写香港本地，广州官网询盘任务、CRM 待办和派工待办不会随“已回复”完成。
 - `includes/sync.php` 新增耐久队列事件 `inquiry.status_changed`；只有 `replied / closed` 且已有广州关联的询盘会同步，单条操作立即尝试发送，失败保留在队列重试；批量状态操作只入队，避免大量跨服务器请求卡住页面。
 - `admin/inquiries.php` 的单条与批量状态操作、`admin/contact_page.php` 的“标记已处理/归档”都接入同一状态同步方法；普通 `new / assigned` 状态不改变广州任务。
-- 新增 `tests/inquiry_status_sync_contract.php`。候选文件已在香港服务器 `/tmp/artdon_status_candidate_20260813` 通过 PHP 语法与契约测试；正式发布和现有询盘 `#69` 补同步将在后续固定发布流程完成。
+- 新增 `tests/inquiry_status_sync_contract.php`。候选文件已在香港服务器 `/tmp/artdon_status_candidate_20260813` 通过 PHP 语法与契约测试；功能提交 `108a0ab` 已推送 GitHub，随后备份并精确部署到正式服务器，服务器复检通过。
+- 现有询盘 `#69` 已通过新事件补同步，香港队列 `#134` 为 `synced`、广州返回 `status-staging-51`；变更前询盘快照为 `/tmp/hk_inquiry_69_before_status_sync_20260813.json`。广州关联官网任务、CRM 待办和派工待办均已完成。最终版本以本节上下文提交后的 HEAD 为准。
 
 Last updated: 2026-08-13
 
