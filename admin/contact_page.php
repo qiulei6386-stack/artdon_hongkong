@@ -70,11 +70,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && web_verify_csrf($_POST['csrf'] ?? n
     $id = (int)($_POST['id'] ?? 0);
     try {
         if ($action === 'handled' && $id > 0) {
+            $rowStmt = $pdo->prepare('SELECT * FROM web_inquiries WHERE id=? LIMIT 1');
+            $rowStmt->execute([$id]);
+            $inquiry = $rowStmt->fetch() ?: [];
             $pdo->prepare("UPDATE web_inquiries SET status='replied', internal_process_status='completed' WHERE id=?")->execute([$id]);
-            $_SESSION['admin_success'] = '提交记录已标记为已处理。';
+            $syncResult = $inquiry ? web_sync_inquiry_status($pdo, $inquiry, 'replied') : ['ok'=>true, 'skipped'=>true];
+            $_SESSION['admin_success'] = !empty($syncResult['ok']) && empty($syncResult['skipped'])
+                ? '提交记录已标记为已处理，广州派工已同步完成。'
+                : (!empty($syncResult['ok']) ? '提交记录已标记为已处理。' : '提交记录已标记为已处理，广州派工同步已进入重试队列。');
         } elseif ($action === 'archive' && $id > 0) {
+            $rowStmt = $pdo->prepare('SELECT * FROM web_inquiries WHERE id=? LIMIT 1');
+            $rowStmt->execute([$id]);
+            $inquiry = $rowStmt->fetch() ?: [];
             $pdo->prepare("UPDATE web_inquiries SET status='closed' WHERE id=?")->execute([$id]);
-            $_SESSION['admin_success'] = '提交记录已归档。';
+            $syncResult = $inquiry ? web_sync_inquiry_status($pdo, $inquiry, 'closed') : ['ok'=>true, 'skipped'=>true];
+            $_SESSION['admin_success'] = !empty($syncResult['ok']) && empty($syncResult['skipped'])
+                ? '提交记录已归档，广州派工已同步完成。'
+                : (!empty($syncResult['ok']) ? '提交记录已归档。' : '提交记录已归档，广州派工同步已进入重试队列。');
         } elseif ($action === 'delete' && $id > 0) {
             $pdo->prepare('DELETE FROM web_inquiries WHERE id=?')->execute([$id]);
             $_SESSION['admin_success'] = '提交记录已删除。';

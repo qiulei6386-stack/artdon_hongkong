@@ -1,6 +1,13 @@
 # Codex Context Handoff
 
-Last updated: 2026-08-01
+## 2026-08-13：官网已回复同步广州派工完成
+
+- 官网询盘状态原来只写香港本地，广州官网询盘任务、CRM 待办和派工待办不会随“已回复”完成。
+- `includes/sync.php` 新增耐久队列事件 `inquiry.status_changed`；只有 `replied / closed` 且已有广州关联的询盘会同步，单条操作立即尝试发送，失败保留在队列重试；批量状态操作只入队，避免大量跨服务器请求卡住页面。
+- `admin/inquiries.php` 的单条与批量状态操作、`admin/contact_page.php` 的“标记已处理/归档”都接入同一状态同步方法；普通 `new / assigned` 状态不改变广州任务。
+- 新增 `tests/inquiry_status_sync_contract.php`。候选文件已在香港服务器 `/tmp/artdon_status_candidate_20260813` 通过 PHP 语法与契约测试；正式发布和现有询盘 `#69` 补同步将在后续固定发布流程完成。
+
+Last updated: 2026-08-13
 
 ## Workflow Rule
 

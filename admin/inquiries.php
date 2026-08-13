@@ -109,9 +109,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && web_verify_csrf($_POST['csrf'] ?? n
     if ($action === 'status') {
         $status = (string)($_POST['status'] ?? 'new');
         if (in_array($status, ['new','assigned','replied','closed'], true) && $id > 0) {
+            $rowStmt = $pdo->prepare('SELECT * FROM web_inquiries WHERE id=? LIMIT 1');
+            $rowStmt->execute([$id]);
+            $inquiry = $rowStmt->fetch() ?: [];
             $pdo->prepare('UPDATE web_inquiries SET status=? WHERE id=?')->execute([$status, $id]);
-            web_log($pdo, (int)$user['id'], 'update_inquiry', 'inquiry', (string)$id, ['status' => $status]);
-            $_SESSION['admin_success'] = '询盘状态已更新。';
+            $syncResult = $inquiry ? web_sync_inquiry_status($pdo, $inquiry, $status) : ['ok'=>true, 'skipped'=>true];
+            web_log($pdo, (int)$user['id'], 'update_inquiry', 'inquiry', (string)$id, ['status' => $status, 'status_sync' => $syncResult]);
+            $_SESSION['admin_success'] = !empty($syncResult['ok']) && empty($syncResult['skipped'])
+                ? '询盘状态已更新，广州派工已同步完成。'
+                : (!empty($syncResult['ok']) ? '询盘状态已更新。' : '询盘状态已更新，广州派工同步已进入重试队列。');
         }
         inquiry_redirect_with_filters();
     }
@@ -223,12 +229,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && web_verify_csrf($_POST['csrf'] ?? n
         if (str_starts_with($batchAction, 'status:')) {
             $target = substr($batchAction, 7);
             if (in_array($target, ['new','assigned','replied','closed'], true)) {
+                $rowStmt = $pdo->prepare("SELECT * FROM web_inquiries WHERE id IN ($ph)");
+                $rowStmt->execute($ids);
+                $inquiries = $rowStmt->fetchAll() ?: [];
                 $params = array_merge([$target], $ids);
                 $stmt = $pdo->prepare("UPDATE web_inquiries SET status=? WHERE id IN ($ph)");
                 $stmt->execute($params);
                 $count = $stmt->rowCount();
-                web_log($pdo, (int)$user['id'], 'batch_update_inquiry_status', 'inquiry', 'batch', ['ids' => $ids, 'status' => $target, 'count' => $count]);
-                $_SESSION['admin_success'] = "已批量更新 {$count} 条询盘状态。";
+                $statusSync = ['synced'=>0, 'queued'=>0, 'skipped'=>0];
+                foreach ($inquiries as $inquiry) {
+                    $result = web_sync_inquiry_status($pdo, $inquiry, $target, false);
+                    if (!empty($result['skipped'])) $statusSync['skipped']++;
+                    elseif (!empty($result['queued'])) $statusSync['queued']++;
+                    elseif (!empty($result['ok'])) $statusSync['synced']++;
+                    else $statusSync['queued']++;
+                }
+                web_log($pdo, (int)$user['id'], 'batch_update_inquiry_status', 'inquiry', 'batch', ['ids' => $ids, 'status' => $target, 'count' => $count, 'status_sync' => $statusSync]);
+                $_SESSION['admin_success'] = "已批量更新 {$count} 条询盘状态。"
+                    . ($statusSync['synced'] > 0 ? " 广州派工同步完成 {$statusSync['synced']} 条。" : '')
+                    . ($statusSync['queued'] > 0 ? " 待重试 {$statusSync['queued']} 条。" : '');
                 inquiry_redirect_with_filters();
             }
         }

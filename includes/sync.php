@@ -446,6 +446,48 @@ function web_sync_process_queue(PDO $pdo, int $limit = 20): array
     return $summary;
 }
 
+function web_sync_inquiry_status(PDO $pdo, array $inquiry, string $status, bool $processNow = true): array
+{
+    $status = strtolower(trim($status));
+    if (!in_array($status, ['replied', 'closed'], true)) {
+        return ['ok' => true, 'skipped' => true, 'message' => '非完成状态无需同步广州派工。'];
+    }
+
+    $localId = (int)($inquiry['id'] ?? $inquiry['local_inquiry_id'] ?? 0);
+    if ($localId <= 0) {
+        return ['ok' => false, 'message' => '缺少官网询盘 ID。'];
+    }
+    $hasRemote = (int)($inquiry['bridge_inquiry_id'] ?? 0) > 0
+        || (int)($inquiry['dispatch_task_id'] ?? 0) > 0
+        || (string)($inquiry['sync_status'] ?? '') === 'synced';
+    if (!$hasRemote) {
+        return ['ok' => true, 'skipped' => true, 'message' => '询盘尚未关联广州任务。'];
+    }
+
+    $payload = [
+        'local_inquiry_id' => $localId,
+        'hk_inquiry_id' => $localId,
+        'bridge_inquiry_id' => (int)($inquiry['bridge_inquiry_id'] ?? 0),
+        'staging_id' => (int)($inquiry['bridge_inquiry_id'] ?? 0),
+        'task_id' => (int)($inquiry['dispatch_task_id'] ?? 0),
+        'dispatch_task_id' => (int)($inquiry['dispatch_task_id'] ?? 0),
+        'dispatch_table' => (string)($inquiry['dispatch_table'] ?? ''),
+        'status' => $status,
+        'status_changed_at' => gmdate('c'),
+    ];
+    $externalKey = sprintf('inquiry-status-%d-%s-%s', $localId, $status, bin2hex(random_bytes(6)));
+    $queueId = web_sync_enqueue($pdo, 'inquiry.status_changed', $payload, $externalKey);
+    if ($queueId <= 0) {
+        return ['ok' => false, 'message' => '无法建立状态同步队列。'];
+    }
+    if (!$processNow) {
+        return ['ok' => true, 'queued' => true, 'queue_id' => $queueId, 'message' => '状态同步已进入队列。'];
+    }
+    $result = web_sync_process_item($pdo, $queueId);
+    $result['queue_id'] = $queueId;
+    return $result;
+}
+
 function web_sync_send_revoke_inquiry(PDO $pdo, array $inquiry, string $reason = ''): array
 {
     $localId = (int)($inquiry['id'] ?? $inquiry['local_inquiry_id'] ?? 0);
