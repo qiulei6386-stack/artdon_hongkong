@@ -47,6 +47,7 @@ function web_default_content(): array
             'quote_modal_submit_label' => 'Submit inquiry',
             'nav_schema_version' => 49,
             'nav' => [
+                ['label'=>'Home','href'=>'index.php','items'=>[]],
                 ['label'=>'Products','href'=>'products.php','items'=>[
                     ['label'=>'All Products','href'=>'products.php'],
                     ['label'=>'Downlights','href'=>'products.php?type=downlight'],
