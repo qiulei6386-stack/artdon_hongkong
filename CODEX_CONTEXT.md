@@ -1,5 +1,12 @@
 # Codex Context Handoff
 
+## 2026-08-15：Solutions 六个系列标题完整显示
+
+- 用户反馈 `/solutions.php` 的六张应用系列卡片标题只显示两行并出现省略号，希望字号略缩小且全部显示完整。
+- 根因：`assets/css/solutions.css` 将标题固定为 54px、强制两行 `-webkit-line-clamp:2` 并隐藏溢出；线上 HTML 回读确认六个标题原文完整，不是后台数据缺失。
+- 标题字号调整为 20–22px，取消行数截断和隐藏，标题行改为最小 78px 的自适应高度，六张卡片继续对齐；规则只作用于 Solutions 顶部六张卡片，不影响说明文字和其他产品卡片。
+- `solutions.php` 将样式缓存版本更新至 `solutions.css?v=1.0.45`；新增 `tests/solutions_strip_titles_contract.php`。候选文件已在香港服务器 `/tmp/artdon_solution_titles_20260815` 通过 PHP 语法和契约测试，正式发布与线上复查将在本次固定流程后续完成。
+
 ## 2026-08-13：官网已回复同步广州派工完成
 
 - 官网询盘状态原来只写香港本地，广州官网询盘任务、CRM 待办和派工待办不会随“已回复”完成。
@@ -8,7 +15,7 @@
 - 新增 `tests/inquiry_status_sync_contract.php`。候选文件已在香港服务器 `/tmp/artdon_status_candidate_20260813` 通过 PHP 语法与契约测试；功能提交 `108a0ab` 已推送 GitHub，随后备份并精确部署到正式服务器，服务器复检通过。
 - 现有询盘 `#69` 已通过新事件补同步，香港队列 `#134` 为 `synced`、广州返回 `status-staging-51`；变更前询盘快照为 `/tmp/hk_inquiry_69_before_status_sync_20260813.json`。广州关联官网任务、CRM 待办和派工待办均已完成。最终版本以本节上下文提交后的 HEAD 为准。
 
-Last updated: 2026-08-13
+Last updated: 2026-08-15
 
 ## Workflow Rule
 

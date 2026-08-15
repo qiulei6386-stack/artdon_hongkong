@@ -433,7 +433,7 @@ $ctaBlock = is_array($solutionsPage['cta'] ?? null) ? $solutionsPage['cta'] : []
   <link rel="stylesheet" href="assets/css/artdon_catalog_layout_v708.css?v=7.0.8">
   <link rel="stylesheet" href="assets/css/artdon_products_inline_v718.css?v=7.1.8.184">
   <link rel="stylesheet" href="assets/css/artdon_component_safety.css?v=6.8.4">
-  <link rel="stylesheet" href="assets/css/solutions.css?v=1.0.44">
+  <link rel="stylesheet" href="assets/css/solutions.css?v=1.0.45">
 </head>
 <body>
 <?php include __DIR__ . '/partials/header.php'; ?>

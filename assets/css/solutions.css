@@ -352,7 +352,7 @@
 .sol-solutions-card{
   min-height:100%;
   display:grid;
-  grid-template-rows:54px 98px auto auto;
+  grid-template-rows:minmax(78px,auto) 98px auto auto;
   align-items:start;
   gap:0;
   padding:46px 10px 28px;
@@ -371,21 +371,20 @@
   align-items:flex-start;
   justify-content:space-between;
   gap:10px;
-  min-height:54px;
-  max-height:54px;
-  overflow:hidden;
+  min-height:78px;
+  overflow:visible;
 }
 .sol-solutions-card-title h2{
-  display:-webkit-box;
-  -webkit-box-orient:vertical;
-  -webkit-line-clamp:2;
-  overflow:hidden;
+  display:block;
+  overflow:visible;
   margin:0;
   color:#111;
-  font-size:clamp(24px,1.45vw,28px);
-  line-height:1.12;
+  font-size:clamp(20px,1.15vw,22px);
+  line-height:1.16;
   letter-spacing:0;
   font-weight:700;
+  overflow-wrap:normal;
+  word-break:normal;
 }
 .sol-solutions-card-copy{
   display:-webkit-box;
