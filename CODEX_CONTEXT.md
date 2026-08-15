@@ -5,7 +5,8 @@
 - 用户反馈 `/solutions.php` 的六张应用系列卡片标题只显示两行并出现省略号，希望字号略缩小且全部显示完整。
 - 根因：`assets/css/solutions.css` 将标题固定为 54px、强制两行 `-webkit-line-clamp:2` 并隐藏溢出；线上 HTML 回读确认六个标题原文完整，不是后台数据缺失。
 - 标题字号调整为 20–22px，取消行数截断和隐藏，标题行改为最小 78px 的自适应高度，六张卡片继续对齐；规则只作用于 Solutions 顶部六张卡片，不影响说明文字和其他产品卡片。
-- `solutions.php` 将样式缓存版本更新至 `solutions.css?v=1.0.45`；新增 `tests/solutions_strip_titles_contract.php`。候选文件已在香港服务器 `/tmp/artdon_solution_titles_20260815` 通过 PHP 语法和契约测试，正式发布与线上复查将在本次固定流程后续完成。
+- `solutions.php` 将样式缓存版本更新至 `solutions.css?v=1.0.45`；新增 `tests/solutions_strip_titles_contract.php`。候选文件已在香港服务器 `/tmp/artdon_solution_titles_20260815` 通过 PHP 语法和契约测试；功能提交 `8c14c76` 已推送 GitHub，部署前备份为 `/tmp/solutions.php.before_8c14c76_20260815`、`/tmp/solutions.css.before_8c14c76_20260815`，随后精确部署正式服务器并清理 7 个页面缓存文件。
+- 正式服务器复检通过；线上 `/solutions.php` 已加载 `solutions.css?v=1.0.45`，六个标题 HTML 均为完整原文，线上 CSS 回读确认标题为 20–22px、`overflow:visible` 且不再含两行截断。最终版本以本节上下文提交后的 HEAD 为准。
 
 ## 2026-08-13：官网已回复同步广州派工完成
 
