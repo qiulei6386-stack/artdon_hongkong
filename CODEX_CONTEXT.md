@@ -6,7 +6,9 @@
 - 新增 `includes/inquiry_spam.php`：独立规则表与拦截日志表；支持关键词、正则、完整邮箱、邮箱域名，支持拦截/白名单、评分阈值、启用/停用、命中次数。首次启用内置 SEO、Google排名、外链、建站、数字营销、TikTok、抖音、小红书等 22 条高置信度规则。
 - `submit_inquiry.php`：完成基础字段校验后，先检查现有 IP 黑名单和广告规则，再处理附件、保存正常询盘和同步广州；命中广告时仍向提交者返回成功，但不保存正常询盘、不落附件、不建立同步队列、不生成广州派工。广告过滤本身异常时采用 fail-open，避免过滤器故障导致真实客户询盘丢失。
 - 新增 `admin/inquiry_spam.php`，后台客户中心增加“广告询盘拦截”：可新增、停用、恢复、删除规则；配置阈值；查看独立拦截日志。`admin/inquiries.php` 增加快捷入口。
-- 新增 `tests/inquiry_spam_filter_contract.php`，覆盖正常照明询盘、SEO/抖音/TikTok广告、邮箱域名黑名单、白名单优先级以及“拦截早于附件保存”边界。候选文件已在香港服务器 `/tmp/artdon_inquiry_spam_20260817` 通过全部 PHP 语法与契约测试；正式库只读确认无同名表，发布与线上数据库验证将在本次固定流程后续完成。
+- 新增 `tests/inquiry_spam_filter_contract.php`，覆盖正常照明询盘、SEO/抖音/TikTok广告、邮箱域名黑名单、白名单优先级以及“拦截早于附件保存”边界。候选文件已在香港服务器 `/tmp/artdon_inquiry_spam_20260817` 通过全部 PHP 语法与契约测试。
+- 功能提交 `9c0b0ff` 已推送 GitHub；部署前文件备份为 `/tmp/submit_inquiry.php.before_9c0b0ff_20260817`、`/tmp/admin_layout.php.before_9c0b0ff_20260817`、`/tmp/admin_inquiries.php.before_9c0b0ff_20260817`、`/tmp/CODEX_CONTEXT.md.before_9c0b0ff_20260817`，相关设置快照为 `/tmp/inquiry_spam_settings_before_9c0b0ff_20260817.json`。随后精确部署正式服务器并通过全部 PHP 语法与契约测试。
+- 正式库已创建 `web_inquiry_spam_rules`、`web_inquiry_spam_events`，默认22条拦截规则全部启用、阈值100；生产代码实际评估确认正常酒店轨道灯询价 `blocked=false`，SEO与抖音广告 `blocked=true`，未写入测试询盘或测试日志。后台 `/admin/inquiry_spam.php` 未登录返回302到登录页，公开 Contact 页面返回HTTP 200。最终版本以本节上下文提交后的 HEAD 为准。
 
 ## 2026-08-15：Solutions 六个系列标题完整显示
 
