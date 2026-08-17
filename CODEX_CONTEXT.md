@@ -1,5 +1,13 @@
 # Codex Context Handoff
 
+## 2026-08-17：官网广告询盘入口拦截
+
+- 用户要求官网询盘直接拒绝 SEO、抖音等推广广告，不允许进入正常询盘、广州暂存池、CRM 或派工。
+- 新增 `includes/inquiry_spam.php`：独立规则表与拦截日志表；支持关键词、正则、完整邮箱、邮箱域名，支持拦截/白名单、评分阈值、启用/停用、命中次数。首次启用内置 SEO、Google排名、外链、建站、数字营销、TikTok、抖音、小红书等 22 条高置信度规则。
+- `submit_inquiry.php`：完成基础字段校验后，先检查现有 IP 黑名单和广告规则，再处理附件、保存正常询盘和同步广州；命中广告时仍向提交者返回成功，但不保存正常询盘、不落附件、不建立同步队列、不生成广州派工。广告过滤本身异常时采用 fail-open，避免过滤器故障导致真实客户询盘丢失。
+- 新增 `admin/inquiry_spam.php`，后台客户中心增加“广告询盘拦截”：可新增、停用、恢复、删除规则；配置阈值；查看独立拦截日志。`admin/inquiries.php` 增加快捷入口。
+- 新增 `tests/inquiry_spam_filter_contract.php`，覆盖正常照明询盘、SEO/抖音/TikTok广告、邮箱域名黑名单、白名单优先级以及“拦截早于附件保存”边界。候选文件已在香港服务器 `/tmp/artdon_inquiry_spam_20260817` 通过全部 PHP 语法与契约测试；正式库只读确认无同名表，发布与线上数据库验证将在本次固定流程后续完成。
+
 ## 2026-08-15：Solutions 六个系列标题完整显示
 
 - 用户反馈 `/solutions.php` 的六张应用系列卡片标题只显示两行并出现省略号，希望字号略缩小且全部显示完整。
@@ -16,7 +24,7 @@
 - 新增 `tests/inquiry_status_sync_contract.php`。候选文件已在香港服务器 `/tmp/artdon_status_candidate_20260813` 通过 PHP 语法与契约测试；功能提交 `108a0ab` 已推送 GitHub，随后备份并精确部署到正式服务器，服务器复检通过。
 - 现有询盘 `#69` 已通过新事件补同步，香港队列 `#134` 为 `synced`、广州返回 `status-staging-51`；变更前询盘快照为 `/tmp/hk_inquiry_69_before_status_sync_20260813.json`。广州关联官网任务、CRM 待办和派工待办均已完成。最终版本以本节上下文提交后的 HEAD 为准。
 
-Last updated: 2026-08-15
+Last updated: 2026-08-17
 
 ## Workflow Rule
 

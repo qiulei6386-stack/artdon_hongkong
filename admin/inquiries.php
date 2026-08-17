@@ -462,7 +462,7 @@ admin_notice();
       <label>排序<select name="sort"><option value="newest"<?= $sort==='newest'?' selected':'' ?>>最新优先</option><option value="oldest"<?= $sort==='oldest'?' selected':'' ?>>最早优先</option><option value="failed_first"<?= $sort==='failed_first'?' selected':'' ?>>失败优先</option><option value="status"<?= $sort==='status'?' selected':'' ?>>按状态</option></select></label>
       <label>每页<select name="per_page"><?php foreach([20,50,100,200,300] as $n):?><option value="<?= $n ?>"<?= $perPage===$n?' selected':'' ?>><?= $n ?> 条</option><?php endforeach;?></select></label>
     </div>
-    <div class="inquiry-toolbar"><button class="admin-button" type="submit">筛选</button><a class="admin-button-secondary" href="inquiries.php">清空筛选</a><a class="admin-button-secondary" href="inquiry_routing.php">设置询盘联动规则</a><a class="admin-button-secondary" href="http://119.91.27.19/website_inquiry_staging.php" target="_blank">打开广州暂存池 ↗</a></div>
+    <div class="inquiry-toolbar"><button class="admin-button" type="submit">筛选</button><a class="admin-button-secondary" href="inquiries.php">清空筛选</a><a class="admin-button-secondary" href="inquiry_spam.php">广告拦截规则</a><a class="admin-button-secondary" href="inquiry_routing.php">设置询盘联动规则</a><a class="admin-button-secondary" href="http://119.91.27.19/website_inquiry_staging.php" target="_blank">打开广州暂存池 ↗</a></div>
   </form>
 
   <?php if(!$rows):?><div class="empty">没有找到符合条件的询盘。</div><?php else:?>

@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/sync.php';
 require_once __DIR__ . '/includes/inquiry_routing.php';
 require_once __DIR__ . '/includes/contact_page_data.php';
 require_once __DIR__ . '/includes/visitor_analytics.php';
+require_once __DIR__ . '/includes/inquiry_spam.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php#contact');
@@ -234,20 +235,7 @@ try {
     } elseif ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         inquiry_respond('invalid', $returnUrl);
     }
-    $attachments = inquiry_save_attachments((int)($contactForm['upload_max_mb'] ?? 10), inquiry_contact_allowed_exts($contactForm));
-    if ($attachments === false) {
-        inquiry_respond('file', $returnUrl);
-    }
-    $attachmentText = '';
-    if ($attachments) {
-        $lines = ['Uploaded files:'];
-        foreach ($attachments as $attachment) {
-            $lines[] = '- ' . $attachment['name'] . ': ' . $attachment['path'];
-        }
-        $attachmentText = "\n\n" . implode("\n", $lines);
-    }
     $supportType = mb_substr(trim((string)($_POST['support_type'] ?? 'quotation')), 0, 80);
-    $route = web_inquiry_resolve_route($pdo, $supportType);
     $record = [
         'source' => $source,
         'name' => mb_substr($name, 0, 160),
@@ -261,7 +249,7 @@ try {
         'product_link' => mb_substr(trim((string)($_POST['product_link'] ?? '')), 0, 500),
         'page_type' => mb_substr(trim((string)($_POST['page_type'] ?? '')), 0, 80),
         'page_title' => mb_substr(trim((string)($_POST['page_title'] ?? '')), 0, 255),
-        'message' => $message . $attachmentText,
+        'message' => $message,
         'ip_address' => mb_substr((string)($_SERVER['REMOTE_ADDR'] ?? ''), 0, 64),
         'user_agent' => mb_substr((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 500),
         'visitor_id' => mb_substr(trim((string)($_POST['visitor_id'] ?? '')), 0, 80),
@@ -279,6 +267,36 @@ try {
             inquiry_respond('ok', $returnUrl);
         }
     }
+
+    // High-confidence advertising inquiries are silently accepted from the
+    // sender's perspective, but never saved, uploaded, synced or dispatched.
+    // If the protection tables are temporarily unavailable, fail open so a
+    // genuine customer inquiry is never lost because of the filter itself.
+    try {
+        $spamResult = web_inquiry_spam_evaluate($pdo, $record);
+        if (!empty($spamResult['blocked'])) {
+            web_inquiry_spam_record_block($pdo, $record, $spamResult);
+            $_SESSION['last_web_inquiry_at'] = $now;
+            inquiry_respond('ok', $returnUrl);
+        }
+    } catch (Throwable $ignored) {}
+
+    // Attachment validation and file moves intentionally happen only after
+    // IP and advertising checks, so rejected submissions cannot store files.
+    $attachments = inquiry_save_attachments((int)($contactForm['upload_max_mb'] ?? 10), inquiry_contact_allowed_exts($contactForm));
+    if ($attachments === false) {
+        inquiry_respond('file', $returnUrl);
+    }
+    $attachmentText = '';
+    if ($attachments) {
+        $lines = ['Uploaded files:'];
+        foreach ($attachments as $attachment) {
+            $lines[] = '- ' . $attachment['name'] . ': ' . $attachment['path'];
+        }
+        $attachmentText = "\n\n" . implode("\n", $lines);
+        $record['message'] .= $attachmentText;
+    }
+    $route = web_inquiry_resolve_route($pdo, $supportType);
 
     // Same public IP may submit at most three valid inquiries per MySQL calendar day.
     // REMOTE_ADDR is intentionally used instead of spoofable forwarded headers.

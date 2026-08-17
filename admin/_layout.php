@@ -87,6 +87,7 @@ function admin_nav_groups(): array
             'label' => '客户中心',
             'items' => [
                 ['key'=>'inquiries','label'=>'官网询盘','href'=>'inquiries.php','icon'=>'inquiry','permission'=>'inquiries.view'],
+                ['key'=>'inquiry_spam','label'=>'广告询盘拦截','href'=>'inquiry_spam.php','icon'=>'shield','permission'=>'inquiries.view'],
                 ['key'=>'routing','label'=>'自动分配与派工','href'=>'inquiry_routing.php','icon'=>'routing','permission'=>'routing.view'],
             ],
         ],
@@ -138,7 +139,7 @@ function admin_route_key(string $fallback): string
         'home_products.php'=>'home_products', 'home_product_edit.php'=>'home_products',
         'product_categories.php'=>'product_categories',
         'product_bulk_io.php'=>'bulk_io',
-        'inquiries.php'=>'inquiries', 'inquiry_routing.php'=>'routing',
+        'inquiries.php'=>'inquiries', 'inquiry_spam.php'=>'inquiry_spam', 'inquiry_routing.php'=>'routing',
         'resources_pages.php'=>'resources_pages', 'save_resources_page.php'=>'resources_pages',
         'resources_blog.php'=>'resources_blog', 'resources_blog_categories.php'=>'resources_blog', 'save_resources_blog.php'=>'resources_blog',
         'resources_faq.php'=>'resources_faq', 'save_resources_faq.php'=>'resources_faq',
