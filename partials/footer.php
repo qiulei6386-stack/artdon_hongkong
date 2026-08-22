@@ -43,6 +43,7 @@ $__primaryClasses[] = $__brandActive ? 'has-brand' : 'without-brand';
 $__primaryClasses[] = $__contactActive ? 'has-contact' : 'without-contact';
 ?>
 <link rel="stylesheet" href="assets/css/artdon_footer_v6129.css?v=6.12.9">
+<link rel="stylesheet" href="<?= web_e(web_asset_versioned_url('assets/css/artdon_inquiry_captcha.css')) ?>">
 <footer class="site-footer footer-v611 footer-v6122 footer-v6128 footer-v6129<?= !empty($__theme['is_light']) ? ' is-light-theme' : ' is-dark-theme' ?>" id="footer" aria-label="Website footer" style="<?= web_e($__themeStyle) ?>">
   <div class="footer-v611__shell">
     <div class="<?= web_e(implode(' ', $__primaryClasses)) ?>">
@@ -159,3 +160,4 @@ if (is_file($__artdonFloatingActions)) include $__artdonFloatingActions;
 // Only public front-end pages include this file; admin pages do not use partials/footer.php.
 ?>
 <script src="assets/js/artdon_visitor_analytics.js?v=718138" defer></script>
+<script src="<?= web_e(web_asset_versioned_url('assets/js/artdon_inquiry_captcha.js')) ?>" defer></script>

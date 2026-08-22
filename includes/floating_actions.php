@@ -566,6 +566,7 @@ if (isset($series) && is_array($series)) {
             setTimeout(closeInquiry,1300);
           }else{
             if(status){status.textContent=(data&&data.message)||'Submit failed. Please try again.';status.className='artdon-fi-status-v71871 err'}
+            if(data&&data.status==='captcha'&&window.ArtdonInquiryCaptcha)window.ArtdonInquiryCaptcha.refresh(form,true);
           }
         })
         .catch(function(){if(status){status.textContent='Submit failed. Please try again or email us.';status.className='artdon-fi-status-v71871 err'}})

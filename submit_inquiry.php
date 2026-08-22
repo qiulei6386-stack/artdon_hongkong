@@ -8,6 +8,7 @@ require_once __DIR__ . '/includes/inquiry_routing.php';
 require_once __DIR__ . '/includes/contact_page_data.php';
 require_once __DIR__ . '/includes/visitor_analytics.php';
 require_once __DIR__ . '/includes/inquiry_spam.php';
+require_once __DIR__ . '/includes/inquiry_captcha.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: index.php#contact');
@@ -30,6 +31,7 @@ function inquiry_status_message(string $status): string
         'ok' => 'Thank you. Your inquiry has been received.',
         'limit' => 'Submission limit reached. Each IP address may submit up to three inquiries per day. Please email us directly if your request is urgent.',
         'slow' => 'Please wait a moment before submitting another inquiry.',
+        'captcha' => 'Please enter the verification code shown in the image.',
         'invalid' => 'Please check the required fields, privacy consent and email address.',
         'file' => 'The uploaded file could not be accepted. Please upload PDF, DWG, JPG or PNG files up to 10MB.',
         'db' => 'The inquiry service is temporarily unavailable. Please contact us by email.',
@@ -45,6 +47,7 @@ function inquiry_respond(string $status, string $returnUrl): void
             'ok' => 200,
             'limit' => 429,
             'slow' => 429,
+            'captcha' => 422,
             'invalid' => 422,
             'file' => 422,
             'db' => 503,
@@ -205,6 +208,8 @@ $email = trim((string)($_POST['email'] ?? ''));
 $country = trim((string)($_POST['country'] ?? ''));
 $message = trim((string)($_POST['message'] ?? ''));
 $source = mb_substr(trim((string)($_POST['source'] ?? 'website')), 0, 80);
+$captchaToken = strtolower(trim((string)($_POST['captcha_token'] ?? '')));
+$captchaCode = trim((string)($_POST['captcha_code'] ?? ''));
 if ($source === 'contact-page') $source = 'contact_page';
 $isContactPage = $source === 'contact_page';
 
@@ -235,6 +240,9 @@ try {
     } elseif ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         inquiry_respond('invalid', $returnUrl);
     }
+    if (!web_inquiry_captcha_verify($captchaToken, $captchaCode)) {
+        inquiry_respond('captcha', $returnUrl);
+    }
     $supportType = mb_substr(trim((string)($_POST['support_type'] ?? 'quotation')), 0, 80);
     $record = [
         'source' => $source,
@@ -264,6 +272,7 @@ try {
         $blacklistId = (int)$blacklistStmt->fetchColumn();
         if ($blacklistId > 0) {
             $pdo->prepare('UPDATE web_inquiry_ip_blacklist SET blocked_count=blocked_count+1, last_blocked_at=NOW() WHERE id=?')->execute([$blacklistId]);
+            web_inquiry_captcha_forget($captchaToken);
             inquiry_respond('ok', $returnUrl);
         }
     }
@@ -277,6 +286,7 @@ try {
         if (!empty($spamResult['blocked'])) {
             web_inquiry_spam_record_block($pdo, $record, $spamResult);
             $_SESSION['last_web_inquiry_at'] = $now;
+            web_inquiry_captcha_forget($captchaToken);
             inquiry_respond('ok', $returnUrl);
         }
     } catch (Throwable $ignored) {}
@@ -377,6 +387,7 @@ try {
         web_va_update_profile($pdo, $record['visitor_id'], $record['visitor_session_id']);
     }
     $pdo->commit();
+    web_inquiry_captcha_forget($captchaToken);
     inquiry_release_rate_lock($pdo, $rateLockName);
     $rateLockHeld = false;
 

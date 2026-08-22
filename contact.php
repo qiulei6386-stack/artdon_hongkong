@@ -212,6 +212,7 @@ function contact_icon(string $type): string
     fetch(form.action,{method:'POST',body:new FormData(form),headers:{'X-Requested-With':'XMLHttpRequest'}}).then(function(r){return r.json().then(function(j){return {ok:r.ok,json:j};});}).then(function(res){
       show(res.json.message || (res.ok ? 'Thank you. Your inquiry has been received.' : 'Submit failed.'), !!res.ok);
       if(res.ok) form.reset();
+      else if(res.json && res.json.status === 'captcha' && window.ArtdonInquiryCaptcha) window.ArtdonInquiryCaptcha.refresh(form, true);
     }).catch(function(){show('The inquiry could not be submitted. Please try again or contact us by email.',false);}).finally(function(){ if(btn){btn.disabled=false;btn.textContent=old;} });
   });
 })();
