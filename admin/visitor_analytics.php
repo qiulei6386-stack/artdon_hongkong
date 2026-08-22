@@ -159,6 +159,7 @@ $includeBot = (int)($_GET['include_bot'] ?? 0) === 1 || $visitorType === 'bot' |
 $export = (string)($_GET['export'] ?? '');
 $partial = (string)($_GET['partial'] ?? '');
 $visitorId = web_va_token($_GET['visitor'] ?? '', 80);
+$fromInquiryId = max(0, (int)($_GET['from_inquiry'] ?? 0));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
@@ -259,7 +260,7 @@ admin_notice();
 <main class="visitor-radar">
   <div class="vr-head">
     <div><p class="admin-eyebrow">VISITOR RADAR</p><h1>访问雷达工作台</h1><p>一眼看清谁来了、从哪里来、看了什么、有没有意向、要不要跟进。</p></div>
-    <div class="vr-actions"><a class="vr-btn" href="?<?= va_h(va_qs(['visitor_type'=>'excluded','include_bot'=>'1'])) ?>">排除名单</a><a class="vr-btn black" href="?<?= va_h(va_qs(['export'=>'profiles'])) ?>">导出 CSV</a><a class="vr-btn" href="?include_bot=<?= $includeBot ? '0' : '1' ?>"><?= $includeBot ? '排除 Bot' : '显示 Bot' ?></a></div>
+    <div class="vr-actions"><?php if($fromInquiryId>0): ?><a class="vr-btn black" href="inquiries.php?q=<?= rawurlencode($q) ?>">← 返回询盘 #<?= $fromInquiryId ?></a><?php endif; ?><a class="vr-btn" href="?<?= va_h(va_qs(['visitor_type'=>'excluded','include_bot'=>'1'])) ?>">排除名单</a><a class="vr-btn black" href="?<?= va_h(va_qs(['export'=>'profiles'])) ?>">导出 CSV</a><a class="vr-btn" href="?include_bot=<?= $includeBot ? '0' : '1' ?>"><?= $includeBot ? '排除 Bot' : '显示 Bot' ?></a></div>
   </div>
 
   <form class="vr-card vr-filter" method="get">
@@ -345,6 +346,8 @@ admin_notice();
     var btn=e.target.closest('[data-visitor-open]'); if(btn){e.preventDefault(); openDrawer(btn.getAttribute('data-visitor-open')||'');}
     if(e.target.closest('[data-vr-close]')){drawer.classList.remove('is-open'); drawer.hidden=true;}
   });
+  var initialVisitor=<?= json_encode($visitorId, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>;
+  if(initialVisitor) openDrawer(initialVisitor);
 })();
 </script>
 <?php admin_page_end(); ?>
