@@ -54,6 +54,7 @@ function web_inquiry_spam_migrate(PDO $pdo): void
 function web_inquiry_spam_default_rules(): array
 {
     return [
+        ['keyword','block','name','robertwisee',100,'批量代理垃圾询盘姓名'],
         ['regex','block','all','~(?:^|[^a-z0-9])seo(?:[^a-z0-9]|$)~iu',100,'SEO 推广'],
         ['keyword','block','all','search engine optimization',100,'SEO 推广'],
         ['keyword','block','all','google ranking',100,'Google 排名推广'],
@@ -83,13 +84,17 @@ function web_inquiry_spam_seed(PDO $pdo): void
 {
     web_inquiry_spam_migrate($pdo);
     $seeded = false;
+    $seedVersion = '20260822_proxy_guard';
+    $installedVersion = '';
     try {
         $stmt = $pdo->prepare("SELECT setting_value FROM web_system_settings WHERE setting_key='inquiry_spam_rules_seeded' LIMIT 1");
         $stmt->execute();
         $seeded = trim((string)$stmt->fetchColumn()) === '1';
+        $stmt = $pdo->prepare("SELECT setting_value FROM web_system_settings WHERE setting_key='inquiry_spam_rules_seeded_version' LIMIT 1");
+        $stmt->execute();
+        $installedVersion = trim((string)$stmt->fetchColumn());
     } catch (Throwable $ignored) {}
-    if ($seeded) return;
-
+    if ($seeded && $installedVersion === $seedVersion) return;
     $stmt = $pdo->prepare("INSERT INTO web_inquiry_spam_rules
         (rule_key,rule_kind,rule_action,field_scope,pattern,score,label,is_active)
         VALUES (?,?,?,?,?,?,?,1)
@@ -99,6 +104,9 @@ function web_inquiry_spam_seed(PDO $pdo): void
         $key = hash('sha256', implode('|', [$kind,$action,$scope,$pattern]));
         $stmt->execute([$key,$kind,$action,$scope,$pattern,$score,$label]);
     }
+    // A version marker makes newly released defaults run once on an installed
+    // site. Existing rules disabled by an administrator stay disabled because
+    // the duplicate update intentionally does not change is_active.
     try {
         $pdo->prepare("INSERT INTO web_system_settings (setting_key,setting_value,is_secret)
             VALUES ('inquiry_spam_rules_seeded','1',0)
@@ -106,6 +114,9 @@ function web_inquiry_spam_seed(PDO $pdo): void
         $pdo->prepare("INSERT INTO web_system_settings (setting_key,setting_value,is_secret)
             VALUES ('inquiry_spam_threshold','100',0)
             ON DUPLICATE KEY UPDATE setting_value=IF(setting_value='', '100', setting_value), updated_at=CURRENT_TIMESTAMP")->execute();
+        $pdo->prepare("INSERT INTO web_system_settings (setting_key,setting_value,is_secret)
+            VALUES ('inquiry_spam_rules_seeded_version',?,0)
+            ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value), updated_at=CURRENT_TIMESTAMP")->execute([$seedVersion]);
     } catch (Throwable $ignored) {}
 }
 
@@ -187,7 +198,68 @@ function web_inquiry_spam_evaluate(PDO $pdo, array $record): array
 {
     web_inquiry_spam_seed($pdo);
     $rules = $pdo->query("SELECT * FROM web_inquiry_spam_rules WHERE is_active=1 ORDER BY rule_action='allow' DESC, id ASC")->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    return web_inquiry_spam_evaluate_rules($record, $rules, web_inquiry_spam_threshold($pdo));
+    $ruleResult = web_inquiry_spam_evaluate_rules($record, $rules, web_inquiry_spam_threshold($pdo));
+    if (!empty($ruleResult['blocked']) || !empty($ruleResult['allowed'])) return $ruleResult;
+    return web_inquiry_spam_behavior_evaluate($pdo, $record);
+}
+
+function web_inquiry_spam_behavior_key(mixed $value, int $maxLength = 500): string
+{
+    $value = web_inquiry_spam_lower(web_inquiry_spam_clip($value, $maxLength));
+    return trim((string)preg_replace('/[\p{Z}\s]+/u', ' ', $value));
+}
+
+function web_inquiry_spam_behavior_evaluate(PDO $pdo, array $record): array
+{
+    $ip = trim((string)($record['ip_address'] ?? ''));
+    $name = web_inquiry_spam_behavior_key($record['name'] ?? '', 160);
+    $email = strtolower(trim((string)($record['email'] ?? '')));
+    $message = web_inquiry_spam_behavior_key($record['message'] ?? '', 1500);
+    $clean = ['blocked'=>false,'allowed'=>false,'score'=>0,'matched_rules'=>[],'reason'=>''];
+    if ($ip === '') return $clean;
+
+    $recent = [];
+    try {
+        $recent = $pdo->query("SELECT name,email,message,ip_address
+            FROM web_inquiries WHERE created_at>=DATE_SUB(NOW(),INTERVAL 24 HOUR)
+            ORDER BY id DESC LIMIT 1500")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $events = $pdo->query("SELECT name,email,message_excerpt AS message,ip_address
+            FROM web_inquiry_spam_events WHERE created_at>=DATE_SUB(NOW(),INTERVAL 24 HOUR)
+            ORDER BY id DESC LIMIT 1500")->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $recent = array_merge($recent, $events);
+    } catch (Throwable $ignored) {
+        return $clean;
+    }
+
+    $nameIps = [$ip=>true];
+    $emailIps = [$ip=>true];
+    $messageIps = [$ip=>true];
+    foreach ($recent as $old) {
+        $oldIp = trim((string)($old['ip_address'] ?? ''));
+        if ($oldIp === '') continue;
+        if (mb_strlen($name, 'UTF-8') >= 6 && web_inquiry_spam_behavior_key($old['name'] ?? '', 160) === $name) $nameIps[$oldIp] = true;
+        if ($email !== '' && strtolower(trim((string)($old['email'] ?? ''))) === $email) $emailIps[$oldIp] = true;
+        if (mb_strlen($message, 'UTF-8') >= 16 && web_inquiry_spam_behavior_key($old['message'] ?? '', 1500) === $message) $messageIps[$oldIp] = true;
+    }
+
+    $label = '';
+    $pattern = '';
+    if (mb_strlen($name, 'UTF-8') >= 6 && count($nameIps) >= 5) {
+        $label = '同一姓名跨多个 IP 重复提交'; $pattern = $name;
+    } elseif ($email !== '' && count($emailIps) >= 4) {
+        $label = '同一邮箱跨多个 IP 重复提交'; $pattern = $email;
+    } elseif (mb_strlen($message, 'UTF-8') >= 16 && count($messageIps) >= 5) {
+        $label = '相同留言跨多个 IP 重复提交'; $pattern = $message;
+    }
+    if ($label === '') return $clean;
+
+    return [
+        'blocked'=>true,
+        'allowed'=>false,
+        'score'=>100,
+        'matched_rules'=>[['id'=>0,'label'=>$label,'pattern'=>web_inquiry_spam_clip($pattern, 500)]],
+        'reason'=>'命中跨 IP 重复询盘规则',
+    ];
 }
 
 function web_inquiry_spam_record_block(PDO $pdo, array $record, array $result): int
