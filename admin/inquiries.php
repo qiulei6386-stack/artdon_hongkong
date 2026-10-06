@@ -12,6 +12,13 @@ if (!$pdo) { header('Location: login.php'); exit; }
 web_migrate($pdo);
 $user = web_require_admin($pdo);
 
+function inquiry_message_preview(string $message): string {
+    $text = trim(preg_replace('/\s+/u', ' ', $message) ?? $message);
+    preg_match_all('/./us', $text, $characters);
+    $chars = $characters[0];
+    return implode('', array_slice($chars, 0, 80)) . (count($chars) > 80 ? '…' : '');
+}
+
 function inquiry_process_label(string $status): string {
     return ['pending'=>'待处理','processing'=>'处理中','completed'=>'已完成','error'=>'处理失败','disabled'=>'未启用','cancelled'=>'已撤回'][$status] ?? ($status ?: '待处理');
 }
@@ -394,6 +401,7 @@ admin_notice();
 .inquiry-filter-grid{display:grid;grid-template-columns:repeat(6,minmax(140px,1fr));gap:12px;margin:14px 0 12px}
 .inquiry-filter-grid label{font-size:12px;font-weight:800;color:#64748b;display:flex;flex-direction:column;gap:6px}.inquiry-filter-grid input,.inquiry-filter-grid select{height:38px;border:1px solid #d8dee8;border-radius:10px;padding:0 10px;background:#fff;color:#0f172a}.inquiry-wide{grid-column:span 2}.inquiry-batch-bar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;background:#f8fafc;border:1px solid #e5eaf2;border-radius:14px;padding:12px;margin:12px 0}.inquiry-batch-bar .left,.inquiry-batch-bar .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.inquiry-batch-bar select{height:38px;border:1px solid #d8dee8;border-radius:10px;padding:0 10px;background:#fff}.inquiry-count-pill{display:inline-flex;gap:5px;align-items:center;border-radius:999px;background:#f1f5f9;color:#334155;padding:6px 10px;font-size:12px;font-weight:800}.inquiry-danger{border-color:#fecaca!important;color:#b91c1c!important;background:#fff5f5!important}.inquiry-row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.inquiry-small-btn{border:1px solid #d8dee8;border-radius:9px;background:#fff;padding:6px 10px;font-weight:800;font-size:12px;cursor:pointer;text-decoration:none;color:#0f172a}.inquiry-link-danger{color:#b91c1c!important}.inquiry-muted{color:#94a3b8;font-size:12px}.inquiry-msg{max-width:520px}.inquiry-msg span{white-space:pre-wrap}.inquiry-checkbox{width:18px;height:18px}.inquiry-pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:14px 0 0;flex-wrap:wrap}.inquiry-pagination .pages{display:flex;gap:8px;flex-wrap:wrap}.inquiry-pagination a,.inquiry-pagination span{border:1px solid #d8dee8;border-radius:10px;padding:7px 11px;text-decoration:none;font-weight:800;color:#0f172a;background:#fff}.inquiry-pagination .is-active{background:#111827;color:#fff;border-color:#111827}.inquiry-tabs-mini{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;background:#eef2f7;border-radius:10px;padding:6px}.inquiry-tabs-mini a{text-decoration:none;padding:8px 12px;border-radius:9px;background:#fff;color:#334155;font-weight:800;font-size:13px}.inquiry-tabs-mini a.is-active{background:#111827;color:#fff}.inquiry-tabs-mini .n{color:#94a3b8;font-size:11px;margin-left:4px}.inquiry-section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 8px}.inquiry-section-title h3{margin:0;font-size:15px}.inquiry-filter-card{background:#fff;border:1px solid #e3e9f2;border-radius:16px;padding:14px;margin-bottom:16px}.admin-table th:first-child,.admin-table td:first-child{width:42px;text-align:center}.admin-table td{vertical-align:top}@media(max-width:1180px){.inquiry-filter-grid{grid-template-columns:repeat(2,minmax(140px,1fr))}.inquiry-wide{grid-column:span 2}}@media(max-width:720px){.inquiry-filter-grid{grid-template-columns:1fr}.inquiry-wide{grid-column:span 1}.inquiry-batch-bar{align-items:stretch}.inquiry-batch-bar .left,.inquiry-batch-bar .right{width:100%}}
 .inquiry-blacklist-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:10px 0 0}.inquiry-blacklist-tools label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:800;color:#64748b}.inquiry-blacklist-tools input{height:38px;border:1px solid #d8dee8;border-radius:10px;padding:0 10px;background:#fff;color:#0f172a}.inquiry-ip-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 8px;background:#f8fafc;color:#475569;font-size:12px;font-weight:800;margin-top:4px;text-decoration:none;transition:background .15s,color .15s,box-shadow .15s}.inquiry-ip-badge:hover{background:#e0f2fe;color:#0369a1;box-shadow:0 0 0 2px rgba(14,165,233,.12)}.inquiry-ip-badge:focus-visible{outline:2px solid #0284c7;outline-offset:2px}.inquiry-ip-badge.is-blocked{background:#fff1f2;color:#be123c}.inquiry-ip-badge.is-blocked:hover{background:#ffe4e6;color:#9f1239}.inquiry-ip-jump{font-size:11px;opacity:.7}.inquiry-blacklist-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.inquiry-blacklist-list form{display:inline-flex;gap:6px;align-items:center;border:1px solid #fee2e2;background:#fff7f7;border-radius:999px;padding:5px 6px 5px 10px;font-size:12px;color:#991b1b}.inquiry-blacklist-pager{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}.inquiry-blacklist-pager .pages{display:flex;gap:6px;flex-wrap:wrap}.inquiry-blacklist-pager a,.inquiry-blacklist-pager span{border:1px solid #d8dee8;border-radius:10px;padding:6px 10px;text-decoration:none;font-weight:800;color:#0f172a;background:#fff;font-size:12px}.inquiry-blacklist-pager .is-active{background:#111827;color:#fff;border-color:#111827}
+.inquiry-message-open{display:block;width:100%;padding:6px 0;border:0;background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer}.inquiry-msg .inquiry-message-preview{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;white-space:normal;overflow-wrap:anywhere;line-height:1.5}.inquiry-message-hint{display:block;color:#0369a1;font-size:12px;margin-top:5px}.inquiry-message-open:hover .inquiry-message-hint{text-decoration:underline}.inquiry-message-open:focus-visible{outline:2px solid #0284c7;outline-offset:3px;border-radius:4px}.inquiry-message-dialog{width:min(680px,calc(100vw - 32px));max-height:80vh;padding:24px;border:1px solid #d8dee8;border-radius:16px;box-sizing:border-box;color:#0f172a;overflow:auto}.inquiry-message-dialog::backdrop{background:rgba(15,23,42,.5)}.inquiry-message-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}.inquiry-message-dialog-header h3{margin:0;font-size:18px}.inquiry-message-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}
 </style>
 <div class="status-card status-ok"><strong>官网询盘批量管理已启用</strong><br><span>删除只清理香港官网询盘记录，并取消未完成同步队列；广州侧只接收暂存池和任务提醒，不直接新增正式客户。</span></div>
 <section class="admin-card">
@@ -498,7 +506,7 @@ admin_notice();
     <?php foreach($rows as $row):?><tr>
       <td><input class="inquiry-checkbox inquiry-row-check" type="checkbox" name="ids[]" form="inquiryBatchForm" value="<?= (int)$row['id'] ?>"></td>
       <td><?= web_e($row['created_at']) ?><br><strong><?= web_e($row['name']) ?></strong><br><a href="mailto:<?= web_e($row['email']) ?>"><?= web_e($row['email']) ?></a><?php if(!empty($row['phone'])):?><br><span class="help">电话：<?= web_e($row['phone']) ?></span><?php endif;?><?php if(!empty($row['whatsapp'])):?><br><span class="help">WhatsApp：<?= web_e($row['whatsapp']) ?></span><?php endif;?><br><span class="help"><?= web_e(trim(($row['company']??'').' '.($row['country']??''))) ?></span><br><span class="inquiry-muted">#<?= (int)$row['id'] ?> · <?= web_e($row['source'] ?: '-') ?></span><?php $rowIp=(string)($row['ip_address']??''); $rowIpBlocked=$rowIp!=='' && isset($activeBlockedIps[$rowIp]); if($rowIp!==''):?><br><a class="inquiry-ip-badge <?= $rowIpBlocked?'is-blocked':'' ?>" href="<?= web_e(inquiry_visitor_analytics_url($row)) ?>" title="查看此客户的访问页面和路径">IP <?= web_e($rowIp) ?><?= $rowIpBlocked?' · 已拉黑':'' ?><span class="inquiry-ip-jump" aria-hidden="true">↗</span></a><?php endif;?></td>
-      <td class="inquiry-msg"><strong><?= web_e($row['product']?:$row['support_type']) ?></strong><?php if($row['product_link']):?><br><a href="../<?= web_e($row['product_link']) ?>" target="_blank">打开产品</a><?php endif;?><?php if(!empty($row['page_title'])):?><br><span class="help"><?= web_e($row['page_title']) ?></span><?php endif;?><br><span><?= nl2br(web_e($row['message'])) ?></span></td>
+      <td class="inquiry-msg"><strong><?= web_e($row['product']?:$row['support_type']) ?></strong><?php if($row['product_link']):?><br><a href="../<?= web_e($row['product_link']) ?>" target="_blank">打开产品</a><?php endif;?><?php if(!empty($row['page_title'])):?><br><span class="help"><?= web_e($row['page_title']) ?></span><?php endif;?><br><?php if(trim((string)$row['message']) !== ''): ?><button type="button" class="inquiry-message-open" data-message-id="inquiry-message-<?= (int)$row['id'] ?>" data-message-title="<?= web_e('询盘 #'.(int)$row['id'].' · '.$row['name']) ?>" aria-haspopup="dialog"><span class="inquiry-message-preview"><?= web_e(inquiry_message_preview((string)$row['message'])) ?></span><span class="inquiry-message-hint">查看完整留言 ↗</span></button><template id="inquiry-message-<?= (int)$row['id'] ?>"><?= web_e((string)$row['message']) ?></template><?php else: ?><span class="help">暂无留言</span><?php endif; ?></td>
       <td><strong>负责人：</strong><?= web_e($row['route_owner']?:'-') ?><br><strong>执行人：</strong><?= web_e($row['route_assignees']?:'-') ?><br><span class="help"><?= (int)$row['route_due_days'] ?> 天 · <?= web_e(inquiry_priority_label((string)$row['route_priority'])) ?> · <?= (int)$row['route_auto_dispatch']===1?'生成任务提醒':'不生成提醒' ?></span></td>
       <td><?php if(!empty($row['bridge_inquiry_id'])):?><strong>暂存池 #<?= (int)$row['bridge_inquiry_id'] ?></strong><br><span class="help">客户信息已进入广州暂存池，未直接新增正式客户。</span><?php else:?><span class="help">尚未进入暂存池</span><?php endif;?></td>
       <td><?php if(!empty($row['dispatch_task_id'])):?><strong><?= web_e($row['dispatch_table']?:'website_inquiry_tasks') ?> #<?= (int)$row['dispatch_task_id'] ?></strong><br><span class="help">询盘消息已进入任务提醒。</span><?php else:?><span class="help">尚未生成任务</span><?php endif;?></td>
@@ -509,7 +517,30 @@ admin_notice();
   <div class="inquiry-pagination"><span>第 <?= (int)$page ?> / <?= (int)$totalPages ?> 页，共 <?= (int)$total ?> 条</span><div class="pages"><?php if($page>1):?><a href="<?= web_e(inquiry_make_url(['page'=>$page-1])) ?>">上一页</a><?php endif;?><?php $start=max(1,$page-2); $end=min($totalPages,$page+2); for($p=$start;$p<=$end;$p++):?><a class="<?= $p===$page?'is-active':'' ?>" href="<?= web_e(inquiry_make_url(['page'=>$p])) ?>"><?= (int)$p ?></a><?php endfor;?><?php if($page<$totalPages):?><a href="<?= web_e(inquiry_make_url(['page'=>$page+1])) ?>">下一页</a><?php endif;?></div></div>
   <?php endif;?>
 </section>
+<dialog id="inquiryMessageDialog" class="inquiry-message-dialog" aria-labelledby="inquiryMessageTitle">
+  <div class="inquiry-message-dialog-header"><h3 id="inquiryMessageTitle">完整留言</h3><button type="button" class="inquiry-small-btn" id="inquiryMessageClose" autofocus>关闭</button></div>
+  <div id="inquiryMessageBody" class="inquiry-message-body"></div>
+</dialog>
 <script>
+(function(){
+  const dialog = document.getElementById('inquiryMessageDialog');
+  const body = document.getElementById('inquiryMessageBody');
+  document.querySelectorAll('.inquiry-message-open').forEach(button => {
+    button.addEventListener('click', () => {
+      const message = document.getElementById(button.dataset.messageId);
+      if(!message) return;
+      document.getElementById('inquiryMessageTitle').textContent = button.dataset.messageTitle;
+      body.textContent = message.content.textContent;
+      dialog.showModal();
+      body.scrollTop = 0;
+    });
+  });
+  document.getElementById('inquiryMessageClose').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', event => {
+    const rect = dialog.getBoundingClientRect();
+    if(event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
+  });
+})();
 (function(){
   const form = document.getElementById('inquiryBatchForm');
   if(!form) return;
