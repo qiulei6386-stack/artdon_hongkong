@@ -39,8 +39,9 @@ function inquiry_status_message(string $status): string
     };
 }
 
-function inquiry_respond(string $status, string $returnUrl): void
+function inquiry_respond(string $status, string $returnUrl, bool $leadCreated = false): void
 {
+    $receipt = web_google_analytics_lead_receipt($status, $leadCreated);
     if (inquiry_is_ajax()) {
         $success = $status === 'ok';
         $httpCode = match ($status) {
@@ -60,10 +61,21 @@ function inquiry_respond(string $status, string $returnUrl): void
             'ok' => $success,
             'status' => $status,
             'message' => inquiry_status_message($status),
+            'lead_created' => $receipt !== null,
+            'lead_event_id' => $receipt['lead_event_id'] ?? null,
         ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
     }
 
+    // A short-lived, non-personal receipt lets the next public page record a
+    // native POST success, even when product/series URLs redirect again.
+    setcookie('artdon_ga4_inquiry_lead', $receipt['lead_event_id'] ?? '', [
+        'expires' => $receipt !== null ? time() + 600 : time() - 3600,
+        'path' => '/',
+        'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'httponly' => false,
+        'samesite' => 'Lax',
+    ]);
     $separator = str_contains($returnUrl, '?') ? '&' : '?';
     $hash = '';
     if (str_contains($returnUrl, '#')) {
@@ -410,7 +422,7 @@ try {
     } catch (Throwable $ignored) {}
 
     $_SESSION['last_web_inquiry_at'] = $now;
-    inquiry_respond('ok', $returnUrl);
+    inquiry_respond('ok', $returnUrl, true);
 } catch (Throwable $e) {
     if ($rateLockHeld) {
         inquiry_release_rate_lock($pdo, $rateLockName);
