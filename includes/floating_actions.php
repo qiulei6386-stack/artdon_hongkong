@@ -560,6 +560,7 @@ if (isset($series) && is_array($series)) {
         .then(function(r){return r.json().catch(function(){return {ok:false,message:'Submit failed. Please try again.'}})})
         .then(function(data){
           if(data&&data.ok){
+            if(typeof window.artdonTrackInquiryLead === 'function') window.artdonTrackInquiryLead(data);
             if(status){status.textContent=data.message||'Thank you. Your inquiry has been received and assigned through our CRM + dispatch workflow.';status.className='artdon-fi-status-v71871 ok'}
             showToast('Inquiry submitted');
             form.reset();
