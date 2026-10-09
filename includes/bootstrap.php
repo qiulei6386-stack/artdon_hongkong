@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/security_headers.php';
 artdon_security_headers_send();
+web_google_analytics_start();
 
 function web_public_get_without_session(): bool
 {

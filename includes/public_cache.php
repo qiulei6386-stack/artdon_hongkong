@@ -67,6 +67,7 @@ if (!function_exists('web_public_cache_send_headers')) {
 if (!function_exists('web_public_cache_start')) {
     function web_public_cache_start(string $group = 'page', int $ttl = 300): void
     {
+        web_google_analytics_start();
         if (!web_public_cache_allowed()) return;
         $ttl = max(30, min(1800, $ttl));
         $dir = web_public_cache_dir();
