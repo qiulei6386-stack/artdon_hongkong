@@ -27,6 +27,11 @@ $existing = str_replace('<title>', "<script>gtag('config', 'G-C63RTCJ402');</scr
 $existingTagged = web_inject_google_analytics($existing);
 lead_check(substr_count($existingTagged, "gtag('config', 'G-C63RTCJ402')") === 1, 'Existing tag must not be duplicated');
 lead_check(substr_count($existingTagged, 'window.artdonTrackInquiryLead =') === 1, 'Existing tag must still receive tracker');
+$callbackHtml = str_replace('</body>', '<script>if(typeof window.artdonTrackInquiryLead === "function") window.artdonTrackInquiryLead(data);</script></body>', $html);
+$callbackTagged = web_inject_google_analytics($callbackHtml);
+lead_check(substr_count($callbackTagged, 'window.artdonTrackInquiryLead = function(') === 1, 'Existing AJAX hook must not be mistaken for tracker definition');
+lead_check(strpos($callbackTagged, 'window.artdonTrackInquiryLead = function(') < strpos($callbackTagged, '</head>'), 'Tracker must be defined in head before form hooks');
+lead_check(web_inject_google_analytics($callbackTagged) === $callbackTagged, 'Full page with form hook must remain idempotent');
 
 // Execute only the real responder functions with mocked headers/cookies. No DB,
 // uploads, captcha, CRM dispatch or public web requests are involved.
