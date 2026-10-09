@@ -43,7 +43,7 @@ function web_inject_google_analytics(string $html): string
 
 HTML;
     $tag = '';
-    if (!str_contains($html, 'window.artdonTrackInquiryLead =')) {
+    if (!str_contains($html, 'window.artdonTrackInquiryLead = function(')) {
         $tag .= <<<'HTML'
 <script>
   (function(){
