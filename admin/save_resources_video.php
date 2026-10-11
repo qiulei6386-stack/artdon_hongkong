@@ -52,6 +52,20 @@ try {
         $labelLength = function_exists('mb_strlen') ? mb_strlen($relatedLabel, 'UTF-8') : preg_match_all('/./us', $relatedLabel);
         if ($labelLength === false || $labelLength > 120) throw new RuntimeException('链接按钮文字最多 120 个字符。');
 
+        $previousHighlights = [];
+        if ($id > 0 && (!array_key_exists('key_highlights_title', $_POST) || !array_key_exists('key_highlights_details', $_POST))) {
+            $previous = $pdo->prepare('SELECT key_highlights_title,key_highlights_details FROM web_resource_videos WHERE id=? LIMIT 1');
+            $previous->execute([$id]);
+            $previousHighlights = $previous->fetch(PDO::FETCH_ASSOC) ?: [];
+        }
+        $highlightsTitle = array_key_exists('key_highlights_title', $_POST) ? $_POST['key_highlights_title'] : ($previousHighlights['key_highlights_title'] ?? '');
+        $highlightsDetails = array_key_exists('key_highlights_details', $_POST) ? $_POST['key_highlights_details'] : ($previousHighlights['key_highlights_details'] ?? '');
+        if (!is_string($highlightsTitle) || !is_string($highlightsDetails)) throw new RuntimeException('Key Highlights 标题和详情必须为文字。');
+        if (array_key_exists('key_highlights_title', $_POST)) $highlightsTitle = trim($highlightsTitle);
+        $highlightsTitleLength = function_exists('mb_strlen') ? mb_strlen($highlightsTitle, 'UTF-8') : preg_match_all('/./us', $highlightsTitle);
+        if ($highlightsTitleLength === false || $highlightsTitleLength > 255) throw new RuntimeException('Key Highlights 标题最多 255 个字符。');
+        if (strlen($highlightsDetails) > 65535) throw new RuntimeException('Key Highlights 详情内容过长，请缩短后重试。');
+
         $main = rv_save_clean($_POST['main_category'] ?? 'product');
         $sub = rv_save_clean($_POST['product_subcategory'] ?? ($_POST['sub_category'] ?? 'track-lights'));
         if (!isset(artdon_resource_video_main_categories()[$main])) $main = 'product';
@@ -70,13 +84,13 @@ try {
         $videoUrl = artdon_resource_video_embed_url(rv_save_clean($_POST['video_url'] ?? ''), $sourceType);
         $videoUpload = rv_upload($pdo, $user, 'video_upload', 'video', 'videos', $title);
         if ($videoUpload !== '') $videoUrl = $videoUpload;
-        $values = [$title, artdon_resource_video_description_source($_POST['description'] ?? ''), $main, $sub, $sourceType, $videoUrl, $relatedUrl, $relatedLabel, $cover, $alt, rv_save_clean($_POST['duration'] ?? ''), rv_save_clean($_POST['publish_date'] ?? ''), rv_save_clean($_POST['seo_title'] ?? ''), rv_save_clean($_POST['seo_description'] ?? ''), rv_save_clean($_POST['seo_keywords'] ?? ''), (int)($_POST['sort_order'] ?? 10), !empty($_POST['is_active']) ? 1 : 0, !empty($_POST['is_featured']) ? 1 : 0];
+        $values = [$title, artdon_resource_video_description_source($_POST['description'] ?? ''), $highlightsTitle, $highlightsDetails, $main, $sub, $sourceType, $videoUrl, $relatedUrl, $relatedLabel, $cover, $alt, rv_save_clean($_POST['duration'] ?? ''), rv_save_clean($_POST['publish_date'] ?? ''), rv_save_clean($_POST['seo_title'] ?? ''), rv_save_clean($_POST['seo_description'] ?? ''), rv_save_clean($_POST['seo_keywords'] ?? ''), (int)($_POST['sort_order'] ?? 10), !empty($_POST['is_active']) ? 1 : 0, !empty($_POST['is_featured']) ? 1 : 0];
         if ($id > 0) {
-            $stmt = $pdo->prepare('UPDATE web_resource_videos SET title=?, description=?, main_category=?, sub_category=?, source_type=?, video_url=?, related_url=?, related_label=?, cover_image=?, cover_alt=?, duration=?, publish_date=?, seo_title=?, seo_description=?, seo_keywords=?, sort_order=?, is_active=?, is_featured=? WHERE id=?');
+            $stmt = $pdo->prepare('UPDATE web_resource_videos SET title=?, description=?, key_highlights_title=?, key_highlights_details=?, main_category=?, sub_category=?, source_type=?, video_url=?, related_url=?, related_label=?, cover_image=?, cover_alt=?, duration=?, publish_date=?, seo_title=?, seo_description=?, seo_keywords=?, sort_order=?, is_active=?, is_featured=? WHERE id=?');
             $stmt->execute([...$values, $id]);
             $_SESSION['admin_success'] = '视频已保存。';
         } else {
-            $stmt = $pdo->prepare('INSERT INTO web_resource_videos (title,description,main_category,sub_category,source_type,video_url,related_url,related_label,cover_image,cover_alt,duration,publish_date,seo_title,seo_description,seo_keywords,sort_order,is_active,is_featured) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+            $stmt = $pdo->prepare('INSERT INTO web_resource_videos (title,description,key_highlights_title,key_highlights_details,main_category,sub_category,source_type,video_url,related_url,related_label,cover_image,cover_alt,duration,publish_date,seo_title,seo_description,seo_keywords,sort_order,is_active,is_featured) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
             $stmt->execute($values);
             $id = (int)$pdo->lastInsertId();
             $_SESSION['admin_success'] = '视频已新增。';
