@@ -70,7 +70,7 @@ try {
         $videoUrl = artdon_resource_video_embed_url(rv_save_clean($_POST['video_url'] ?? ''), $sourceType);
         $videoUpload = rv_upload($pdo, $user, 'video_upload', 'video', 'videos', $title);
         if ($videoUpload !== '') $videoUrl = $videoUpload;
-        $values = [$title, rv_save_clean($_POST['description'] ?? ''), $main, $sub, $sourceType, $videoUrl, $relatedUrl, $relatedLabel, $cover, $alt, rv_save_clean($_POST['duration'] ?? ''), rv_save_clean($_POST['publish_date'] ?? ''), rv_save_clean($_POST['seo_title'] ?? ''), rv_save_clean($_POST['seo_description'] ?? ''), rv_save_clean($_POST['seo_keywords'] ?? ''), (int)($_POST['sort_order'] ?? 10), !empty($_POST['is_active']) ? 1 : 0, !empty($_POST['is_featured']) ? 1 : 0];
+        $values = [$title, artdon_resource_video_description_source($_POST['description'] ?? ''), $main, $sub, $sourceType, $videoUrl, $relatedUrl, $relatedLabel, $cover, $alt, rv_save_clean($_POST['duration'] ?? ''), rv_save_clean($_POST['publish_date'] ?? ''), rv_save_clean($_POST['seo_title'] ?? ''), rv_save_clean($_POST['seo_description'] ?? ''), rv_save_clean($_POST['seo_keywords'] ?? ''), (int)($_POST['sort_order'] ?? 10), !empty($_POST['is_active']) ? 1 : 0, !empty($_POST['is_featured']) ? 1 : 0];
         if ($id > 0) {
             $stmt = $pdo->prepare('UPDATE web_resource_videos SET title=?, description=?, main_category=?, sub_category=?, source_type=?, video_url=?, related_url=?, related_label=?, cover_image=?, cover_alt=?, duration=?, publish_date=?, seo_title=?, seo_description=?, seo_keywords=?, sort_order=?, is_active=?, is_featured=? WHERE id=?');
             $stmt->execute([...$values, $id]);
