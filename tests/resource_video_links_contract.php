@@ -73,7 +73,7 @@ final class RVLinkContractPDO extends PDO
     }
     public function prepare(string $query, array $options = []): PDOStatement|false
     {
-        $rows = str_contains($query, 'SELECT related_url,related_label') ? [$this->fixture['previous'] ?? []] : [];
+        $rows = (str_contains($query, 'SELECT related_url,related_label') || str_contains($query, 'SELECT key_highlights_title,key_highlights_details')) ? [$this->fixture['previous'] ?? []] : [];
         return new RVLinkContractStatement($this, $query, $rows);
     }
     public function lastInsertId(?string $name = null): string|false { return '901'; }
@@ -280,6 +280,8 @@ PHP;
     rvl_check(substr_count($schema, 'CREATE TABLE IF NOT EXISTS') === 2, 'Migration must remain safe to invoke repeatedly');
     rvl_check(substr_count($schema, 'ADD COLUMN related_url VARCHAR(1000)') === 2 && substr_count($schema, 'ADD COLUMN related_label VARCHAR(120)') === 2, 'Existing video tables must receive both related-link columns despite duplicate-column errors');
     rvl_check(str_contains($migrationDb->schema[0], "related_url VARCHAR(1000) NOT NULL DEFAULT ''") && str_contains($migrationDb->schema[0], "related_label VARCHAR(120) NOT NULL DEFAULT ''"), 'New video tables must define empty related-link defaults');
+    rvl_check(substr_count($schema, 'ADD COLUMN key_highlights_title VARCHAR(255)') === 2 && substr_count($schema, 'ADD COLUMN key_highlights_details TEXT NULL') === 2, 'Existing video tables must receive both highlights columns through repeatable additive migration');
+    rvl_check(str_contains($migrationDb->schema[0], "key_highlights_title VARCHAR(255) NOT NULL DEFAULT ''") && str_contains($migrationDb->schema[0], 'key_highlights_details TEXT NULL'), 'New video tables must define the optional highlights fields');
     $mapped = artdon_resource_video_map_row(['id'=>11,'title'=>'Sample','related_url'=>'product.php?slug=spectrum-45','related_label'=>'  See product  ']);
     rvl_check($mapped['related_url'] === '/product.php?slug=spectrum-45' && $mapped['related_label'] === 'See product', 'Read mapping must normalize link and label');
     foreach ([[], ['related_url'=>'javascript:alert(1)', 'related_label'=>''], ['related_url'=>['bad'], 'related_label'=>null]] as $row) {
@@ -288,21 +290,38 @@ PHP;
     }
     $mapped = artdon_resource_video_map_row(['description'=>$linkedSource]);
     rvl_check($mapped['description'] === $linkedText && $mapped['description_source'] === $linkedSource, 'Read mapping must separate plain search/SEO description from the saved linked source');
+    foreach ([[], ['key_highlights_title'=>null, 'key_highlights_details'=>null]] as $row) {
+        $mapped = artdon_resource_video_map_row($row);
+        rvl_check($mapped['key_highlights_title'] === '' && $mapped['key_highlights_details'] === '' && artdon_resource_video_highlights_html($mapped) === '', 'Old rows and NULL optional highlights fields must map to empty strings and render no module');
+    }
+    $mapped = artdon_resource_video_map_row(['key_highlights_title'=>'0', 'key_highlights_details'=>"First\r\n\n0\nLast"]);
+    rvl_check($mapped['key_highlights_title'] === '0' && $mapped['key_highlights_details'] === "First\r\n\n0\nLast", 'Read mapping must preserve literal zero and original detail line endings');
+    foreach ([[], ['key_highlights_title'=>'', 'key_highlights_details'=>''], ['key_highlights_title'=>" \t", 'key_highlights_details'=>" \r\n\t\n\u{00a0}\n\u{3000}"]] as $video) {
+        rvl_check(artdon_resource_video_highlights_html($video) === '', 'Empty and whitespace-only highlights must not add a visible module');
+    }
+    $highlights = ['key_highlights_title'=>'  Key Highlights  ', 'key_highlights_details'=>" First \r\n\n Second\r0\n\t\n Last "];
+    rvl_check(artdon_resource_video_highlights_html($highlights) === '<section class="rv-highlights"><h3 class="rv-highlights-title">Key Highlights</h3><ul class="rv-highlights-list"><li>First</li><li>Second</li><li>0</li><li>Last</li></ul></section>', 'Highlights must trim lines, skip blank rows, preserve zero and render one item per nonempty line');
+    rvl_check(artdon_resource_video_highlights_html(['key_highlights_title'=>'0']) === '<section class="rv-highlights"><h3 class="rv-highlights-title">0</h3></section>', 'A title-only highlights module must retain literal zero without an empty list');
+    rvl_check(artdon_resource_video_highlights_html(['key_highlights_details'=>'0']) === '<section class="rv-highlights"><ul class="rv-highlights-list"><li>0</li></ul></section>', 'Details must display without requiring a title');
+    $unsafeHighlights = ['key_highlights_title'=>'<script>Title</script> & "quoted"', 'key_highlights_details'=>"<a href=\"javascript:alert(1)\">Link</a>\n&lt;literal&gt; & text"];
+    rvl_check(artdon_resource_video_highlights_html($unsafeHighlights, 2) === '<section class="rv-highlights"><h2 class="rv-highlights-title">&lt;script&gt;Title&lt;/script&gt; &amp; &quot;quoted&quot;</h2><ul class="rv-highlights-list"><li>&lt;a href=&quot;javascript:alert(1)&quot;&gt;Link&lt;/a&gt;</li><li>&amp;lt;literal&amp;gt; &amp; text</li></ul></section>', 'Highlights must escape all title/detail markup and entities as plain text');
+    rvl_check(str_contains(artdon_resource_video_highlights_html($highlights, 99), '<h6 class="rv-highlights-title">') && str_contains(artdon_resource_video_highlights_html($highlights, 0), '<h1 class="rv-highlights-title">'), 'Highlights headings must remain valid HTML levels');
 
     $basePost = ['csrf'=>'fixture-csrf', 'action'=>'save', 'id'=>0, 'title'=>'Fixture title', 'description'=>'Fixture description',
+        'key_highlights_title'=>'Fixture highlights', 'key_highlights_details'=>"First point\nSecond point",
         'main_category'=>'product', 'product_subcategory'=>'track-lights', 'source_type'=>'file', 'video_url'=>'/videos/original.mp4',
         'related_url'=>'product.php?slug=spectrum-45#details', 'related_label'=>'  Explore product  ',
         'cover_image'=>'assets/fixture-cover.webp', 'cover_alt'=>'Fixture alt', 'duration'=>'2:34', 'publish_date'=>'2026-10-11',
         'seo_title'=>'Fixture SEO', 'seo_description'=>'Fixture meta', 'seo_keywords'=>'fixture,product', 'sort_order'=>27, 'is_active'=>'1', 'is_featured'=>'1'];
     $runSave = static function(array $post, array $extra = []) use ($fixtureRoot): array {
-        $scenario = array_merge(['post'=>$post, 'previous'=>['related_url'=>'/products/existing', 'related_label'=>'Existing button']], $extra);
-        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__FILE__) . ' --save-fixture ' . escapeshellarg($fixtureRoot) . ' ' . escapeshellarg(base64_encode(json_encode($scenario, JSON_THROW_ON_ERROR))) . ' 2>&1';
+        $scenario = array_merge(['post'=>$post, 'previous'=>['related_url'=>'/products/existing', 'related_label'=>'Existing button', 'key_highlights_title'=>'Existing highlights', 'key_highlights_details'=>"Existing point\n0"]], $extra);
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg(__FILE__) . ' --save-fixture ' . escapeshellarg($fixtureRoot) . ' ' . escapeshellarg(base64_encode(json_encode($scenario, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE))) . ' 2>&1';
         exec($command, $lines, $exitCode);
         rvl_check($exitCode === 0, 'Real save handler fixture must exit successfully: ' . implode("\n", $lines));
         try { return json_decode(implode("\n", $lines), true, 512, JSON_THROW_ON_ERROR); }
         catch (Throwable $error) { throw new RuntimeException('Save fixture returned non-JSON output: ' . implode("\n", $lines), 0, $error); }
     };
-    $expectedValues = ['title'=>'Fixture title','description'=>'Fixture description','main_category'=>'product','sub_category'=>'track-lights',
+    $expectedValues = ['title'=>'Fixture title','description'=>'Fixture description','key_highlights_title'=>'Fixture highlights','key_highlights_details'=>"First point\nSecond point",'main_category'=>'product','sub_category'=>'track-lights',
         'source_type'=>'file','video_url'=>'/videos/original.mp4','related_url'=>'/product.php?slug=spectrum-45#details','related_label'=>'Explore product',
         'cover_image'=>'assets/fixture-cover.webp','cover_alt'=>'Fixture alt','duration'=>'2:34','publish_date'=>'2026-10-11',
         'seo_title'=>'Fixture SEO','seo_description'=>'Fixture meta','seo_keywords'=>'fixture,product','sort_order'=>27,'is_active'=>1,'is_featured'=>1];
@@ -319,6 +338,41 @@ PHP;
     rvl_check($result['mutations'][0]['values']['description'] === "  " . $linkedSource . "\n  ", 'Real save handler must normalize description links without trimming historical whitespace or line breaks');
     $result = $runSave(array_replace($basePost, ['description'=>'Before <a href="javascript:alert(1)" onclick="bad()">Click</a> after <script>literal</script>']));
     rvl_check($result['mutations'][0]['values']['description'] === 'Before Click after <script>literal</script>', 'Real save handler must remove unsafe link markup while retaining other historical text literally');
+    $oldHighlightsPost = array_replace($basePost, ['id'=>31]);
+    unset($oldHighlightsPost['key_highlights_title'], $oldHighlightsPost['key_highlights_details']);
+    $result = $runSave($oldHighlightsPost);
+    rvl_check($result['mutations'][0]['values']['key_highlights_title'] === 'Existing highlights' && $result['mutations'][0]['values']['key_highlights_details'] === "Existing point\n0", 'Older forms omitting both highlights fields must preserve the existing values');
+    $lookup = array_values(array_filter($result['executions'], static fn(array $execution): bool => str_starts_with($execution['sql'], 'SELECT key_highlights_title,key_highlights_details')));
+    rvl_check(count($lookup) === 1 && $lookup[0]['params'] === [31], 'Highlights fallback must read only the video being updated');
+    foreach (['key_highlights_title', 'key_highlights_details'] as $missing) {
+        $post = array_replace($basePost, ['id'=>31]);
+        unset($post[$missing]);
+        $result = $runSave($post);
+        $values = $result['mutations'][0]['values'];
+        rvl_check($values[$missing] === ($missing === 'key_highlights_title' ? 'Existing highlights' : "Existing point\n0"), 'Omitting one highlights field must preserve that field');
+        $submitted = $missing === 'key_highlights_title' ? 'key_highlights_details' : 'key_highlights_title';
+        rvl_check($values[$submitted] === $expectedValues[$submitted], 'Omitting one highlights field must still save the other submitted field');
+        $post[$submitted] = '';
+        $result = $runSave($post);
+        rvl_check($result['mutations'][0]['values'][$missing] === $values[$missing] && $result['mutations'][0]['values'][$submitted] === '', 'One highlights field may be explicitly cleared while the omitted field stays unchanged');
+    }
+    $result = $runSave($oldHighlightsPost, ['previous'=>['key_highlights_title'=>'  Existing highlights  ', 'key_highlights_details'=>"  Existing point\r\n\n0  "]]);
+    rvl_check($result['mutations'][0]['values']['key_highlights_title'] === '  Existing highlights  ' && $result['mutations'][0]['values']['key_highlights_details'] === "  Existing point\r\n\n0  ", 'Omitted highlights fields must preserve saved title whitespace and detail line endings byte for byte');
+    $result = $runSave(array_replace($basePost, ['id'=>31, 'key_highlights_title'=>'', 'key_highlights_details'=>'']));
+    rvl_check($result['mutations'][0]['values']['key_highlights_title'] === '' && $result['mutations'][0]['values']['key_highlights_details'] === '', 'Explicit empty highlights fields must clear an existing module');
+    $oldHighlightsPost['id'] = 0;
+    $result = $runSave($oldHighlightsPost);
+    rvl_check($result['mutations'][0]['values']['key_highlights_title'] === '' && $result['mutations'][0]['values']['key_highlights_details'] === '', 'New videos submitted by an older form must default to empty highlights');
+    $olderPost = array_replace($basePost, ['id'=>31]);
+    unset($olderPost['key_highlights_title'], $olderPost['key_highlights_details'], $olderPost['related_url'], $olderPost['related_label']);
+    $result = $runSave($olderPost);
+    rvl_check($result['mutations'][0]['values']['key_highlights_title'] === 'Existing highlights' && $result['mutations'][0]['values']['related_url'] === '/products/existing', 'Forms predating both optional modules must preserve both existing modules');
+    $result = $runSave(array_replace($basePost, ['key_highlights_title'=>str_repeat('灯', 255), 'key_highlights_details'=>"  First point\r\n\n0\n<a>literal</a>  "]));
+    rvl_check($result['mutations'][0]['values']['key_highlights_title'] === str_repeat('灯', 255) && $result['mutations'][0]['values']['key_highlights_details'] === "  First point\r\n\n0\n<a>literal</a>  ", 'Highlights must accept 255 Unicode title characters and retain details as unchanged plain text');
+    $result = $runSave(array_replace($basePost, ['key_highlights_title'=>'0', 'key_highlights_details'=>'0']));
+    rvl_check($result['mutations'][0]['values']['key_highlights_title'] === '0' && $result['mutations'][0]['values']['key_highlights_details'] === '0', 'Saving highlights must never treat literal zero as empty');
+    $result = $runSave(array_replace($basePost, ['key_highlights_details'=>str_repeat('灯', 21845)]));
+    rvl_check(strlen($result['mutations'][0]['values']['key_highlights_details']) === 65535, 'Highlights must accept a UTF-8 detail string at the TEXT byte boundary');
     $oldPost = array_replace($basePost, ['id'=>31]);
     unset($oldPost['related_url'], $oldPost['related_label']);
     $result = $runSave($oldPost);
@@ -348,13 +402,16 @@ PHP;
         ['related_url'=>'/products.php?x=%0a'], ['related_url'=>'/' . str_repeat('a', 1000)], ['related_url'=>['https://example.com']],
         ['related_url'=>'example.com/' . str_repeat('a', 981)], ['related_url'=>'guide' . str_repeat('a', 991) . '.php'],
         ['related_label'=>['bad']], ['related_label'=>str_repeat('灯', 121)],
+        ['key_highlights_title'=>['bad']], ['key_highlights_details'=>['bad']], ['key_highlights_title'=>null], ['key_highlights_details'=>null],
+        ['key_highlights_title'=>12], ['key_highlights_details'=>false],
+        ['key_highlights_title'=>str_repeat('灯', 256)], ['key_highlights_details'=>str_repeat('灯', 21845) . 'x'],
     ];
     foreach ($invalidPosts as $override) {
         $result = $runSave(array_replace($basePost, $override), ['uploads'=>true]);
-        rvl_check(isset($result['session']['admin_error']) && !isset($result['session']['admin_success']), 'Invalid related fields must return a validation error');
-        rvl_check($result['mutations'] === [] && $result['uploads'] === [] && $result['cache_clears'] === [] && $result['logs'] === [], 'Invalid related fields must fail before uploads, video writes, cache clearing and success logging');
+        rvl_check(isset($result['session']['admin_error']) && !isset($result['session']['admin_success']), 'Invalid optional video fields must return a validation error');
+        rvl_check($result['mutations'] === [] && $result['uploads'] === [] && $result['cache_clears'] === [] && $result['logs'] === [], 'Invalid optional video fields must fail before uploads, video writes, cache clearing and success logging');
     }
-    echo 'Resource video link URL, description, label, public catalog, migration, mapping and isolated save contracts passed.' . "\n";
+    echo 'Resource video links, description, highlights, catalog, migration, mapping and isolated save contracts passed.' . "\n";
 } finally {
     rvl_remove_tree($fixtureRoot);
 }

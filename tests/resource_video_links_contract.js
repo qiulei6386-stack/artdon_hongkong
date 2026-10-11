@@ -140,7 +140,7 @@ function makeAdmin(options = {}) {
   };
 }
 
-function makePublic() {
+function makePublic(options = {}) {
   const document = new Document();
   const ids = {};
   for (const id of ['videoSearch', 'videoSort', 'videoGrid', 'videoLoad', 'videoLoadWrap', 'videoEmpty',
@@ -165,6 +165,16 @@ function makePublic() {
   };
   const linked = addCard('/products/track-lights/armi', 'ARMI Details');
   const unlinked = addCard('', '');
+  if (options.highlights) {
+    const template = unlinked.appendChild(new Element('template', {'data-video-highlights': ''}));
+    template.content = new Element('fragment');
+    const section = template.content.appendChild(new Element('section', {class: 'rv-highlights'}));
+    section.appendChild(new Element('h3')).textContent = 'REDLINE at a Glance';
+    const list = section.appendChild(new Element('ul'));
+    for (const line of ['Two sizes – Ø55 mm and Ø75 mm', 'Trimmed and trimless', '0']) {
+      list.appendChild(new Element('li')).textContent = line;
+    }
+  }
   const close = document.appendChild(new Element('button', {'data-video-close': ''}));
   // Only server-rendered description literals are substituted; all event logic is real.
   const executable = publicScript.replace(/<\?=[\s\S]*?\?>/g, '""');
@@ -312,6 +322,21 @@ async function main() {
     assert.equal(env.ids.videoPlayer.innerHTML, '');
     env.click(full.querySelector('a'));
     assert.equal(env.ids.videoPlayer.innerHTML, '');
+  });
+
+  await test('Highlights keep More available for short descriptions and do not leak into another video dialog', () => {
+    const env = makePublic({highlights: true});
+    assert.equal(env.unlinked.more.hidden, false);
+    env.click(env.unlinked.more);
+    assert.equal(env.ids.videoDescriptionContent.children.length, 2);
+    const highlights = env.ids.videoDescriptionContent.children[1];
+    assert.equal(highlights.querySelector('h3').textContent, 'REDLINE at a Glance');
+    assert.deepEqual(highlights.querySelectorAll('li').map(line => line.textContent),
+      ['Two sizes – Ø55 mm and Ø75 mm', 'Trimmed and trimless', '0']);
+    assert.equal(env.ids.videoPlayer.innerHTML, '');
+    env.click(env.linked.more);
+    assert.equal(env.ids.videoDescriptionContent.children.length, 1);
+    assert.equal(env.ids.videoDescriptionContent.querySelector('section'), null);
   });
 
   console.log('resource video link contract passed (' + checks + ' groups)');
