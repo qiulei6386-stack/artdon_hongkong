@@ -103,6 +103,8 @@ function artdon_resource_video_migrate(PDO $pdo): void
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         title VARCHAR(255) NOT NULL DEFAULT '',
         description TEXT NULL,
+        key_highlights_title VARCHAR(255) NOT NULL DEFAULT '',
+        key_highlights_details TEXT NULL,
         main_category VARCHAR(80) NOT NULL DEFAULT 'product',
         sub_category VARCHAR(120) NOT NULL DEFAULT 'all-products',
         source_type VARCHAR(40) NOT NULL DEFAULT 'youtube',
@@ -126,6 +128,8 @@ function artdon_resource_video_migrate(PDO $pdo): void
         KEY idx_cat_sort (main_category, sub_category, is_active, sort_order)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     foreach ([
+        'key_highlights_title VARCHAR(255) NOT NULL DEFAULT ""',
+        'key_highlights_details TEXT NULL',
         'related_url VARCHAR(1000) NOT NULL DEFAULT ""',
         'related_label VARCHAR(120) NOT NULL DEFAULT ""',
         'seo_title VARCHAR(255) NOT NULL DEFAULT ""',
@@ -187,6 +191,8 @@ function artdon_resource_video_map_row(array $row): array
             'title'=>(string)($row['title'] ?? ''),
             'description'=>artdon_resource_video_description_text($row['description'] ?? ''),
             'description_source'=>(string)($row['description'] ?? ''),
+            'key_highlights_title'=>(string)($row['key_highlights_title'] ?? ''),
+            'key_highlights_details'=>(string)($row['key_highlights_details'] ?? ''),
             'main_category'=>$main,
             'main_label'=>artdon_resource_video_main_categories()[$main] ?? 'Product Videos',
             'sub_category'=>$sub,
@@ -210,6 +216,34 @@ function artdon_resource_video_map_row(array $row): array
     ];
     $video['share_path'] = artdon_resource_video_share_path($video);
     return $video;
+}
+
+/** Highlights are plain text only; each non-empty detail line becomes one item. */
+function artdon_resource_video_highlights_html(array $video, int $headingLevel = 3): string
+{
+    $trim = static function(string $value): string {
+        return preg_replace('/^[\s\p{Z}]+|[\s\p{Z}]+$/u', '', $value) ?? trim($value);
+    };
+    $title = $trim(is_string($video['key_highlights_title'] ?? null) ? $video['key_highlights_title'] : '');
+    $details = is_string($video['key_highlights_details'] ?? null) ? $video['key_highlights_details'] : '';
+    $lines = [];
+    foreach (preg_split('/\r\n|\r|\n/', $details) ?: [] as $line) {
+        $line = $trim($line);
+        if ($line !== '') $lines[] = $line;
+    }
+    if ($title === '' && $lines === []) return '';
+    $escape = static fn(string $value): string => htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $html = '<section class="rv-highlights">';
+    if ($title !== '') {
+        $level = max(1, min(6, $headingLevel));
+        $html .= '<h' . $level . ' class="rv-highlights-title">' . $escape($title) . '</h' . $level . '>';
+    }
+    if ($lines !== []) {
+        $html .= '<ul class="rv-highlights-list">';
+        foreach ($lines as $line) $html .= '<li>' . $escape($line) . '</li>';
+        $html .= '</ul>';
+    }
+    return $html . '</section>';
 }
 
 function artdon_resource_video_find(PDO $pdo, int $id, bool $activeOnly = true): ?array
