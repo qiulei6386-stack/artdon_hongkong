@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/bootstrap.php';
 require_once __DIR__ . '/resource_video_links.php';
+require_once __DIR__ . '/resource_video_description.php';
 
 function artdon_resource_video_main_categories(): array
 {
@@ -184,7 +185,8 @@ function artdon_resource_video_map_row(array $row): array
     $video = [
             'id'=>(int)($row['id'] ?? 0),
             'title'=>(string)($row['title'] ?? ''),
-            'description'=>(string)($row['description'] ?? ''),
+            'description'=>artdon_resource_video_description_text($row['description'] ?? ''),
+            'description_source'=>(string)($row['description'] ?? ''),
             'main_category'=>$main,
             'main_label'=>artdon_resource_video_main_categories()[$main] ?? 'Product Videos',
             'sub_category'=>$sub,
