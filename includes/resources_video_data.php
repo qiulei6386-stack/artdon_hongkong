@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/resource_video_links.php';
 
 function artdon_resource_video_main_categories(): array
 {
@@ -26,6 +27,23 @@ function artdon_resource_video_slug(string $value): string
     $value = strtolower(trim($value));
     $value = preg_replace('/[^a-z0-9]+/', '-', $value) ?: '';
     return trim($value, '-');
+}
+
+function artdon_resource_video_share_path(array $video): string
+{
+    $id = max(0, (int)($video['id'] ?? 0));
+    if ($id <= 0) return '/resources-videos.php';
+    $slug = artdon_resource_video_slug((string)($video['title'] ?? 'video')) ?: 'video';
+    return '/videos/' . $id . '-' . $slug;
+}
+
+function artdon_resource_video_share_url(array $video, string $siteUrl = 'https://artdonlighting.com', bool $crmTracking = false): string
+{
+    $url = rtrim($siteUrl, '/') . artdon_resource_video_share_path($video);
+    if ($crmTracking) {
+        $url .= '?utm_source=crm&utm_medium=email&utm_campaign=video_share';
+    }
+    return $url;
 }
 
 function artdon_resource_video_embed_url(string $url, string $sourceType = ''): string
@@ -88,6 +106,8 @@ function artdon_resource_video_migrate(PDO $pdo): void
         sub_category VARCHAR(120) NOT NULL DEFAULT 'all-products',
         source_type VARCHAR(40) NOT NULL DEFAULT 'youtube',
         video_url VARCHAR(500) NOT NULL DEFAULT '',
+        related_url VARCHAR(1000) NOT NULL DEFAULT '',
+        related_label VARCHAR(120) NOT NULL DEFAULT '',
         cover_image VARCHAR(500) NOT NULL DEFAULT '',
         cover_alt VARCHAR(255) NOT NULL DEFAULT '',
         duration VARCHAR(40) NOT NULL DEFAULT '',
@@ -105,6 +125,8 @@ function artdon_resource_video_migrate(PDO $pdo): void
         KEY idx_cat_sort (main_category, sub_category, is_active, sort_order)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     foreach ([
+        'related_url VARCHAR(1000) NOT NULL DEFAULT ""',
+        'related_label VARCHAR(120) NOT NULL DEFAULT ""',
         'seo_title VARCHAR(255) NOT NULL DEFAULT ""',
         'seo_description TEXT NULL',
         'seo_keywords TEXT NULL',
@@ -152,10 +174,14 @@ function artdon_resource_video_items(PDO $pdo, bool $activeOnly = true): array
     artdon_resource_video_seed($pdo);
     $sql = 'SELECT * FROM web_resource_videos' . ($activeOnly ? ' WHERE is_active=1' : '') . ' ORDER BY sort_order ASC, id ASC';
     $rows = $pdo->query($sql)->fetchAll() ?: [];
-    return array_map(static function(array $row): array {
-        $main = (string)($row['main_category'] ?? 'product');
-        $sub = $main === 'product' ? (string)($row['sub_category'] ?? 'track-lights') : '';
-        return [
+    return array_map('artdon_resource_video_map_row', $rows);
+}
+
+function artdon_resource_video_map_row(array $row): array
+{
+    $main = (string)($row['main_category'] ?? 'product');
+    $sub = $main === 'product' ? (string)($row['sub_category'] ?? 'track-lights') : '';
+    $video = [
             'id'=>(int)($row['id'] ?? 0),
             'title'=>(string)($row['title'] ?? ''),
             'description'=>(string)($row['description'] ?? ''),
@@ -165,6 +191,8 @@ function artdon_resource_video_items(PDO $pdo, bool $activeOnly = true): array
             'sub_label'=>$main === 'product' ? (artdon_resource_video_sub_categories()[$sub] ?? '') : '',
             'source_type'=>(string)($row['source_type'] ?? 'youtube'),
             'video_url'=>artdon_resource_video_embed_url((string)($row['video_url'] ?? ''), (string)($row['source_type'] ?? 'youtube')),
+            'related_url'=>artdon_resource_video_link_url($row['related_url'] ?? ''),
+            'related_label'=>artdon_resource_video_link_label($row['related_label'] ?? ''),
             'cover_image'=>(string)($row['cover_image'] ?? 'assets/img/hero/hero-technical-downloads.webp'),
             'cover_alt'=>(string)($row['cover_alt'] ?? ($row['title'] ?? 'Video')),
             'duration'=>(string)($row['duration'] ?? ''),
@@ -175,6 +203,20 @@ function artdon_resource_video_items(PDO $pdo, bool $activeOnly = true): array
             'sort_order'=>(int)($row['sort_order'] ?? 0),
             'is_active'=>(int)($row['is_active'] ?? 1) === 1,
             'is_featured'=>(int)($row['is_featured'] ?? 0) === 1,
-        ];
-    }, $rows);
+            'created_at'=>(string)($row['created_at'] ?? ''),
+            'updated_at'=>(string)($row['updated_at'] ?? ''),
+    ];
+    $video['share_path'] = artdon_resource_video_share_path($video);
+    return $video;
+}
+
+function artdon_resource_video_find(PDO $pdo, int $id, bool $activeOnly = true): ?array
+{
+    if ($id <= 0) return null;
+    artdon_resource_video_migrate($pdo);
+    $sql = 'SELECT * FROM web_resource_videos WHERE id=?' . ($activeOnly ? ' AND is_active=1' : '') . ' LIMIT 1';
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([$id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return is_array($row) ? artdon_resource_video_map_row($row) : null;
 }
