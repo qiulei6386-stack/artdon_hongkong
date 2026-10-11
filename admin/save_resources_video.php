@@ -35,6 +35,23 @@ try {
     } else {
         $title = rv_save_clean($_POST['title'] ?? '');
         if ($title === '') throw new RuntimeException('视频标题不能为空。');
+        $previousLink = [];
+        if ($id > 0 && (!array_key_exists('related_url', $_POST) || !array_key_exists('related_label', $_POST))) {
+            $previous = $pdo->prepare('SELECT related_url,related_label FROM web_resource_videos WHERE id=? LIMIT 1');
+            $previous->execute([$id]);
+            $previousLink = $previous->fetch(PDO::FETCH_ASSOC) ?: [];
+        }
+        $rawLink = $_POST['related_url'] ?? ($previousLink['related_url'] ?? '');
+        $relatedUrl = artdon_resource_video_link_url($rawLink);
+        if (!is_string($rawLink) || (trim($rawLink) !== '' && $relatedUrl === '')) {
+            throw new RuntimeException('关联链接无效，请填写 http/https 网址或站内路径。');
+        }
+        $relatedLabel = $_POST['related_label'] ?? ($previousLink['related_label'] ?? '');
+        if (!is_string($relatedLabel)) throw new RuntimeException('链接按钮文字无效。');
+        $relatedLabel = trim($relatedLabel);
+        $labelLength = function_exists('mb_strlen') ? mb_strlen($relatedLabel, 'UTF-8') : preg_match_all('/./us', $relatedLabel);
+        if ($labelLength === false || $labelLength > 120) throw new RuntimeException('链接按钮文字最多 120 个字符。');
+
         $main = rv_save_clean($_POST['main_category'] ?? 'product');
         $sub = rv_save_clean($_POST['product_subcategory'] ?? ($_POST['sub_category'] ?? 'track-lights'));
         if (!isset(artdon_resource_video_main_categories()[$main])) $main = 'product';
@@ -53,13 +70,13 @@ try {
         $videoUrl = artdon_resource_video_embed_url(rv_save_clean($_POST['video_url'] ?? ''), $sourceType);
         $videoUpload = rv_upload($pdo, $user, 'video_upload', 'video', 'videos', $title);
         if ($videoUpload !== '') $videoUrl = $videoUpload;
-        $values = [$title, rv_save_clean($_POST['description'] ?? ''), $main, $sub, $sourceType, $videoUrl, $cover, $alt, rv_save_clean($_POST['duration'] ?? ''), rv_save_clean($_POST['publish_date'] ?? ''), rv_save_clean($_POST['seo_title'] ?? ''), rv_save_clean($_POST['seo_description'] ?? ''), rv_save_clean($_POST['seo_keywords'] ?? ''), (int)($_POST['sort_order'] ?? 10), !empty($_POST['is_active']) ? 1 : 0, !empty($_POST['is_featured']) ? 1 : 0];
+        $values = [$title, rv_save_clean($_POST['description'] ?? ''), $main, $sub, $sourceType, $videoUrl, $relatedUrl, $relatedLabel, $cover, $alt, rv_save_clean($_POST['duration'] ?? ''), rv_save_clean($_POST['publish_date'] ?? ''), rv_save_clean($_POST['seo_title'] ?? ''), rv_save_clean($_POST['seo_description'] ?? ''), rv_save_clean($_POST['seo_keywords'] ?? ''), (int)($_POST['sort_order'] ?? 10), !empty($_POST['is_active']) ? 1 : 0, !empty($_POST['is_featured']) ? 1 : 0];
         if ($id > 0) {
-            $stmt = $pdo->prepare('UPDATE web_resource_videos SET title=?, description=?, main_category=?, sub_category=?, source_type=?, video_url=?, cover_image=?, cover_alt=?, duration=?, publish_date=?, seo_title=?, seo_description=?, seo_keywords=?, sort_order=?, is_active=?, is_featured=? WHERE id=?');
+            $stmt = $pdo->prepare('UPDATE web_resource_videos SET title=?, description=?, main_category=?, sub_category=?, source_type=?, video_url=?, related_url=?, related_label=?, cover_image=?, cover_alt=?, duration=?, publish_date=?, seo_title=?, seo_description=?, seo_keywords=?, sort_order=?, is_active=?, is_featured=? WHERE id=?');
             $stmt->execute([...$values, $id]);
             $_SESSION['admin_success'] = '视频已保存。';
         } else {
-            $stmt = $pdo->prepare('INSERT INTO web_resource_videos (title,description,main_category,sub_category,source_type,video_url,cover_image,cover_alt,duration,publish_date,seo_title,seo_description,seo_keywords,sort_order,is_active,is_featured) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
+            $stmt = $pdo->prepare('INSERT INTO web_resource_videos (title,description,main_category,sub_category,source_type,video_url,related_url,related_label,cover_image,cover_alt,duration,publish_date,seo_title,seo_description,seo_keywords,sort_order,is_active,is_featured) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)');
             $stmt->execute($values);
             $id = (int)$pdo->lastInsertId();
             $_SESSION['admin_success'] = '视频已新增。';
