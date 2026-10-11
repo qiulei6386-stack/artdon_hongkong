@@ -77,6 +77,12 @@ class Element {
     child.parentElement = this;
     return child;
   }
+  cloneNode(deep = false) {
+    const copy = new Element(this.tagName, Object.fromEntries(this.attributes));
+    copy._textContent = this._textContent;
+    if (deep) this.children.forEach(child => copy.appendChild(child.cloneNode(true)));
+    return copy;
+  }
   addEventListener(name, callback) {
     const handlers = this.listeners.get(name) || [];
     handlers.push(callback);
@@ -139,14 +145,22 @@ function makePublic() {
   const ids = {};
   for (const id of ['videoSearch', 'videoSort', 'videoGrid', 'videoLoad', 'videoLoadWrap', 'videoEmpty',
     'videoSectionTitle', 'videoSectionDesc', 'videoListTitle', 'productSubcategoryBar',
-    'videoModal', 'videoPlayer', 'videoLinkActions', 'videoRelatedLink']) {
+    'videoModal', 'videoPlayer', 'videoLinkActions', 'videoRelatedLink', 'videoDescriptionDialog', 'videoDescriptionTitle', 'videoDescriptionContent']) {
     ids[id] = document.appendChild(new Element(id === 'videoRelatedLink' ? 'a' : 'div', {id}));
   }
   ids.videoLinkActions.hidden = true;
   const addCard = (relatedUrl, relatedLabel) => {
-    const card = ids.videoGrid.appendChild(new Element('button', {'data-video-card': ''}));
+    const card = ids.videoGrid.appendChild(new Element('article', {'data-video-card': ''}));
     card.dataset = {main: 'product', sub: 'track-lights', title: 'Test lighting video', desc: '',
       date: '2026-10-11', popular: '0', source: 'local', video: '/uploads/test.mp4', relatedUrl, relatedLabel};
+    card.play = card.appendChild(new Element('button', {'data-video-open': ''}));
+    card.appendChild(new Element('h3')).textContent = 'Test lighting video';
+    card.preview = card.appendChild(new Element('p', {'data-description-preview': '', class: 'rv-card-description'}));
+    card.preview.clientHeight = 100; card.preview.scrollHeight = relatedUrl ? 180 : 100;
+    card.preview.textContent = 'A complete video description';
+    card.bodyLink = card.preview.appendChild(new Element('a', {href: '/products/track-lights/armi'}));
+    card.bodyLink.textContent = 'ARMI';
+    card.more = card.appendChild(new Element('button', {'data-description-open': ''}));
     return card;
   };
   const linked = addCard('/products/track-lights/armi', 'ARMI Details');
@@ -154,7 +168,7 @@ function makePublic() {
   const close = document.appendChild(new Element('button', {'data-video-close': ''}));
   // Only server-rendered description literals are substituted; all event logic is real.
   const executable = publicScript.replace(/<\?=[\s\S]*?\?>/g, '""');
-  vm.runInNewContext(executable, {document}, {filename: 'resources-videos-inline.js'});
+  vm.runInNewContext(executable, {document, window: {addEventListener() {}}}, {filename: 'resources-videos-inline.js'});
   document.fire('DOMContentLoaded');
   return {ids, linked, unlinked, close, click(target) { document.fire('click', {target}); }};
 }
@@ -265,7 +279,7 @@ async function main() {
 
   await test('Opening an unlinked video removes the previous video CTA and reopening restores it', () => {
     const env = makePublic();
-    env.click(env.linked);
+    env.click(env.linked.play);
     assert.equal(env.ids.videoLinkActions.hidden, false);
     assert.equal(env.ids.videoRelatedLink.getAttribute('href'), env.linked.dataset.relatedUrl);
     assert.equal(env.ids.videoRelatedLink.textContent, 'ARMI Details');
@@ -273,13 +287,31 @@ async function main() {
     env.click(env.close);
     assert.equal(env.ids.videoModal.getAttribute('aria-hidden'), 'true');
     assert.equal(env.ids.videoPlayer.innerHTML, '');
-    env.click(env.unlinked);
+    env.click(env.unlinked.play);
     assert.equal(env.ids.videoLinkActions.hidden, true);
     assert.equal(env.ids.videoRelatedLink.getAttribute('href'), null);
     assert.equal(env.ids.videoRelatedLink.textContent, '');
-    env.click(env.linked);
+    env.click(env.linked.play);
     assert.equal(env.ids.videoLinkActions.hidden, false);
     assert.equal(env.ids.videoRelatedLink.getAttribute('href'), env.linked.dataset.relatedUrl);
+  });
+
+  await test('Description links navigate separately from playback and full-text dialog retains anchors', () => {
+    const env = makePublic();
+    env.click(env.linked.bodyLink);
+    assert.equal(env.ids.videoPlayer.innerHTML, '');
+    assert.equal(env.ids.videoModal.getAttribute('aria-hidden'), null);
+    assert.equal(env.linked.more.hidden, false);
+    assert.equal(env.unlinked.more.hidden, true);
+    env.click(env.linked.more);
+    assert.equal(env.ids.videoDescriptionDialog.getAttribute('open'), '');
+    assert.equal(env.ids.videoDescriptionTitle.textContent, 'Test lighting video');
+    const full = env.ids.videoDescriptionContent.children[0];
+    assert.equal(full.getAttribute('class'), null);
+    assert.equal(full.querySelector('a').getAttribute('href'), '/products/track-lights/armi');
+    assert.equal(env.ids.videoPlayer.innerHTML, '');
+    env.click(full.querySelector('a'));
+    assert.equal(env.ids.videoPlayer.innerHTML, '');
   });
 
   console.log('resource video link contract passed (' + checks + ' groups)');

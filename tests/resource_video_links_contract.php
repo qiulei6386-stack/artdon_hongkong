@@ -132,7 +132,7 @@ $fixtureRoot = sys_get_temp_dir() . '/artdon-video-links-contract-' . bin2hex(ra
 rvl_check(mkdir($fixtureRoot . '/includes', 0700, true), 'Create isolated includes root');
 rvl_check(mkdir($fixtureRoot . '/admin', 0700), 'Create isolated admin root');
 try {
-    foreach (['includes/resource_video_links.php', 'includes/resources_video_data.php', 'includes/pretty_urls_v71868.php', 'admin/save_resources_video.php'] as $file) {
+    foreach (['includes/resource_video_links.php', 'includes/resource_video_description.php', 'includes/resources_video_data.php', 'includes/pretty_urls_v71868.php', 'admin/save_resources_video.php'] as $file) {
         rvl_check(copy(dirname(__DIR__) . '/' . $file, $fixtureRoot . '/' . $file), 'Copy real candidate source: ' . $file);
     }
     $bootstrap = <<<'PHP'
@@ -158,6 +158,60 @@ PHP;
     file_put_contents($fixtureRoot . '/includes/upload.php', "<?php // Upload stub is in fixture bootstrap.\n");
     file_put_contents($fixtureRoot . '/includes/public_cache.php', "<?php // Cache stub is in fixture bootstrap.\n");
     require $fixtureRoot . '/includes/resources_video_data.php';
+    require_once $fixtureRoot . '/includes/resource_video_description.php';
+
+    $plainDescription = "  Original & literal &amp; <MODEL> <b>plain text</b>  \r\n第二行\nLast line  ";
+    rvl_check(artdon_resource_video_description_source($plainDescription) === $plainDescription && artdon_resource_video_description_text($plainDescription) === $plainDescription, 'Historical plain descriptions, literal tags, entities, whitespace and line endings must remain unchanged');
+    rvl_check(artdon_resource_video_description_html($plainDescription) === nl2br(htmlspecialchars($plainDescription, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')), 'Historical non-anchor markup must be escaped rather than executed');
+    rvl_check(artdon_resource_video_description_html($plainDescription, false) === htmlspecialchars($plainDescription, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), 'Editor HTML must preserve original plain-text newlines without adding duplicate BR nodes');
+    foreach ([null, false, 12, []] as $value) {
+        rvl_check(artdon_resource_video_description_source($value) === '' && artdon_resource_video_description_text($value) === '' && artdon_resource_video_description_html($value) === '', 'Non-string descriptions must produce empty safe output');
+    }
+    $linkedDescription = "Read <A HREF='product.php?slug=spectrum-45&amp;finish=white#spec' onclick='alert(1)' style='color:red'><strong>SPECTRUM &amp; &quot;45&quot;</strong></A> today.\nNext line";
+    $linkedSource = "Read <a href=\"/product.php?slug=spectrum-45&amp;finish=white#spec\">SPECTRUM &amp; &quot;45&quot;</a> today.\nNext line";
+    $linkedText = "Read SPECTRUM & \"45\" today.\nNext line";
+    rvl_check(artdon_resource_video_description_source($linkedDescription) === $linkedSource, 'Description storage must normalize href and strip all extra attributes and embedded label tags');
+    rvl_check(artdon_resource_video_description_text($linkedDescription) === $linkedText, 'Description plain output must retain the actual linked words and surrounding text');
+    rvl_check(artdon_resource_video_description_html($linkedDescription) === "Read <a href=\"/product.php?slug=spectrum-45&amp;finish=white#spec\" target=\"_blank\" rel=\"noopener noreferrer\">SPECTRUM &amp; &quot;45&quot;</a> today.<br />\nNext line", 'Description HTML must generate only safe anchors with fixed target and rel, plus escaped text and line breaks');
+    rvl_check(artdon_resource_video_description_html($linkedDescription, false) === "Read <a href=\"/product.php?slug=spectrum-45&amp;finish=white#spec\" target=\"_blank\" rel=\"noopener noreferrer\">SPECTRUM &amp; &quot;45&quot;</a> today.\nNext line", 'Editor HTML must retain one original newline around canonical links without adding BR nodes');
+    $entityDescription = '<a href="/products.php">A &amp; B &amp;lt;model&amp;gt; &lt;型号&gt;</a>';
+    rvl_check(artdon_resource_video_description_source($entityDescription) === $entityDescription, 'Canonical escaped anchor labels must not be double-encoded during repeated saves');
+    rvl_check(artdon_resource_video_description_text($entityDescription) === 'A & B &lt;model&gt; <型号>', 'Label entities must decode once while literal angle-bracket specifications remain text');
+    rvl_check(artdon_resource_video_description_source('<a href=example.com/details>产品</a>') === '<a href="https://example.com/details">产品</a>', 'Description links must use the existing bare-domain normalization');
+    rvl_check(artdon_resource_video_description_source('<a href="/products.php" target="_self" rel="opener" data-extra="ignored">Products</a>') === '<a href="/products.php">Products</a>', 'Saved links must contain href only');
+    rvl_check(artdon_resource_video_description_html("<a href='/products.php'>First\nSecond</a>") === "<a href=\"/products.php\" target=\"_blank\" rel=\"noopener noreferrer\">First<br />\nSecond</a>", 'Line breaks inside linked words must be retained');
+    rvl_check(artdon_resource_video_description_html("<a href='/products.php'>First\nSecond</a>", false) === "<a href=\"/products.php\" target=\"_blank\" rel=\"noopener noreferrer\">First\nSecond</a>", 'Editor HTML must retain one original newline inside linked words without adding BR nodes');
+    $encodedLabel = '<a href="/products.php">&lt;script&gt;alert(1)&lt;/script&gt; &lt;a href=&quot;/contact.php&quot;&gt;literal&lt;/a&gt;</a>';
+    rvl_check(artdon_resource_video_description_source($encodedLabel) === $encodedLabel && substr_count(artdon_resource_video_description_html($encodedLabel), '<a ') === 1 && !str_contains(artdon_resource_video_description_html($encodedLabel), '<script>'), 'Encoded markup inside a valid label must remain literal words rather than nested links or scripts');
+    $unsafeDescriptionLinks = [
+        '<a href="javascript:alert(1)">Click</a>', '<a href="java&#x73;cript:alert(1)">Click</a>',
+        '<a href="data:text/html,test">Click</a>', '<a href="mailto:sales@example.com">Click</a>',
+        '<a href="//evil.example/">Click</a>', '<a href="&#47;&#47;evil.example/">Click</a>',
+        '<a href="https://user:pass@example.com/">Click</a>', '<a href="/products.php?x=%0a">Click</a>',
+        '<a href="/&#92;evil.example/">Click</a>', '<a href="/products.php" HREF="javascript:alert(1)">Click</a>',
+        '<a href="/products.php" href>Click</a>', '<a>Click</a>', '<a href="">Click</a>',
+        '<a href="javascript:alert(1)">&lt;a href=&quot;/products.php&quot;&gt;Click&lt;/a&gt;</a>',
+    ];
+    foreach ($unsafeDescriptionLinks as $value) {
+        rvl_check(artdon_resource_video_description_source($value) === 'Click' && artdon_resource_video_description_text($value) === 'Click' && artdon_resource_video_description_html($value) === 'Click', 'Invalid or encoded malicious description links must become plain words: ' . $value);
+    }
+    $nestedDescription = "Before <a href='/products.php'>outer <a href='/contact.php'>inner</a> end</a>\nAfter <MODEL>";
+    $nestedText = "Before outer inner end\nAfter <MODEL>";
+    rvl_check(artdon_resource_video_description_source($nestedDescription) === $nestedText && artdon_resource_video_description_text($nestedDescription) === $nestedText, 'Nested anchors must become plain words without losing following text');
+    $unfinishedDescription = "Before <a href='/products.php'>unfinished\nNext <MODEL> <a href='/contact.php'>more";
+    $unfinishedText = "Before unfinished\nNext <MODEL> more";
+    rvl_check(artdon_resource_video_description_source($unfinishedDescription) === $unfinishedText && artdon_resource_video_description_text($unfinishedDescription) === $unfinishedText, 'Unclosed anchors must retain the entire following plain body and line breaks');
+    rvl_check(artdon_resource_video_description_html($unfinishedDescription) === nl2br(htmlspecialchars($unfinishedText, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')), 'Unclosed markup must never become active HTML');
+    $malformedDescription = "Before <a href=\"/products.php\" missing delimiter\nAfter <MODEL>";
+    rvl_check(artdon_resource_video_description_source($malformedDescription) === $malformedDescription && artdon_resource_video_description_html($malformedDescription) === nl2br(htmlspecialchars($malformedDescription, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')), 'An incomplete opening tag must remain literal text without swallowing following words');
+    $encodedLiteral = 'Literal &lt;a href="/products.php"&gt;words&lt;/a&gt;';
+    rvl_check(artdon_resource_video_description_source($encodedLiteral) === $encodedLiteral && artdon_resource_video_description_text($encodedLiteral) === $encodedLiteral && !str_contains(artdon_resource_video_description_html($encodedLiteral), '<a '), 'Encoded anchor markup in historical plain text must remain literal text');
+    foreach ([$plainDescription, $linkedDescription, $entityDescription, $encodedLabel, $nestedDescription, $unfinishedDescription, $malformedDescription, ...$unsafeDescriptionLinks] as $value) {
+        $canonical = artdon_resource_video_description_source($value);
+        rvl_check(artdon_resource_video_description_source($canonical) === $canonical, 'Description normalization must be idempotent');
+        rvl_check(artdon_resource_video_description_text($canonical) === artdon_resource_video_description_text($value), 'Normalization must preserve the same plain search/SEO words');
+        rvl_check(artdon_resource_video_description_html($canonical) === artdon_resource_video_description_html($value), 'Normalization must preserve safe visible HTML');
+    }
 
     $accepted = [
         ['', ''], ['   ', ''], ['/', '/'],
@@ -232,6 +286,8 @@ PHP;
         $mapped = artdon_resource_video_map_row($row);
         rvl_check($mapped['related_url'] === '' && $mapped['related_label'] === 'View Details', 'Legacy or unsafe stored fields must never become an unsafe public link');
     }
+    $mapped = artdon_resource_video_map_row(['description'=>$linkedSource]);
+    rvl_check($mapped['description'] === $linkedText && $mapped['description_source'] === $linkedSource, 'Read mapping must separate plain search/SEO description from the saved linked source');
 
     $basePost = ['csrf'=>'fixture-csrf', 'action'=>'save', 'id'=>0, 'title'=>'Fixture title', 'description'=>'Fixture description',
         'main_category'=>'product', 'product_subcategory'=>'track-lights', 'source_type'=>'file', 'video_url'=>'/videos/original.mp4',
@@ -259,6 +315,10 @@ PHP;
         rvl_check(isset($result['session']['admin_success']) && !isset($result['session']['admin_error']), 'Successful handler must report saved video');
         rvl_check($result['cache_clears'] === [''] && count($result['logs']) === 1, 'Successful handler must retain existing cache/log behavior');
     }
+    $result = $runSave(array_replace($basePost, ['description'=>"  " . $linkedDescription . "\n  "]));
+    rvl_check($result['mutations'][0]['values']['description'] === "  " . $linkedSource . "\n  ", 'Real save handler must normalize description links without trimming historical whitespace or line breaks');
+    $result = $runSave(array_replace($basePost, ['description'=>'Before <a href="javascript:alert(1)" onclick="bad()">Click</a> after <script>literal</script>']));
+    rvl_check($result['mutations'][0]['values']['description'] === 'Before Click after <script>literal</script>', 'Real save handler must remove unsafe link markup while retaining other historical text literally');
     $oldPost = array_replace($basePost, ['id'=>31]);
     unset($oldPost['related_url'], $oldPost['related_label']);
     $result = $runSave($oldPost);
@@ -294,7 +354,7 @@ PHP;
         rvl_check(isset($result['session']['admin_error']) && !isset($result['session']['admin_success']), 'Invalid related fields must return a validation error');
         rvl_check($result['mutations'] === [] && $result['uploads'] === [] && $result['cache_clears'] === [] && $result['logs'] === [], 'Invalid related fields must fail before uploads, video writes, cache clearing and success logging');
     }
-    echo 'Resource video link URL, label, public catalog, migration, mapping and isolated save contracts passed.' . "\n";
+    echo 'Resource video link URL, description, label, public catalog, migration, mapping and isolated save contracts passed.' . "\n";
 } finally {
     rvl_remove_tree($fixtureRoot);
 }
